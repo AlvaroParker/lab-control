@@ -1,0 +1,39 @@
+version: "1.0"
+services:
+  database:
+    container_name: db-lab
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./backend/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=defensa2001
+      - POSTGRES_DB=fingerprints
+    ports:
+      - 5432:5432
+  backend:
+    container_name: backend-lab
+    image: rust:latest
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./backend:/app"
+    environment:
+      - SOCKET_PORT=5000
+      - SOCKET_IP=192.168.68.112
+    working_dir: /app
+    command: bash -c "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo binstall -y cargo-watch && cargo watch -x run"
+  frontend:
+    container_name: frontend-lab
+    image: node:18
+    ports: 
+      - 8080:8080
+    volumes:
+      - "./frontend:/app"
+    working_dir: /app
+    command: bash -c "npm i -g vite && yarn install && vite"
+
+volumes:
+  db-data:
