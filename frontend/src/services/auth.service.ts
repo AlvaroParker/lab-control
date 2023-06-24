@@ -1,5 +1,6 @@
 import ServiceTypes from './types';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const login = async (
     email: string,
@@ -11,7 +12,10 @@ export const login = async (
             pswd,
         })
         .then((response) => {
-            if (response.data.token) {
+            if (response.data.cookie) {
+                const cookie = response.data.cookie;
+                Cookies.set('auth-cookie', cookie, {expires: 1, sameSite: "none"});
+                delete response.data.cookie;
                 localStorage.setItem('user', JSON.stringify(response.data));
             }
 
@@ -33,6 +37,8 @@ export const is_authenticated = async (): Promise<boolean> => {
     }
 };
 
+
+
 const getUser = async () => {
     if (await is_authenticated()) {
         const user = localStorage.getItem('user');
@@ -48,17 +54,16 @@ const getUser = async () => {
 };
 
 const logout = async () => {
+    await axios.post(ServiceTypes.API_URL + '/admin/logout', {}, {headers: getToken()});
+    Cookies.remove('auth-cookie');
     localStorage.removeItem('user');
 };
 
 const getToken = () => {
-    const user_local = localStorage.getItem('user');
-    if (user_local) {
-        const user = JSON.parse(user_local);
-        if (user.token) {
-            return { Authorization: 'Bearer ' + user.token };
+    let cookie = Cookies.get('auth-cookie') // => 'value'
+    if (cookie) {
+            return { 'cookie-auth': cookie };
         }
-    }
     return undefined;
 };
 

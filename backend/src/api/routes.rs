@@ -16,9 +16,18 @@ pub async fn create_routes(state: Arc<Pool>) -> Router {
             Method::PUT,
         ]);
     Router::new()
-        .nest("/usuarios", personas::routes::create_routes().await)
-        .nest("/admin", admins::routes::_create_routes().await)
-        .nest("/registros", registros::routes::create_routes().await)
+        .nest(
+            "/usuarios",
+            personas::routes::create_routes(state.clone()).await,
+        )
+        .nest(
+            "/admin",
+            admins::routes::_create_routes(state.clone()).await,
+        )
+        .nest(
+            "/registros",
+            registros::routes::create_routes(state.clone()).await,
+        )
         .with_state(state)
         .layer(cors)
 }

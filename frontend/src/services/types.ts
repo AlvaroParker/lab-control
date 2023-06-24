@@ -48,7 +48,6 @@ namespace ServiceTypes {
 
         return missingProperties.length === 0;
     };
-
-    export const API_URL = 'http://127.0.0.1:3000';
+    export const API_URL = 'http://192.168.68.112:3000';
 }
 export default ServiceTypes;
