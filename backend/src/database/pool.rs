@@ -1,3 +1,5 @@
+use async_sqlx_session::PostgresSessionStore;
+
 use sea_orm::{Database, DatabaseConnection, DbErr};
 
 pub async fn connect_db(database_uri: &str) -> Result<DatabaseConnection, DbErr> {
@@ -12,11 +14,15 @@ use dotenvy_macro::dotenv;
 #[derive(Clone)]
 pub struct Pool {
     db: DatabaseConnection,
+    store: PostgresSessionStore,
 }
 
 impl Pool {
     pub async fn new(db: DatabaseConnection) -> Self {
-        Self { db }
+        // todo: handle this unwrap
+        let store = start_store().await.unwrap();
+
+        Self { db, store }
     }
     pub async fn new_from_uri(database_uri: &str) -> Self {
         let db = match connect_db(database_uri).await {
@@ -26,11 +32,21 @@ impl Pool {
                 exit(1);
             }
         };
-        Self { db }
+        let store = start_store().await.unwrap();
+        Self { db, store }
     }
     pub fn get_db(&self) -> &DatabaseConnection {
         &self.db
     }
+    pub fn get_store(&self) -> PostgresSessionStore {
+        self.store.clone()
+    }
+}
+
+async fn start_store() -> Result<PostgresSessionStore, Box<dyn std::error::Error>> {
+    let store = PostgresSessionStore::new(dotenv!("DATABASE_URL")).await?;
+    store.migrate().await?;
+    Ok(store)
 }
 
 pub async fn create_pool() -> Pool {

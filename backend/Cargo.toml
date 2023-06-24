@@ -6,12 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+async-session = "3.0.0"
+async-sqlx-session = { version = "0.4.0", features = ["pg"] }
 axum = { version = "0.6.18", default-features = false, features = ["headers", "http1", "json", "tokio", "tower-log","query"] }
 bcrypt = "0.14.0"
 chrono = "0.4.26"
 dotenvy = "0.15.7"
 dotenvy_macro = "0.15.7"
-jsonwebtoken = {version = "8.3.0", default-features = false }
 regex = { version = "1.8.4", default-features = false, features = ["std", "unicode-perl"] }
 sea-orm = { version = "0.11.3", features = [
   "sqlx-postgres",

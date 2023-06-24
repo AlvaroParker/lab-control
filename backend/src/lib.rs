@@ -16,6 +16,7 @@ pub async fn run() {
         .init();
 
     let pool = create_pool().await;
+
     let pool_state = Arc::new(pool);
 
     let app = create_routes(pool_state.clone())
