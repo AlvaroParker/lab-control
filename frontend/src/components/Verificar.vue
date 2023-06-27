@@ -65,7 +65,6 @@ export default defineComponent({
                         this.display = false;
                         this.sensor_error = true;
                     }
-                    console.log(err);
                 });
         },
     },

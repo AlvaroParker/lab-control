@@ -2,10 +2,14 @@ use std::{cell::RefCell, env, net::TcpStream, rc::Rc};
 
 use crate::{socket::send_message, write_to_file::write_to_file};
 use libfprint_rs::{device::FpDevice, error::GError, print::FpPrint};
+use tungstenite::WebSocket;
 use uuid::Uuid;
 
 // Run enrollment
-pub fn run_enrollment(addr: Rc<RefCell<TcpStream>>, dev: &FpDevice) -> Result<(), GError<'static>> {
+pub fn run_enrollment(
+    addr: Rc<RefCell<WebSocket<TcpStream>>>,
+    dev: &FpDevice,
+) -> Result<(), GError<'static>> {
     // Check if enroll returned an error, return with error if it did
     let print = match enroll(Rc::clone(&addr), dev) {
         Ok(p) => p,
@@ -25,13 +29,14 @@ pub fn run_enrollment(addr: Rc<RefCell<TcpStream>>, dev: &FpDevice) -> Result<()
             std::process::exit(1);
         }
     };
+    _ = addr.borrow_mut().close(None);
     // Ok = everything went well
     Ok(())
 }
 
 // The actual enroll function
 fn enroll(
-    sock_addr: Rc<RefCell<TcpStream>>,
+    sock_addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
 ) -> Result<FpPrint<'static>, GError<'static>> {
     // Check if the devices is open, if not, open it
@@ -42,7 +47,7 @@ fn enroll(
     // Create a template print
     let template_print = FpPrint::new(&dev);
     // Enroll
-    let print = dev.enroll(template_print, Some(callback_fn), Some(sock_addr))?;
+    let print = dev.enroll(template_print, Some(callback_fn), Some(sock_addr.clone()))?;
     // Close the device
     dev.close()?;
     // Return the device
@@ -56,7 +61,7 @@ fn callback_fn(
     completed_stages: i32,
     _print: FpPrint,
     error: Option<GError>,
-    user_data: &mut Option<Rc<RefCell<TcpStream>>>,
+    user_data: &mut Option<Rc<RefCell<WebSocket<TcpStream>>>>,
 ) {
     // If there's no error and if the user data was successfully delivered to the funciton:
     if error.is_none() && user_data.is_some() {

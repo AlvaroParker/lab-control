@@ -2,11 +2,8 @@ use std::{sync::Arc, time::Duration};
 
 use crate::{api::utils::handle_cookie_err, database::entities::admins::Entity as Admin};
 use async_session::{Session, SessionStore};
-use axum::{
-    extract::State,
-    http::{HeaderMap, StatusCode},
-    Json,
-};
+use axum::{extract::State, http::StatusCode, Json};
+use axum_extra::extract::CookieJar;
 use sea_orm::{ActiveModelTrait, EntityTrait};
 use serde::{Deserialize, Serialize};
 
@@ -95,22 +92,13 @@ pub async fn login(
 
 pub async fn logout(
     State(pool): State<Arc<Pool>>,
-    headers: HeaderMap,
+    jar: CookieJar,
 ) -> Result<String, (StatusCode, String)> {
-    let cookie = match headers.get("cookie-auth") {
-        Some(cookie) => cookie,
+    let cookie = match jar.get("auth-cookie") {
+        Some(cookie) => cookie.value(),
         None => return Err((StatusCode::BAD_REQUEST, "Missing auth cookie".into())),
     };
-    let cookie_id = match cookie.to_str() {
-        Ok(cookie_id) => cookie_id.to_string(),
-        Err(_e) => {
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Internal server error".into(),
-            ))
-        }
-    };
-    let session = match pool.get_store().load_session(cookie_id).await {
+    let session = match pool.get_store().load_session(cookie.into()).await {
         Ok(session) => match session {
             Some(session) => session,
             None => return Ok("Logout".into()),

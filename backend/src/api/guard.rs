@@ -7,34 +7,32 @@ use axum::{
     middleware::Next,
     response::Response,
 };
+use axum_extra::extract::CookieJar;
 
 use crate::database::pool::Pool;
 
-use super::utils::{handle_cookie_err, internal_error};
+use super::utils::handle_cookie_err;
 
 // Guard middleware
 // Todo: Investigate more into JSWT and implement refresh tokens
 pub async fn guard_layer<B>(
     State(pool): State<Arc<Pool>>,
+    jar: CookieJar,
     request: Request<B>,
     next: Next<B>,
 ) -> Result<Response, (StatusCode, String)> {
-    let cookie = request
-        .headers()
-        .get("cookie-auth")
-        .ok_or((StatusCode::BAD_REQUEST, "Missing auth cookie".into()))?
-        .to_str()
-        .map_err(internal_error)?;
-
-    let cookie = pool
-        .get_store()
-        .load_session(cookie.into())
-        .await
-        .map_err(handle_cookie_err)?; // Err should mean Internal server error (500)
-
-    match cookie {
-        // If the session doesn't exist, this will be None
-        Some(_cookie) => Ok(next.run(request).await),
-        None => Err((StatusCode::UNAUTHORIZED, "Unauthorized".into())),
+    if let Some(session_id) = jar.get("auth-cookie") {
+        let cookie_value = session_id.value();
+        let cookie = pool
+            .get_store()
+            .load_session(cookie_value.into())
+            .await
+            .map_err(handle_cookie_err)?;
+        match cookie {
+            Some(_cookie) => Ok(next.run(request).await),
+            None => Err((StatusCode::UNAUTHORIZED, "Unauthorized".into())),
+        }
+    } else {
+        return Err((StatusCode::UNAUTHORIZED, "Unauthorized".into()));
     }
 }

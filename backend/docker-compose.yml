@@ -1,7 +1,7 @@
 version: "1.0"
 services:
   database:
-    container_name: db-lab
+    container_name: backend-test-db
     image: postgres:latest
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -12,7 +12,7 @@ services:
     ports:
       - 5432:5432
   backend:
-    container_name: backend-lab
+    container_name: backend-test
     image: rust:latest
     ports:
       - "3000:3000"

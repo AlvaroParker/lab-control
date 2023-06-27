@@ -1,6 +1,9 @@
 import AuthService from './auth.service';
 import ServiceTypes from './types';
 import axios from 'axios';
+import WebSocket from 'isomorphic-ws';
+
+axios.defaults.withCredentials = true;
 
 export const enrollUsuario = async (usuario: ServiceTypes.Usuario) => {
     const res = await axios.post(
@@ -21,6 +24,28 @@ export const enrollUsuario = async (usuario: ServiceTypes.Usuario) => {
         }
     );
     return res;
+};
+
+export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<WebSocket> => {
+    const nuevo_usuario = {
+        nombre: usuario.nombre,
+        apellido_1: usuario.apellido_1,
+        apellido_2: usuario.apellido_2,
+        rut: usuario.rut,
+        ultima_interaccion: new Date().toISOString(),
+        entrada: true,
+        correo_uai: usuario.correo_uai,
+        is_disabled: false,
+        rol: usuario.rol.toLowerCase(),
+    };
+
+    const url = `${ServiceTypes.WS_URI}/usuarios/enroll`;
+    const ws = new WebSocket(url);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify(nuevo_usuario));
+    };
+    return ws;
 };
 
 export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo: string) => {
@@ -66,5 +91,6 @@ const PostService = {
     enrollUsuario,
     editUsuario,
     nuevoRegistro,
+    enrollNewUsuario,
 };
 export default PostService;
