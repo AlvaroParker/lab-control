@@ -12,10 +12,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::types::chrono::Utc;
 use std::{
-    io::{self, Read, Write},
-    net::TcpStream,
+    io::{self, ErrorKind},
     sync::Arc,
 };
+use tungstenite::{connect, Message};
 
 // This struct is used on Verify to check if we should add `salida` or `entrada` to the Db
 #[derive(Serialize, Deserialize)]
@@ -96,17 +96,30 @@ fn verify_print(paths: Vec<String>) -> Result<String, io::Error> {
 
     let sock_ip = std::env::var("SOCKET_IP").unwrap_or("127.0.0.1".into());
     let sock_port = std::env::var("SOCKET_PORT").unwrap_or("5000".into());
-    let mut stream = TcpStream::connect(format!("{}:{}", sock_ip, sock_port))?;
 
-    // Write a message to the server.
-    stream.write(json_body.as_bytes())?;
-    stream.shutdown(std::net::Shutdown::Write)?;
-    let mut path = String::new();
+    let (mut socket, _response) = connect(format!("ws://{}:{}/socket", sock_ip, sock_port))
+        .map_err(|err| {
+            tracing::error!("Error while trying to connect to socket: {}", &err);
+            io::Error::new(ErrorKind::ConnectionRefused, err)
+        })?;
+    socket
+        .write_message(Message::text(json_body.clone()))
+        .unwrap();
+    let mut path = String::default();
     loop {
-        let n = stream.read_to_string(&mut path)?;
-
-        if n == 0 {
-            break;
+        let msg = match socket.read_message() {
+            Ok(msg) => msg,
+            Err(e) => {
+                tracing::error!(
+                    "Error while trying to read message from fingerprint socket: {}",
+                    e
+                );
+                eprintln!("{}", e);
+                break;
+            }
+        };
+        if let Message::Text(msg) = msg {
+            path = msg.clone();
         }
     }
     Ok(path)

@@ -1,11 +1,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 // import AuthService from '../services/auth.service';
-import PostService from '../services/post.service.js';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
-import { AxiosError } from 'axios';
 import ServiceTypes from '../services/types.js';
+import PostService from '../services/post.service.js';
 
 export default defineComponent({
     data() {
@@ -14,8 +13,9 @@ export default defineComponent({
             usuario: {} as ServiceTypes.Usuario,
             valid_rut: true,
             registrando_huella: false,
-            user_exists_err: false,
+            error_detected: false,
             message: '',
+            stage: '',
             rutRules: [
                 (value: string) => {
                     let normalized = ChileanRutify.normalizeRut(value);
@@ -49,42 +49,52 @@ export default defineComponent({
             const rut = normalizeRut(this.usuario.rut);
             if (ServiceTypes.isUsuario(this.usuario) && rut && this.valid_rut) {
                 this.usuario.rut = rut;
-                try {
-                    const res = await PostService.enrollUsuario(this.usuario);
-                    switch (res.status) {
-                        case 200:
+                this.registrando_huella = true;
+
+                const ws = await PostService.enrollNewUsuario(this.usuario);
+                ws.onerror = (error) => {
+                    this.error_detected = true;
+                    console.log(error.message);
+                    this.message = 'Error al registra huella.';
+                };
+                ws.onmessage = (data) => {
+                    this.stage = data.data as string;
+                    console.log(data.data);
+                };
+                ws.onclose = (event) => {
+                    switch (event.code) {
+                        case 1000:
                             this.go_home();
                             break;
-
+                        case 4000:
+                            this.error_detected = true;
+                            this.message = 'Email o RUT ya registrados';
+                            break;
+                        case 4001:
+                            this.error_detected = true;
+                            this.message = 'RUT invalido';
+                            break;
+                        case 4002:
+                            this.error_detected = true;
+                            this.message = 'Faltan campos por completar';
+                            break;
+                        case 4500:
+                            this.error_detected = true;
+                            this.message = 'Error agregando usuario. Intentelo de nuevo mas tarde.';
+                            break;
                         default:
-                            console.log(res);
-                            console.log('Error while enrolling');
                             break;
                     }
                     this.registrando_huella = false;
-                } catch (err: any) {
-                    const axios_error = err as AxiosError;
-                    switch (axios_error.response?.status) {
-                        case 500:
-                            this.message = 'Sensor de huella no disponible.';
-                            break;
-                        case 409:
-                            this.message = 'RUT o Email ya se encuentra registrado.';
-                            break;
-                        default:
-                            this.message =
-                                'Error al intentar crear nuevo usuario. Intentelo de nuevo mas tarde.';
-                            console.log(axios_error);
-                            break;
-                    }
-                    this.registrando_huella = false;
-                }
+                };
             } else {
                 this.message = 'Faltan campos por llenar';
                 this.registrando_huella = false;
             }
         },
-        handleRut() {
+    },
+    watch: {
+        rut() {
             const valid = ChileanRutify.validRut(this.usuario.rut);
             const normalized = ChileanRutify.normalizeRut(this.usuario.rut);
 
@@ -93,11 +103,6 @@ export default defineComponent({
             } else {
                 this.valid_rut = false;
             }
-        },
-    },
-    watch: {
-        rut() {
-            this.handleRut();
         },
     },
 });
@@ -168,8 +173,11 @@ export default defineComponent({
                                     ></v-text-field>
                                 </div>
 
-                                <p style="color: red" v-if="user_exists_err">
+                                <p style="color: red" v-if="error_detected">
                                     {{ message }}
+                                </p>
+                                <p v-if="stage.length !== 0">
+                                    {{ stage }}
                                 </p>
                                 <button
                                     class="btn btn-primary btn-lg px-5 mt-2 mb"

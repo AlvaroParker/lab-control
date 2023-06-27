@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 // NewPersona struct used to on `enroll.rs` to enroll a new Persona
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct NewPersona {
     pub nombre: String,
     pub apellido_1: String,

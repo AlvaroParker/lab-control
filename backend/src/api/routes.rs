@@ -17,15 +17,15 @@ pub async fn create_routes(state: Arc<Pool>) -> Router {
         ]);
     Router::new()
         .nest(
-            "/usuarios",
+            "/api/usuarios",
             personas::routes::create_routes(state.clone()).await,
         )
         .nest(
-            "/admin",
+            "/api/admin",
             admins::routes::_create_routes(state.clone()).await,
         )
         .nest(
-            "/registros",
+            "/api/registros",
             registros::routes::create_routes(state.clone()).await,
         )
         .with_state(state)

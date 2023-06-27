@@ -1,6 +1,9 @@
 import ServiceTypes from './types';
 import axios, { AxiosResponse } from 'axios';
 import Auth from './auth.service';
+
+axios.defaults.withCredentials = true;
+
 export const getUsuarios = async (): Promise<Array<ServiceTypes.Usuario> | undefined> => {
     const res = await axios.get(ServiceTypes.API_URL + '/usuarios', { headers: Auth.getToken() });
     return res.data;

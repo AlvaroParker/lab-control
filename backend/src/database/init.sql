@@ -48,7 +48,8 @@ INSERT INTO admins (
   'Parker',
   'Del Fierro',
   'aparkerdf@gmail.com',
-  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS'
+  -- Hashed Password for Testing purpposes: 'admin'
+  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS' 
 );
 
 

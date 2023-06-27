@@ -1,6 +1,7 @@
 use std::{cell::RefCell, fs, io::Read, net::TcpStream, rc::Rc};
 
 use libfprint_rs::{device::FpDevice, error::GError, print::FpPrint};
+use tungstenite::WebSocket;
 
 use crate::socket::send_message;
 
@@ -32,7 +33,7 @@ fn collect_prints(paths: Vec<String>) -> Vec<FpPrint<'static>> {
 // Run the verification, this takes a socket client stream to report match/not match
 // and the finger sensor device
 pub fn run_verification(
-    addr: Rc<RefCell<TcpStream>>,
+    addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
     paths: Vec<String>,
 ) -> Result<(), GError<'static>> {
@@ -47,11 +48,12 @@ pub fn run_verification(
     dev.identify(
         prints,
         Some(callback_function),
-        Some(addr),
+        Some(addr.clone()),
         Some(&mut matched_print),
         Some(&mut new_print),
     )?;
     dev.close()?;
+    _ = addr.borrow_mut().close(None);
     Ok(())
 }
 
@@ -62,7 +64,7 @@ fn callback_function(
     matched_print: Option<FpPrint>, // The matched print, if any.
     _new_print: FpPrint,            // New print scanned.
     _error: Option<GError>,         // Optinal error in case of an error.
-    match_data: &Option<Rc<RefCell<TcpStream>>>, // User data can be any data type.
+    match_data: &Option<Rc<RefCell<WebSocket<TcpStream>>>>, // User data can be any data type.
 ) {
     if let Some(print) = matched_print {
         let data = match_data.as_ref().unwrap();
