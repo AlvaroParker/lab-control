@@ -62,7 +62,6 @@ const logout = async () => {
 const getToken = () => {
     // Check if cookie has expired
     let cookie = Cookies.get('auth-cookie'); // => 'value'
-    console.log(cookie);
     if (cookie) {
         return { 'cookie-auth': cookie };
     }

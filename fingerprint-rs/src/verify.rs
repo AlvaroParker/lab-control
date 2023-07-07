@@ -1,6 +1,6 @@
 use std::{cell::RefCell, fs, io::Read, net::TcpStream, rc::Rc};
 
-use libfprint_rs::{device::FpDevice, error::GError, print::FpPrint};
+use libfprint_rs::{FpDevice, FpPrint, GError};
 use tungstenite::WebSocket;
 
 use crate::socket::send_message;
@@ -43,13 +43,11 @@ pub fn run_verification(
 
     let prints = collect_prints(paths);
 
-    let mut matched_print = FpPrint::new(&dev);
     let mut new_print = FpPrint::new(&dev);
-    dev.identify(
+    let _matched_print = dev.identify(
         prints,
         Some(callback_function),
         Some(addr.clone()),
-        Some(&mut matched_print),
         Some(&mut new_print),
     )?;
     dev.close()?;

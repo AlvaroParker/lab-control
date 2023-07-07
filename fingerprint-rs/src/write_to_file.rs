@@ -1,4 +1,4 @@
-use libfprint_rs::print::FpPrint;
+use libfprint_rs::FpPrint;
 use std::{
     fs,
     io::{self, Write},

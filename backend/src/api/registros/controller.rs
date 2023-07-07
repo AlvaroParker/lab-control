@@ -59,6 +59,7 @@ pub async fn get_all(
     Ok(Json(registros_rows))
 }
 
+// RegistroNew is the json body that we will receive when registering a new registro
 #[derive(Serialize, Deserialize)]
 pub struct RegistroNew {
     pub rut: String,
@@ -66,21 +67,26 @@ pub struct RegistroNew {
     pub motivo: String,
 }
 
+// Register a new reigstro into the DB
 pub async fn registrar_rut(
     State(pool): State<Arc<Pool>>,
     Json(registro): Json<RegistroNew>,
 ) -> Result<(), (StatusCode, String)> {
+    // Create a new registro active model
     let mut querie = registros::ActiveModel::new();
 
+    // Get current date
     let now = Local::now();
     let offset_in_sec = now.offset();
     let now = Utc::now().with_timezone(offset_in_sec);
 
+    // Build the new registro
     querie.rut = Set(registro.rut);
     querie.fecha = Set(now);
     querie.salida = Set(registro.salida);
     querie.id = NotSet;
     querie.motivo = Set(registro.motivo);
+    // Insert the new registro into the DB
     querie.insert(pool.get_db()).await.map_err(internal_error)?;
     Ok(())
 }

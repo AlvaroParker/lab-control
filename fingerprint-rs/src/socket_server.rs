@@ -3,7 +3,7 @@ use std::error::Error;
 use std::net::{IpAddr, SocketAddrV4, TcpListener};
 use std::rc::Rc;
 
-use libfprint_rs::context::FpContext;
+use libfprint_rs::FpContext;
 use local_ip_address::linux::local_ip;
 use serde::{Deserialize, Serialize};
 use tungstenite::{accept, Message};
@@ -13,7 +13,7 @@ use crate::utilities::get_device;
 use crate::verify::run_verification;
 
 /// Run the socket server
-/// This will creaet a socket server and listen for request, in case
+/// This will create a socket server and listen for request, in case
 /// an `enroll` or `verify` request is received, the proper function
 /// will be executed
 
@@ -23,6 +23,8 @@ pub struct Body {
     pub paths: Vec<String>,
 }
 
+// Serialize and deserialize the struct to JSON. 
+// Possible values for Actions are verify and enroll
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Action {
     #[serde(alias = "verify")]

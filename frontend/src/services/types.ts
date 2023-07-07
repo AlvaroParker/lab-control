@@ -48,7 +48,9 @@ namespace ServiceTypes {
 
         return missingProperties.length === 0;
     };
-    export const API_URL = 'http://192.168.68.112:8001/api';
-    export const WS_URI = 'ws://192.168.68.112:8001/api';
+    // This is defined when deploying the server
+    const IP = '192.168.68.112';
+    export const API_URL = `http://${IP}:8001/api`;
+    export const WS_URI = `ws://${IP}:8001/api`;
 }
 export default ServiceTypes;

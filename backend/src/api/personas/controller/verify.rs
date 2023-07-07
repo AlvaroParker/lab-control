@@ -6,11 +6,10 @@ use crate::{
 use super::utils::{Action, Body};
 use crate::api::utils::internal_error;
 use axum::{extract::State, http::StatusCode, Json};
-use chrono::Local;
+use chrono::{Local, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, QueryFilter, QuerySelect};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use sqlx::types::chrono::Utc;
 use std::{
     io::{self, ErrorKind},
     sync::Arc,
@@ -94,8 +93,8 @@ fn verify_print(paths: Vec<String>) -> Result<String, io::Error> {
     };
     let json_body = json!(body).to_string();
 
-    let sock_ip = std::env::var("SOCKET_IP").unwrap_or("127.0.0.1".into());
-    let sock_port = std::env::var("SOCKET_PORT").unwrap_or("5000".into());
+    let sock_ip = crate::SOCKET_IP.to_string();
+    let sock_port = crate::SOCKET_PORT.to_string();
 
     let (mut socket, _response) = connect(format!("ws://{}:{}/socket", sock_ip, sock_port))
         .map_err(|err| {
