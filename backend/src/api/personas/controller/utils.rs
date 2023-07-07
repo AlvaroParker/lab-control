@@ -20,15 +20,15 @@ pub struct NewPersona {
 
 // We added the print_path so we a can then deserialize Outer and Serialize it again to an `personas::Model`
 #[derive(Debug, Serialize)]
-pub struct Outer {
+pub struct Outer<'a> {
     #[serde(flatten)]
     pub field_1: NewPersona,
-    pub print_path: String,
+    pub print_path: &'a str,
 }
 
 // Create a new Outer instance with a `NewPersona` struct and a `print_path` String
-impl Outer {
-    pub fn new(field_1: NewPersona, print_path: String) -> Self {
+impl<'a> Outer<'a> {
+    pub fn new(field_1: NewPersona, print_path: &'a str) -> Self {
         Self {
             field_1,
             print_path,

@@ -12,23 +12,30 @@ use axum::{
     response::Response,
 };
 use sea_orm::ActiveModelTrait;
-use serde_json::{from_str, json};
 use std::{borrow::Cow, sync::Arc};
-use tungstenite::Error as TunError;
-use tungstenite::{connect, Message};
 
 pub async fn enroll_persona(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>) -> Response {
     ws.on_upgrade(move |socket| handle_socket(socket, pool.clone()))
 }
 
+// The result of the enrollment is a JSON, this struct is used to deserialize the JSON
+// if result is true, the enrollment was successful and the path is the path to the fingerprint
+#[derive(serde::Deserialize)]
+struct Sucess<'a> {
+    result: bool,
+    path: Option<&'a str>,
+}
+
+// Returning errors, this are implemented as well on the frontend
 const INTERNAL_SERVER_ERROR: u16 = 4500;
 const USER_EXISTS_ERR: u16 = 4000;
 const INVALID_RUT_ERR: u16 = 4001;
 const DB_INSERTION_ERR: u16 = 4002;
 const FP_SENSOR_ERR: u16 = 4003;
 
+// Handle a new socket connection from the client
 async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
-    // Get the data from message from client
+    // Get the first message from the client, this should be a JSON with the new persona data
     let data = match socket.recv().await {
         Some(Ok(ws::Message::Text(data))) => data,
         _ => return,
@@ -63,27 +70,20 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
         }
     }; // Todo: handle the socket closing if the fingerprint panics
 
-    // Get the path from the print response string
-    let path = match print.split_whitespace().skip(1).next() {
-        Some(s) => s.to_string(),
-        None => {
-            return;
-        }
-    };
     // Create the new persona struct using the Persona JSON provided by the client and
     // the path provided by the fingerprint sensor
-    let json_persona = json!(Outer::new(persona, path));
-    dbg!(&json_persona.to_string());
+    let json_persona = serde_json::json!(Outer::new(persona, &print));
 
-    // It never fails since is made from persona and path wich together make an ActiveModel
     // Create a new DB model with the json_persona object
-    let persona_model = personas::ActiveModel::from_json(json_persona).unwrap();
+    let persona_model = personas::ActiveModel::from_json(json_persona).unwrap(); // this never
+                                                                                 // fails
 
     // Insert the new row
     if let Err(e) = persona_model.insert(pool.get_db()).await {
         let msg = close_msg(DB_INSERTION_ERR, "Error while saving new user".into());
-
+        // Close the socket with DB_INSErtION_ERR message
         if let Err(socket_err) = socket.send(msg).await {
+            // Log the error in the database
             tracing::error!(
                 "Error ({}) sending database error ({}) to client",
                 socket_err,
@@ -92,6 +92,7 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
         };
         return;
     }
+    // Close the socket normally
     if socket
         .send(close_msg(
             close_code::NORMAL,
@@ -100,31 +101,42 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
         .await
         .is_err()
     {
+        // Log in case of error
         tracing::error!("Error sending sucessfully added response to client");
     };
 }
 
+// Enroll the print connecting to the Print server socket
 async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
+    // Set the body with the proper action
     let body = Body {
         action: Action::Enroll,
         paths: vec![],
     };
-    let json_body = json!(body).to_string();
-    let sock_ip = std::env::var("SOCKET_IP").unwrap_or("127.0.0.1".into());
-    let sock_port = std::env::var("SOCKET_PORT").unwrap_or("5000".into());
+    // Serialize the body to JSON
+    let json_body = serde_json::json!(body).to_string();
 
+    // Get the socket ip and port
+    let sock_ip = crate::SOCKET_IP.to_string();
+    let sock_port = crate::SOCKET_PORT.to_string();
+
+    // Connect to the socket
     let (mut socket, _response) =
-        connect(format!("ws://{}:{}/socket", sock_ip, sock_port)).map_err(|e| e.to_string())?;
+        tungstenite::connect(format!("ws://{}:{}/socket", sock_ip, sock_port))
+            .map_err(|e| e.to_string())?;
+    // Send JSON to the socket to start enroll action
     socket
-        .write_message(Message::text(json_body.clone()))
+        .write_message(tungstenite::Message::text(json_body.clone()))
         .map_err(|e| e.to_string())?;
 
+    // Declare a path variable
     let mut path = String::default();
+    // Loop until the fingerprint finish to enroll the new print and returned the new print path
     loop {
         let msg = match socket.read_message() {
             Ok(msg) => msg,
             Err(e) => match e {
-                TunError::ConnectionClosed => {
+                tungstenite::Error::ConnectionClosed => {
                     break;
                 }
                 _ => {
@@ -133,22 +145,29 @@ async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
             },
         };
 
-        if let Message::Text(msg) = msg {
-            if !msg.contains("SUCCESS") {
+        if let tungstenite::Message::Text(msg) = msg {
+            if let Ok(success) = serde_json::from_str::<Sucess>(&msg) {
+                if success.result {
+                    path = success.path.unwrap().to_string();
+                } else {
+                    return Err("Error saving print to file".into());
+                }
+                break;
+            } else {
                 let ws_msg = ws::Message::Text(msg.clone());
                 ws.send(ws_msg).await.map_err(|e| e.to_string())?;
-            } else {
-                path = msg
-            }
+            };
         }
     }
 
+    // Return the new print path
     tracing::info!("Enroll path: {}", &path);
     path = path.trim_matches(char::from(0)).to_string();
     dbg!(&path);
     Ok(path)
 }
 
+// Close message with a custom close code and reason
 fn close_msg(close_code: u16, reason: String) -> ws::Message {
     ws::Message::Close(Some(CloseFrame {
         code: close_code,
@@ -156,6 +175,7 @@ fn close_msg(close_code: u16, reason: String) -> ws::Message {
     }))
 }
 
+// Send and close the socket
 async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
     let (error_code, error_message) = err;
     tracing::info!("{}", error_message);
@@ -164,8 +184,10 @@ async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
     }
 }
 
+// Check if the data provided by the client is a valid NewPerson struct
+// and that the new rut is valid and is not already registered
 async fn validate_message(data: String, pool: Arc<Pool>) -> Result<NewPersona, (u16, String)> {
-    let persona: NewPersona = match from_str(&data) {
+    let persona: NewPersona = match serde_json::from_str(&data) {
         Ok(persona) => persona,
         Err(e) => {
             return Err((DB_INSERTION_ERR, e.to_string()));

@@ -20,6 +20,7 @@ pub fn is_valid_num_rut(rut: &String) -> bool {
     (rut.len() == 9 && follow_rut.is_match(rut)) || (rut.len() == 8 && follow_rut_7.is_match(rut))
 }
 
+// Handle cookie errors, return 500 internal server error
 pub fn handle_cookie_err(err: async_session::Error) -> (StatusCode, String) {
     let err_msg = err.to_string();
     tracing::info!(err_msg);

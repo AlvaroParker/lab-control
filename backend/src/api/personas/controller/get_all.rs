@@ -7,6 +7,7 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use std::sync::Arc;
 
 use crate::api::utils::internal_error;
+// Get all personas
 pub async fn get_all_personas(
     State(pool): State<Arc<Pool>>,
 ) -> Result<Json<Vec<personas::Model>>, (StatusCode, String)> {

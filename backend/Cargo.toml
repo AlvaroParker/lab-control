@@ -8,14 +8,24 @@ edition = "2021"
 [dependencies]
 async-session = "3.0.0"
 async-sqlx-session = { version = "0.4.0", features = ["pg"] }
-axum = { version = "0.6.18", default-features = false, features = ["headers", "http1", "json", "tokio", "tower-log", "query", "ws"] }
+axum = { version = "0.6.18", default-features = false, features = [
+  "headers",
+  "http1",
+  "json",
+  "tokio",
+  "tower-log",
+  "query",
+  "ws",
+] }
 axum-extra = { version = "0.7.4", features = ["cookie"] }
 axum-server = { version = "0.5.1", features = ["tls-rustls"] }
-bcrypt = "0.14.0"
+bcrypt = "0.15.0"
 chrono = "0.4.26"
-dotenvy = "0.15.7"
-dotenvy_macro = "0.15.7"
-regex = { version = "1.8.4", default-features = false, features = ["std", "unicode-perl"] }
+lazy_static = "1.4.0"
+regex = { version = "1.8.4", default-features = false, features = [
+  "std",
+  "unicode-perl",
+] }
 sea-orm = { version = "0.11.3", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
@@ -23,8 +33,12 @@ sea-orm = { version = "0.11.3", features = [
 ] }
 serde = { version = "1.0.163", features = ["derive"] }
 serde_json = "1.0.96"
-sqlx = { version = "0.6.3", features = ["postgres"] }
-tokio = { version = "1.28.2", features = ["rt-multi-thread", "macros", "tracing"] }
+sqlx = { version = "=0.6.3", features = ["runtime-tokio-rustls", "postgres"] }
+tokio = { version = "1.28.2", features = [
+  "rt-multi-thread",
+  "macros",
+  "tracing",
+] }
 tower-http = { version = "0.4.0", features = ["cors"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"

@@ -58,8 +58,8 @@ export default defineComponent({
                     this.message = 'Error al registra huella.';
                 };
                 ws.onmessage = (data) => {
-                    this.stage = data.data as string;
-                    console.log(data.data);
+                    let status = JSON.parse(data.data as string);
+                    this.stage = `Registrando huella... ${status.current} de ${status.total}`;
                 };
                 ws.onclose = (event) => {
                     switch (event.code) {
@@ -121,7 +121,7 @@ export default defineComponent({
                             >
                                 <h2 class="fw-bold mb-1 text-uppercase">Nuevo usuario</h2>
                                 <p class="text-50 mb-2">
-                                    Ingresa los datos para registrar un nuevo usuario
+                                    Ingresa los datos para registrar un nuevo usuarios
                                 </p>
 
                                 <div class="form-outline form-white mb-2">
@@ -176,9 +176,7 @@ export default defineComponent({
                                 <p style="color: red" v-if="error_detected">
                                     {{ message }}
                                 </p>
-                                <p v-if="stage.length !== 0">
-                                    {{ stage }}
-                                </p>
+                                <p v-if="stage.length !== 0">{{ stage }}</p>
                                 <button
                                     class="btn btn-primary btn-lg px-5 mt-2 mb"
                                     :disabled="registrando_huella"

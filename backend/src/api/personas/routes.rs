@@ -11,6 +11,7 @@ use axum::{
 };
 use std::sync::Arc;
 
+// Create the routes
 pub async fn create_routes(pool: Arc<Pool>) -> Router<Arc<Pool>> {
     Router::new()
         .route("/", get(get_all_personas)) //Get all alumnos

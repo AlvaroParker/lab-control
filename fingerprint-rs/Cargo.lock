@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "bindgen"
-version = "0.65.1"
+version = "0.66.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cfdf7b466f9a4903edc73f95d6d2bcd5baf8ae620638762244d3f60143643cc5"
+checksum = "f2b84e06fc203107bfbad243f4aba2af864eb7db3b1cf46ea0a023b0b433d2a7"
 dependencies = [
  "bitflags",
  "cexpr",
@@ -27,9 +27,9 @@ dependencies = [
 
 [[package]]
 name = "bitflags"
-version = "1.3.2"
+version = "2.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
+checksum = "630be753d4e58660abd17930c71b647fe46c27ea6b63cc59e1e3851406972e42"
 
 [[package]]
 name = "block-buffer"
@@ -226,18 +226,18 @@ checksum = "f92be4933c13fd498862a9e02a3055f8a8d9c039ce33db97306fd5a6caa7f29b"
 
 [[package]]
 name = "libfprint-rs"
-version = "0.1.0"
-source = "git+https://gitlab.com/parawa/libfprint-rs.git#fce3cb9c943ec9cca6d01ff3c03abf70691ed0ea"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0a2a47c06b0b639d0a3551c97d6a0db83f771fcbbb11bb2e5910fa46fe2abf18"
 dependencies = [
- "bindgen",
  "libfprint-sys",
- "pkg-config",
 ]
 
 [[package]]
 name = "libfprint-sys"
-version = "0.1.0"
-source = "git+https://gitlab.com/parawa/libfprint-rs.git#fce3cb9c943ec9cca6d01ff3c03abf70691ed0ea"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0db3712df92852c111a1c35f6fa933bea7c30d8c5c839c85b6687f4d662109e7"
 dependencies = [
  "bindgen",
  "pkg-config",
