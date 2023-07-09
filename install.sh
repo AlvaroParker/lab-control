@@ -32,12 +32,14 @@ while getopts ":r-:" opt; do
 done
 
 # Build the frontend and copy files to deploy/ folder
+yarn --cwd frontend install
 yarn --cwd frontend run build
 rm -rf deploy/frontend && cp -r frontend/dist deploy/frontend
 
 # Build backend and copy files to deploy/ folder
-cargo build --manifest-path backend/Cargo.toml --release
-cp ~/.cargo-target/release/backend deploy/backend
+# cc and openssl and openssl-devel (fedora) or libssl-dev (ubuntu) is needed for this step to work
+cargo build --release --manifest-path=backend/Cargo.toml --target-dir=.tmp/
+cp ./.tmp/release/backend deploy/backend
 cp ./backend/src/database/init.sql deploy/init.sql
 
 # Execute the last line if the "--run" option is provided
