@@ -1,6 +1,6 @@
 # Development build
 
-- To run this in development mode, you'll need `docker` engine installed.
+- To run this in development mode, you'll need `docker` engine, `cc` and `openssl` installed.
 - Configuration of the server ip and fingerprint socket ip can be set on `deploy/.env`
 - Valid `.env` variables:
 
@@ -26,11 +26,13 @@ After properly setting this `env` variables, you are good to go. In the root dir
 docker compose up
 ```
 
-You will be able to visit the frontend by visiting the provided `VITE_BACKEND_IP` since both the backend and the frontend is running under a `nginx` container that implements only https
+You will be able to visit the frontend by visiting the provided `VITE_BACKEND_IP` since both the backend and the frontend are running under a `nginx` container that implements only https.
 
-Once the development containers are deployed, when you make changes in `backend/` or `frontend/` the container will automatically refresh the files and updated the `frontend` or the `backend` accordingly
+Once the development containers are deployed, when you make changes in `backend/` or `frontend/` the container will automatically refresh the files and update the `frontend` or the `backend` accordingly
 
 # Production build
 
-Configure the `.env` variables properly. Then run `./install` and your deployment file will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
+In order to build the production backend you'll need `cc`, `openssl` and `openssl-devel` installed in your system.
+
+Configure the `.env` variables properly. Then run `./install` and your deployment files will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
 by running `docker compose up`
