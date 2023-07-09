@@ -2,7 +2,7 @@ version: "1.0"
 services:
   database:
     container_name: database
-    image: postgres:latest
+    image: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -10,23 +10,21 @@ services:
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_DB=${PG_DB}
       - POSTGRES_USER=${PG_USER}
-    ports:
-      - 5432:5432
   backend:
     container_name: backend
-    image: ubuntu:latest
+    build: .
     volumes:
-      - ./backend:/backend
+      - ./backend:/bin/backend
     environment:
       - SOCKET_IP=${SOCKET_IP}
       - SOCKET_PORT=${SOCKET_PORT}
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - database
-    command: bash -c './backend'
+    command: backend
   web:
     container_name: webserver
-    image: nginx
+    image: nginx:stable
     depends_on:
       - backend
       - database
