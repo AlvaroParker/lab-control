@@ -8,6 +8,7 @@ export const login = async (
     email: string,
     pswd: string
 ): Promise<ServiceTypes.Admin | undefined> => {
+    console.log(ServiceTypes.API_URL);
     return axios
         .post(ServiceTypes.API_URL + '/admin/login', {
             email,
