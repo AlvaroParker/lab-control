@@ -16,6 +16,9 @@ export default defineComponent({
             error_detected: false,
             message: '',
             stage: '',
+            value: 10,
+            total: 1,
+            current: 0,
             rutRules: [
                 (value: string) => {
                     let normalized = ChileanRutify.normalizeRut(value);
@@ -59,6 +62,8 @@ export default defineComponent({
                 };
                 ws.onmessage = (data) => {
                     let status = JSON.parse(data.data as string);
+                    this.total = status.total;
+                    this.current = status.current;
                     this.stage = `Registrando huella... ${status.current} de ${status.total}`;
                 };
                 ws.onclose = (event) => {
@@ -129,6 +134,7 @@ export default defineComponent({
                                         v-model="usuario.nombre"
                                         label="Nombre"
                                         required
+                                        :disabled="registrando_huella"
                                     ></v-text-field>
                                 </div>
 
@@ -136,6 +142,7 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.apellido_1"
                                         label="Primer apellido"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -144,6 +151,7 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.apellido_2"
                                         label="Segundo apellido"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -153,6 +161,7 @@ export default defineComponent({
                                         v-model="usuario.rut"
                                         label="RUT"
                                         :rules="rutRules"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -161,6 +170,7 @@ export default defineComponent({
                                         :items="['Alumno', 'Ayudante', 'Docente']"
                                         density="comfortable"
                                         label="Rol"
+                                        :disabled="registrando_huella"
                                         v-model="usuario.rol"
                                     ></v-select>
                                 </div>
@@ -169,6 +179,7 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.correo_uai"
                                         label="Correo"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -176,13 +187,37 @@ export default defineComponent({
                                 <p style="color: red" v-if="error_detected">
                                     {{ message }}
                                 </p>
-                                <p v-if="stage.length !== 0">{{ stage }}</p>
                                 <button
+                                    v-show="!registrando_huella"
                                     class="btn btn-primary btn-lg px-5 mt-2 mb"
                                     :disabled="registrando_huella"
                                 >
                                     Registrar huella
                                 </button>
+
+                                <Teleport to="body">
+                                    <Transition name="modal">
+                                        <div v-if="registrando_huella" class="modal-mask">
+                                            <div
+                                                class="modal-container d-flex flex-column align-items-center justify-content-center rounded-5"
+                                            >
+                                                <h6 class="mb-4 justify-content-center text-center">
+                                                    Registrando, ponga su huella sobre el lector
+                                                </h6>
+                                                <v-progress-circular
+                                                    v-if="registrando_huella"
+                                                    :rotate="-90"
+                                                    :size="100"
+                                                    :width="15"
+                                                    :model-value="(current * 100) / total"
+                                                    color="primary"
+                                                >
+                                                    {{ current }}
+                                                </v-progress-circular>
+                                            </div>
+                                        </div>
+                                    </Transition>
+                                </Teleport>
                             </form>
                         </div>
                     </div>
@@ -195,5 +230,63 @@ export default defineComponent({
 <style>
 .card {
     margin-top: 50px;
+}
+
+.modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    transition: opacity 0.3s ease;
+}
+
+.modal-container {
+    width: 300px;
+    margin: auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    transition: all 0.3s ease;
+}
+
+.modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+}
+
+.modal-body {
+    margin: 20px 0;
+}
+
+.modal-default-button {
+    float: right;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter-from {
+    opacity: 0;
+}
+
+.modal-leave-to {
+    opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
 }
 </style>

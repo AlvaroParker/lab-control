@@ -105,6 +105,25 @@ export default defineComponent({
                                 <li className="list-group-item">
                                     Correo: {{ usuario.correo_uai }}
                                 </li>
+                                <li className="list-group-item" v-if="usuario.last_registro">
+                                    Ultimo Registro:
+                                    {{
+                                        usuario.last_registro.salida ? 'Salida el ' : 'Entrada el '
+                                    }}
+
+                                    {{
+                                        new Date(usuario.last_registro.fecha).toLocaleString(
+                                            'es-CL',
+                                            {
+                                                timeZone: 'America/Santiago',
+                                            }
+                                        )
+                                    }}
+                                </li>
+
+                                <li className="list-group-item" v-if="!usuario.last_registro">
+                                    Ultimo registro: Nunca
+                                </li>
                             </ul>
                         </div>
                     </div>
