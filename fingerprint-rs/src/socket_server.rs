@@ -23,7 +23,7 @@ pub struct Body {
     pub paths: Vec<String>,
 }
 
-// Serialize and deserialize the struct to JSON. 
+// Serialize and deserialize the struct to JSON.
 // Possible values for Actions are verify and enroll
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Action {
@@ -82,10 +82,20 @@ pub fn server() -> Result<(), Box<dyn Error>> {
             let body: Body = serde_json::from_str(&msg).unwrap();
             match body.action {
                 Action::Verify => {
-                    run_verification(stream, &dev, body.paths)?;
+                    match run_verification(stream, &dev, body.paths) {
+                        Ok(()) => {}
+                        Err(err) => {
+                            eprintln!("Error while running verification: {}", err);
+                        }
+                    };
                 }
                 Action::Enroll => {
-                    run_enrollment(stream, &dev)?;
+                    match run_enrollment(stream, &dev) {
+                        Ok(()) => {}
+                        Err(err) => {
+                            eprintln!("Error while running enrollment: {}", err);
+                        }
+                    };
                 }
             }
         }
