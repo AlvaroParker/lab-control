@@ -16,18 +16,21 @@ export default defineComponent({
             not_found: false,
             disabled: false,
             showModal: false,
+            esperando_huella: false,
         };
     },
     setup() {},
     methods: {
         getRegistro() {},
         handleSubmit(salida: boolean, motivo: string) {
+            this.esperando_huella = true;
             this.showModal = false;
             const timeout = 2000;
             this.disabled = true;
             GetService.verifyUsuario(salida, motivo)
                 .then((res) => {
                     if (res?.data) {
+                        this.esperando_huella = false;
                         this.usuario = res.data;
                         this.display = true;
                         console.log(this.usuario);
@@ -37,6 +40,7 @@ export default defineComponent({
                             this.disabled = false;
                         }, timeout);
                     } else {
+                        this.esperando_huella = true;
                         this.usuario = {} as ServiceTypes.Usuario;
                         this.not_found = true;
                         this.not_found = true;
@@ -50,6 +54,7 @@ export default defineComponent({
                     }
                 })
                 .catch((err) => {
+                    this.esperando_huella = false;
                     this.usuario = {} as ServiceTypes.Usuario;
                     const axios_err = err as AxiosError;
                     if (axios_err.response?.status === 404) {
@@ -98,6 +103,26 @@ export default defineComponent({
             </div>
         </div>
     </div>
+
+    <Teleport to="body">
+        <Transition name="modal">
+            <div v-if="esperando_huella" class="modal-mask">
+                <div
+                    class="modal-container d-flex flex-column align-items-center justify-content-center rounded-5"
+                >
+                    <h6 class="mb-4 justify-content-center text-center">
+                        Esperando huella, ponga su huella en el lector.
+                    </h6>
+                    <v-progress-circular
+                        :size="50"
+                        color="primary"
+                        indeterminate
+                        v-if="esperando_huella"
+                    ></v-progress-circular>
+                </div>
+            </div>
+        </Transition>
+    </Teleport>
 
     <Teleport to="body">
         <Transition name="fade">

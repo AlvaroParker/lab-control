@@ -1,17 +1,20 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use axum::extract::Query;
+use axum::extract::{Path, Query};
 use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Local, Utc};
 use sea_orm::prelude::DateTimeWithTimeZone;
 
 use sea_orm::ActiveValue::{NotSet, Set};
-use sea_orm::{ActiveModelBehavior, ActiveModelTrait, DbBackend, FromQueryResult, Statement};
+use sea_orm::{
+    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DbBackend, EntityTrait, FromQueryResult,
+    QueryFilter, QueryOrder, Statement,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::api::utils::internal_error;
+use crate::api::utils::{internal_error, is_valid_num_rut};
 use crate::database::entities::registros;
 use crate::database::pool::Pool;
 
@@ -89,4 +92,25 @@ pub async fn registrar_rut(
     // Insert the new registro into the DB
     querie.insert(pool.get_db()).await.map_err(internal_error)?;
     Ok(())
+}
+
+// Get last registro of a rut
+pub async fn get_last(
+    State(pool): State<Arc<Pool>>,
+    Path(rut): Path<String>,
+) -> Result<Json<registros::Model>, (StatusCode, String)> {
+    if is_valid_num_rut(&rut) {
+        let query = registros::Entity::find()
+            .filter(registros::Column::Rut.eq(rut))
+            .order_by_desc(registros::Column::Fecha)
+            .one(pool.get_db())
+            .await
+            .map_err(internal_error)?;
+        if let Some(query) = query {
+            return Ok(Json(query));
+        } else {
+            return Err((StatusCode::NO_CONTENT, "".into()));
+        }
+    }
+    return Err((StatusCode::BAD_REQUEST, "Rut invalido".into()));
 }

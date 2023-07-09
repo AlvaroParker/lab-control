@@ -7,6 +7,7 @@ namespace ServiceTypes {
         print_path: string;
         correo_uai: string;
         rol: string;
+        last_registro: Registro | null;
     }
     export interface Registro {
         id: number;
@@ -27,6 +28,13 @@ namespace ServiceTypes {
         email: string;
         token: string;
     }
+    export interface Registro {
+        id: number;
+        fecha: string;
+        motivo: string;
+        rut: string;
+        salida: boolean;
+    }
     // Check if object has all the properties of Usuario (except for print_path)
     export const isUsuario = (input: any): input is Usuario => {
         const schema: Record<keyof Usuario, string> = {
@@ -37,12 +45,14 @@ namespace ServiceTypes {
             print_path: 'string',
             correo_uai: 'string',
             rol: 'string',
+            last_registro: 'string',
         };
         const missingProperties = Object.keys(schema)
             .filter(
                 (key) =>
                     (input[key] === undefined || (input[key] as string).trim().length === 0) &&
-                    key !== 'print_path'
+                    key !== 'print_path' &&
+                    key !== 'last_registro'
             )
             .map((key) => key as keyof Usuario);
 
@@ -50,7 +60,7 @@ namespace ServiceTypes {
     };
     // This is defined when deploying the server
     const IP = '192.168.68.112';
-    export const API_URL = `http://${IP}:8001/api`;
-    export const WS_URI = `ws://${IP}:8001/api`;
+    export const API_URL = `https://${IP}:8001/api`;
+    export const WS_URI = `wss://${IP}:8001/api`;
 }
 export default ServiceTypes;
