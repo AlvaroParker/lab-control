@@ -28,6 +28,8 @@ docker compose up
 
 You will be able to visit the frontend by visiting the provided `VITE_BACKEND_IP` since both the backend and the frontend is running under a `nginx` container that implements only https
 
+Once the development containers are deployed, when you make changes in `backend/` or `frontend/` the container will automatically refresh the files and updated the `frontend` or the `backend` accordingly
+
 # Production build
 
 Configure the `.env` variables properly. Then run `./install` and your deployment file will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
