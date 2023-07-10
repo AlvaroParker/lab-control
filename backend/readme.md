@@ -21,13 +21,13 @@ Starts enroll of a new user. This is a get request that gets upgraded to a webso
 Example:
 ```json
 {
-	nombre: "John",
-	apellido_1: "Doe",
-	apellido_2: "Some",
-	rut: "123939331",
-	correo_uai: "some@correo.cl",
-	is_disabled: false,
-	rol: "ayudante"
+	"nombre": "John",
+	"apellido_1": "Doe",
+	"apellido_2": "Some",
+	"rut": "123939331",
+	"correo_uai": "some@correo.cl",
+	"is_disabled": false,
+	"rol": "ayudante"
 }
 ```
 
