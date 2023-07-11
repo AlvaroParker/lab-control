@@ -1,17 +1,20 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use axum::extract::Query;
+use axum::extract::{Path, Query};
 use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Local, Utc};
 use sea_orm::prelude::DateTimeWithTimeZone;
 
 use sea_orm::ActiveValue::{NotSet, Set};
-use sea_orm::{ActiveModelBehavior, ActiveModelTrait, DbBackend, FromQueryResult, Statement};
+use sea_orm::{
+    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DbBackend, EntityTrait, FromQueryResult,
+    QueryFilter, QueryOrder, Statement,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::api::utils::internal_error;
+use crate::api::utils::{internal_error, is_valid_num_rut};
 use crate::database::entities::registros;
 use crate::database::pool::Pool;
 
@@ -59,6 +62,7 @@ pub async fn get_all(
     Ok(Json(registros_rows))
 }
 
+// RegistroNew is the json body that we will receive when registering a new registro
 #[derive(Serialize, Deserialize)]
 pub struct RegistroNew {
     pub rut: String,
@@ -66,21 +70,47 @@ pub struct RegistroNew {
     pub motivo: String,
 }
 
+// Register a new reigstro into the DB
 pub async fn registrar_rut(
     State(pool): State<Arc<Pool>>,
     Json(registro): Json<RegistroNew>,
 ) -> Result<(), (StatusCode, String)> {
+    // Create a new registro active model
     let mut querie = registros::ActiveModel::new();
 
+    // Get current date
     let now = Local::now();
     let offset_in_sec = now.offset();
     let now = Utc::now().with_timezone(offset_in_sec);
 
+    // Build the new registro
     querie.rut = Set(registro.rut);
     querie.fecha = Set(now);
     querie.salida = Set(registro.salida);
     querie.id = NotSet;
     querie.motivo = Set(registro.motivo);
+    // Insert the new registro into the DB
     querie.insert(pool.get_db()).await.map_err(internal_error)?;
     Ok(())
+}
+
+// Get last registro of a rut
+pub async fn get_last(
+    State(pool): State<Arc<Pool>>,
+    Path(rut): Path<String>,
+) -> Result<Json<registros::Model>, (StatusCode, String)> {
+    if is_valid_num_rut(&rut) {
+        let query = registros::Entity::find()
+            .filter(registros::Column::Rut.eq(rut))
+            .order_by_desc(registros::Column::Fecha)
+            .one(pool.get_db())
+            .await
+            .map_err(internal_error)?;
+        if let Some(query) = query {
+            return Ok(Json(query));
+        } else {
+            return Err((StatusCode::NO_CONTENT, "".into()));
+        }
+    }
+    return Err((StatusCode::BAD_REQUEST, "Rut invalido".into()));
 }

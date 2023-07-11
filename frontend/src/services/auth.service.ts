@@ -1,17 +1,27 @@
 import ServiceTypes from './types';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+axios.defaults.withCredentials = true;
 
 export const login = async (
     email: string,
     pswd: string
 ): Promise<ServiceTypes.Admin | undefined> => {
+    console.log(ServiceTypes.API_URL);
     return axios
         .post(ServiceTypes.API_URL + '/admin/login', {
             email,
             pswd,
         })
         .then((response) => {
-            if (response.data.token) {
+            if (response.data.cookie) {
+                const cookie = response.data.cookie;
+                Cookies.set('auth-cookie', cookie, {
+                    expires: 1,
+                    SameSite: 'Lax',
+                });
+                delete response.data.cookie;
                 localStorage.setItem('user', JSON.stringify(response.data));
             }
 
@@ -20,14 +30,11 @@ export const login = async (
 };
 
 export const is_authenticated = async (): Promise<boolean> => {
+    // This only check if it has a cookie that will be used to authenticated. If the cookie is no longer valid
+    // Then the server will response with Unauthorized and this should be handled with a redirect
     const token = getToken();
     if (token) {
-        try {
-            let res = await axios.get(ServiceTypes.API_URL + '/admin/auth', { headers: token });
-            return res.status === 200;
-        } catch {
-            return false;
-        }
+        return true;
     } else {
         return false;
     }
@@ -48,16 +55,16 @@ const getUser = async () => {
 };
 
 const logout = async () => {
+    await axios.post(ServiceTypes.API_URL + '/admin/logout');
+    Cookies.remove('auth-cookie');
     localStorage.removeItem('user');
 };
 
 const getToken = () => {
-    const user_local = localStorage.getItem('user');
-    if (user_local) {
-        const user = JSON.parse(user_local);
-        if (user.token) {
-            return { Authorization: 'Bearer ' + user.token };
-        }
+    // Check if cookie has expired
+    let cookie = Cookies.get('auth-cookie'); // => 'value'
+    if (cookie) {
+        return { 'cookie-auth': cookie };
     }
     return undefined;
 };

@@ -1,20 +1,19 @@
 use std::cell::RefCell;
 use std::error::Error;
-use std::io::Read;
 use std::net::{IpAddr, SocketAddrV4, TcpListener};
 use std::rc::Rc;
 
-use libfprint_rs::context::FpContext;
-use libfprint_rs::error::GError;
+use libfprint_rs::FpContext;
 use local_ip_address::linux::local_ip;
 use serde::{Deserialize, Serialize};
+use tungstenite::{accept, Message};
 
 use crate::enroll::run_enrollment;
 use crate::utilities::get_device;
 use crate::verify::run_verification;
 
 /// Run the socket server
-/// This will creaet a socket server and listen for request, in case
+/// This will create a socket server and listen for request, in case
 /// an `enroll` or `verify` request is received, the proper function
 /// will be executed
 
@@ -24,6 +23,8 @@ pub struct Body {
     pub paths: Vec<String>,
 }
 
+// Serialize and deserialize the struct to JSON.
+// Possible values for Actions are verify and enroll
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Action {
     #[serde(alias = "verify")]
@@ -32,7 +33,7 @@ pub enum Action {
     Enroll,
 }
 
-pub fn server() -> Result<(), impl Error> {
+pub fn server() -> Result<(), Box<dyn Error>> {
     // Get the local ip (i.e 192.168.68.34)
     let ip = local_ip().expect("Couldn't get local ip");
     // let ip = IpAddr::from_str("127.0.0.1").unwrap();
@@ -65,20 +66,40 @@ pub fn server() -> Result<(), impl Error> {
     dev.open()?;
     // For each clients that connects to the socket:
     for stream in listener.incoming() {
-        let stream = Rc::new(RefCell::new(stream.unwrap()));
-        // stream.borrow_mut().read(&mut buff[..]).unwrap();
-        let mut msg = String::new();
-        stream.borrow_mut().read_to_string(&mut msg).unwrap();
-        // If the clients request an enroll action:
-        let body: Body = serde_json::from_str(&msg).unwrap();
-        match body.action {
-            Action::Verify => {
-                run_verification(stream, &dev, body.paths)?;
+        let websocket = match accept(stream?) {
+            Ok(c) => c,
+            Err(e) => {
+                eprintln!("{:?}", e);
+                std::process::exit(1)
             }
-            Action::Enroll => {
-                run_enrollment(stream, &dev)?;
+        };
+
+        let stream = Rc::new(RefCell::new(websocket));
+
+        // stream.borrow_mut().read(&mut buff[..]).unwrap();
+        let msg = stream.borrow_mut().read_message().unwrap();
+        if let Message::Text(msg) = msg {
+            let body: Body = serde_json::from_str(&msg).unwrap();
+            match body.action {
+                Action::Verify => {
+                    match run_verification(stream, &dev, body.paths) {
+                        Ok(()) => {}
+                        Err(err) => {
+                            eprintln!("Error while running verification: {}", err);
+                        }
+                    };
+                }
+                Action::Enroll => {
+                    match run_enrollment(stream, &dev) {
+                        Ok(()) => {}
+                        Err(err) => {
+                            eprintln!("Error while running enrollment: {}", err);
+                        }
+                    };
+                }
             }
         }
+        // If the clients request an enroll action:
     }
-    Ok::<(), GError>(())
+    Ok(())
 }

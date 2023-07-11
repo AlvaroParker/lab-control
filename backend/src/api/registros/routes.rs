@@ -8,12 +8,14 @@ use axum::{
 };
 use std::sync::Arc;
 
-use super::controller::{get_all, registrar_rut};
+use super::controller::{get_all, get_last, registrar_rut};
 
 // Create the routes with the provided handlers
-pub async fn create_routes() -> Router<Arc<Pool>> {
+pub async fn create_routes(pool: Arc<Pool>) -> Router<Arc<Pool>> {
     Router::new()
+        .with_state(pool.clone())
         .route("/", get(get_all))
-        .route_layer(middleware::from_fn(guard_layer))
+        .route("/last/:rut", get(get_last))
+        .route_layer(middleware::from_fn_with_state(pool.clone(), guard_layer))
         .route("/", post(registrar_rut))
 }

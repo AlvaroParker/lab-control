@@ -1,11 +1,29 @@
 use std::{cell::RefCell, env, net::TcpStream, rc::Rc};
 
 use crate::{socket::send_message, write_to_file::write_to_file};
-use libfprint_rs::{device::FpDevice, error::GError, print::FpPrint};
+use libfprint_rs::{FpDevice, FpPrint, GError};
+use serde::Serialize;
+use tungstenite::WebSocket;
 use uuid::Uuid;
 
+#[derive(Serialize)]
+struct ProcessMsg {
+    total: i32,
+    current: i32,
+    error: bool,
+}
+
+#[derive(Serialize)]
+struct Sucess<'a> {
+    result: bool,
+    path: Option<&'a str>,
+}
+
 // Run enrollment
-pub fn run_enrollment(addr: Rc<RefCell<TcpStream>>, dev: &FpDevice) -> Result<(), GError<'static>> {
+pub fn run_enrollment(
+    addr: Rc<RefCell<WebSocket<TcpStream>>>,
+    dev: &FpDevice,
+) -> Result<(), GError<'static>> {
     // Check if enroll returned an error, return with error if it did
     let print = match enroll(Rc::clone(&addr), dev) {
         Ok(p) => p,
@@ -16,22 +34,33 @@ pub fn run_enrollment(addr: Rc<RefCell<TcpStream>>, dev: &FpDevice) -> Result<()
     match write_to_file(&print, &name) {
         Ok(_) => {
             if let Ok(dir) = env::current_dir() {
-                let mesage = format!("SUCCESS {}/fingerprints/{}", dir.to_str().unwrap(), name);
-                send_message(addr.borrow_mut(), &mesage);
+                let path = format!("{}/fingerprints/{}", dir.to_str().unwrap(), name);
+                let success = Sucess {
+                    result: true,
+                    path: Some(&path),
+                };
+                let message = serde_json::to_string(&success).unwrap();
+                send_message(addr.borrow_mut(), &message);
             }
         }
         Err(e) => {
+            let success = Sucess {
+                result: false,
+                path: None,
+            };
+            let message = serde_json::to_string(&success).unwrap();
+            send_message(addr.borrow_mut(), &message);
             eprintln!("{}", e);
-            std::process::exit(1);
         }
     };
+    _ = addr.borrow_mut().close(None);
     // Ok = everything went well
     Ok(())
 }
 
 // The actual enroll function
 fn enroll(
-    sock_addr: Rc<RefCell<TcpStream>>,
+    sock_addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
 ) -> Result<FpPrint<'static>, GError<'static>> {
     // Check if the devices is open, if not, open it
@@ -42,7 +71,7 @@ fn enroll(
     // Create a template print
     let template_print = FpPrint::new(&dev);
     // Enroll
-    let print = dev.enroll(template_print, Some(callback_fn), Some(sock_addr))?;
+    let print = dev.enroll(template_print, Some(callback_fn), Some(sock_addr.clone()))?;
     // Close the device
     dev.close()?;
     // Return the device
@@ -56,15 +85,29 @@ fn callback_fn(
     completed_stages: i32,
     _print: FpPrint,
     error: Option<GError>,
-    user_data: &mut Option<Rc<RefCell<TcpStream>>>,
+    user_data: &Option<Rc<RefCell<WebSocket<TcpStream>>>>,
 ) {
     // If there's no error and if the user data was successfully delivered to the funciton:
     if error.is_none() && user_data.is_some() {
         let data = user_data.as_ref().unwrap();
         let d = data.borrow_mut();
-        let message = format!("{} of {}", completed_stages, device.get_nr_enroll_stages());
+        let msg = ProcessMsg {
+            current: completed_stages,
+            total: device.get_nr_enroll_stages(),
+            error: false,
+        };
+        let message = serde_json::to_string(&msg).unwrap();
         send_message(d, message.as_str());
     } else if error.is_some() {
+        let data = user_data.as_ref().unwrap();
+        let d = data.borrow_mut();
+        let msg = ProcessMsg {
+            current: completed_stages,
+            total: device.get_nr_enroll_stages(),
+            error: true,
+        };
+        let message = serde_json::to_string(&msg).unwrap();
+        send_message(d, &message);
         // If there's an error, send it to the socket client
         eprintln!(
             "Enroll stage {} of {} failed with error {}",

@@ -26,7 +26,7 @@ export const useRegistrosStore = defineStore('RegistrosStore', {
             this.offset += 10;
             const registro = await GetService.getRegistros(this.offset, this.limit);
             // Ignore this error
-            if ( registro?.length !== 0 ) {
+            if (registro?.length !== 0) {
                 this.registros = registro as Array<ServiceTypes.Registro>;
             } else {
                 this.offset -= 10;

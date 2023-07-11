@@ -1,0 +1,41 @@
+version: "1.0"
+services:
+  database:
+    container_name: database
+    image: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${PG_USER}
+  backend:
+    container_name: backend
+    build: .
+    volumes:
+      - ./backend:/bin/backend
+    environment:
+      - SOCKET_IP=${SOCKET_IP}
+      - SOCKET_PORT=${SOCKET_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - database
+    command: backend
+  web:
+    container_name: webserver
+    image: nginx:stable
+    depends_on:
+      - backend
+      - database
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/frontend
+      - ./pem:/pem
+    ports:
+      - "${VITE_BACKEND_PORT}:443"
+    environment:
+      - NGINX_HOST=someweb.com
+      - NGINX_PORT=80
+volumes:
+  db-data:

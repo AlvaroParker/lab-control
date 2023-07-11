@@ -123,7 +123,6 @@ export default defineComponent({
                             class="dropdown-menu dropdown-menu-end"
                             aria-labelledby="navbarDropdown1"
                             id="user-area"
-                            v-if="user.nombre"
                         >
                             <li class="dropdown-item">
                                 {{ user.nombre }} {{ user.apellido_1 }} {{ user.apellido_2 }}

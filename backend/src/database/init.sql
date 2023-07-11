@@ -48,48 +48,7 @@ INSERT INTO admins (
   'Parker',
   'Del Fierro',
   'aparkerdf@gmail.com',
-  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS'
+  -- Hashed Password for Testing purpposes: 'admin'
+  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS' 
 );
 
-
-INSERT INTO
-  personas (
-    nombre,
-    apellido_1,
-    apellido_2,
-    rut,
-    print_path,
-    correo_uai,
-    is_disabled
-  )
-VALUES
-  (
-    'Peter',
-    'Parker',
-    'Jane',
-    '146193749',
-    'none',
-    'correo.uai.cl',
-    false
-  );
-
-INSERT INTO
-  personas (
-    nombre,
-    apellido_1,
-    apellido_2,
-    rut,
-    print_path,
-    correo_uai,
-    is_disabled
-  )
-VALUES
-  (
-    'Bruce',
-    'Banner',
-    'The Hulk',
-    '125153739',
-    'none2',
-    'correo@uai2.cl',
-    false
-  );

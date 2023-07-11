@@ -1,15 +1,15 @@
 import ServiceTypes from './types';
 import axios, { AxiosResponse } from 'axios';
-import Auth from './auth.service';
+
+axios.defaults.withCredentials = true;
+
 export const getUsuarios = async (): Promise<Array<ServiceTypes.Usuario> | undefined> => {
-    const res = await axios.get(ServiceTypes.API_URL + '/usuarios', { headers: Auth.getToken() });
+    const res = await axios.get(ServiceTypes.API_URL + '/usuarios');
     return res.data;
 };
 
 export const getUsuarioByRut = async (rut: string): Promise<ServiceTypes.Usuario | undefined> => {
-    const res = await axios.get(ServiceTypes.API_URL + `/usuarios/${rut}`, {
-        headers: Auth.getToken(),
-    });
+    const res = await axios.get(ServiceTypes.API_URL + `/usuarios/${rut}`);
     return res.data;
 };
 
@@ -26,8 +26,7 @@ export const getRegistros = async (
     limit: number
 ): Promise<Array<ServiceTypes.Registro> | undefined> => {
     const res = await axios.get(
-        ServiceTypes.API_URL + `/registros?limit=${limit}&offset=${offset}`,
-        { headers: Auth.getToken() }
+        ServiceTypes.API_URL + `/registros?limit=${limit}&offset=${offset}`
     );
     return res.data;
 };

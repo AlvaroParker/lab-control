@@ -1,6 +1,8 @@
+use std::error::Error;
+
 #[tokio::main]
-async fn main() {
-    let sock_ip = std::env::var("SOCKET_IP").unwrap_or("127.0.0.1".into());
-    println!("{}", sock_ip);
-    backend::run().await
+async fn main() -> Result<(), Box<dyn Error>> {
+    // Run the backend server
+    backend::run().await;
+    Ok(())
 }

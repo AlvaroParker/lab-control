@@ -1,11 +1,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 // import AuthService from '../services/auth.service';
-import PostService from '../services/post.service.js';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
-import { AxiosError } from 'axios';
 import ServiceTypes from '../services/types.js';
+import PostService from '../services/post.service.js';
 
 export default defineComponent({
     data() {
@@ -14,8 +13,12 @@ export default defineComponent({
             usuario: {} as ServiceTypes.Usuario,
             valid_rut: true,
             registrando_huella: false,
-            user_exists_err: false,
+            error_detected: false,
             message: '',
+            stage: '',
+            value: 10,
+            total: 1,
+            current: 0,
             rutRules: [
                 (value: string) => {
                     let normalized = ChileanRutify.normalizeRut(value);
@@ -49,42 +52,54 @@ export default defineComponent({
             const rut = normalizeRut(this.usuario.rut);
             if (ServiceTypes.isUsuario(this.usuario) && rut && this.valid_rut) {
                 this.usuario.rut = rut;
-                try {
-                    const res = await PostService.enrollUsuario(this.usuario);
-                    switch (res.status) {
-                        case 200:
+                this.registrando_huella = true;
+
+                const ws = await PostService.enrollNewUsuario(this.usuario);
+                ws.onerror = (error) => {
+                    this.error_detected = true;
+                    console.log(error.message);
+                    this.message = 'Error al registra huella.';
+                };
+                ws.onmessage = (data) => {
+                    let status = JSON.parse(data.data as string);
+                    this.total = status.total;
+                    this.current = status.current;
+                    this.stage = `Registrando huella... ${status.current} de ${status.total}`;
+                };
+                ws.onclose = (event) => {
+                    switch (event.code) {
+                        case 1000:
                             this.go_home();
                             break;
-
+                        case 4000:
+                            this.error_detected = true;
+                            this.message = 'Email o RUT ya registrados';
+                            break;
+                        case 4001:
+                            this.error_detected = true;
+                            this.message = 'RUT invalido';
+                            break;
+                        case 4002:
+                            this.error_detected = true;
+                            this.message = 'Faltan campos por completar';
+                            break;
+                        case 4500:
+                            this.error_detected = true;
+                            this.message = 'Error agregando usuario. Intentelo de nuevo mas tarde.';
+                            break;
                         default:
-                            console.log(res);
-                            console.log('Error while enrolling');
                             break;
                     }
                     this.registrando_huella = false;
-                } catch (err: any) {
-                    const axios_error = err as AxiosError;
-                    switch (axios_error.response?.status) {
-                        case 500:
-                            this.message = 'Sensor de huella no disponible.';
-                            break;
-                        case 409:
-                            this.message = 'RUT o Email ya se encuentra registrado.';
-                            break;
-                        default:
-                            this.message =
-                                'Error al intentar crear nuevo usuario. Intentelo de nuevo mas tarde.';
-                            console.log(axios_error);
-                            break;
-                    }
-                    this.registrando_huella = false;
-                }
+                };
             } else {
                 this.message = 'Faltan campos por llenar';
                 this.registrando_huella = false;
             }
         },
-        handleRut() {
+    },
+    watch: {
+        rut() {
             const valid = ChileanRutify.validRut(this.usuario.rut);
             const normalized = ChileanRutify.normalizeRut(this.usuario.rut);
 
@@ -93,11 +108,6 @@ export default defineComponent({
             } else {
                 this.valid_rut = false;
             }
-        },
-    },
-    watch: {
-        rut() {
-            this.handleRut();
         },
     },
 });
@@ -116,7 +126,7 @@ export default defineComponent({
                             >
                                 <h2 class="fw-bold mb-1 text-uppercase">Nuevo usuario</h2>
                                 <p class="text-50 mb-2">
-                                    Ingresa los datos para registrar un nuevo usuario
+                                    Ingresa los datos para registrar un nuevo usuarios
                                 </p>
 
                                 <div class="form-outline form-white mb-2">
@@ -124,6 +134,7 @@ export default defineComponent({
                                         v-model="usuario.nombre"
                                         label="Nombre"
                                         required
+                                        :disabled="registrando_huella"
                                     ></v-text-field>
                                 </div>
 
@@ -131,6 +142,7 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.apellido_1"
                                         label="Primer apellido"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -139,6 +151,7 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.apellido_2"
                                         label="Segundo apellido"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -148,6 +161,7 @@ export default defineComponent({
                                         v-model="usuario.rut"
                                         label="RUT"
                                         :rules="rutRules"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
@@ -156,6 +170,7 @@ export default defineComponent({
                                         :items="['Alumno', 'Ayudante', 'Docente']"
                                         density="comfortable"
                                         label="Rol"
+                                        :disabled="registrando_huella"
                                         v-model="usuario.rol"
                                     ></v-select>
                                 </div>
@@ -164,19 +179,45 @@ export default defineComponent({
                                     <v-text-field
                                         v-model="usuario.correo_uai"
                                         label="Correo"
+                                        :disabled="registrando_huella"
                                         required
                                     ></v-text-field>
                                 </div>
 
-                                <p style="color: red" v-if="user_exists_err">
+                                <p style="color: red" v-if="error_detected">
                                     {{ message }}
                                 </p>
                                 <button
+                                    v-show="!registrando_huella"
                                     class="btn btn-primary btn-lg px-5 mt-2 mb"
                                     :disabled="registrando_huella"
                                 >
                                     Registrar huella
                                 </button>
+
+                                <Teleport to="body">
+                                    <Transition name="modal">
+                                        <div v-if="registrando_huella" class="modal-mask">
+                                            <div
+                                                class="modal-container d-flex flex-column align-items-center justify-content-center rounded-5"
+                                            >
+                                                <h6 class="mb-4 justify-content-center text-center">
+                                                    Registrando, ponga su huella sobre el lector
+                                                </h6>
+                                                <v-progress-circular
+                                                    v-if="registrando_huella"
+                                                    :rotate="-90"
+                                                    :size="100"
+                                                    :width="15"
+                                                    :model-value="(current * 100) / total"
+                                                    color="primary"
+                                                >
+                                                    {{ current }}
+                                                </v-progress-circular>
+                                            </div>
+                                        </div>
+                                    </Transition>
+                                </Teleport>
                             </form>
                         </div>
                     </div>
@@ -189,5 +230,63 @@ export default defineComponent({
 <style>
 .card {
     margin-top: 50px;
+}
+
+.modal-mask {
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    transition: opacity 0.3s ease;
+}
+
+.modal-container {
+    width: 300px;
+    margin: auto;
+    padding: 20px 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    transition: all 0.3s ease;
+}
+
+.modal-header h3 {
+    margin-top: 0;
+    color: #42b983;
+}
+
+.modal-body {
+    margin: 20px 0;
+}
+
+.modal-default-button {
+    float: right;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter-from {
+    opacity: 0;
+}
+
+.modal-leave-to {
+    opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
 }
 </style>

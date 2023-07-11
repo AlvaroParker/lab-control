@@ -32,13 +32,20 @@ pub async fn edit_persona_by_rut(
     Json(edit_persona): Json<EditPersona>,
 ) -> Result<(), (StatusCode, String)> {
     if !is_valid_num_rut(&rut) {
-        return Err((StatusCode::NOT_FOUND, "".into()));
+        return Err((StatusCode::NOT_FOUND, "Not a valid rut".into()));
     }
 
-    let persona = Personas::find_by_id(rut.clone())
+    let persona = Personas::find_by_id(&rut)
         .one(pool.get_db())
         .await
-        .map_err(internal_error)?;
+        .map_err(|err| {
+            if let sea_orm::DbErr::RecordNotFound(e) = err {
+                tracing::error!("Persona not found: {:?}", e);
+                (StatusCode::NOT_FOUND, "Persona not found".into())
+            } else {
+                internal_error(err)
+            }
+        })?;
 
     if let Some(persona) = persona {
         let mut persona: personas::ActiveModel = persona.into();
@@ -51,8 +58,7 @@ pub async fn edit_persona_by_rut(
             .exec(pool.get_db())
             .await
             .map_err(internal_error)?;
-        eprintln!("WENNNNNNNNNNNNNNNNNA");
-        dbg!(res);
+        tracing::info!("Updated persona: {:?}", res);
 
         Ok(())
     } else {
