@@ -14,8 +14,12 @@ use axum::{
 use sea_orm::ActiveModelTrait;
 use std::{borrow::Cow, sync::Arc};
 
+// Handle the new connection and upgrade to a WebSocket
 pub async fn enroll_persona(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>) -> Response {
-    ws.on_upgrade(move |socket| handle_socket(socket, pool.clone()))
+    ws.on_failed_upgrade(|err| {
+        tracing::error!("Failed to upgrade connection: {}", err);
+    })
+    .on_upgrade(move |socket| handle_socket(socket, pool.clone()))
 }
 
 // The result of the enrollment is a JSON, this struct is used to deserialize the JSON
@@ -107,6 +111,7 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
 }
 
 // Enroll the print connecting to the Print server socket
+// See fingerprint-rs crate for more info
 async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
     // Set the body with the proper action
     let body = Body {
