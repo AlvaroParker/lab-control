@@ -77,6 +77,14 @@ export default defineComponent({
                     >
                         <font-awesome-icon :icon="['fa', 'qrcode']" /> QR Reader
                     </router-link>
+
+                    <router-link
+                        to="/admin/new"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                        :class="{ active: 'NuevoAdmin' == getName() }"
+                    >
+                        <font-awesome-icon :icon="['fa', 'plus']" /> Nuevo Admin
+                    </router-link>
                 </div>
             </div>
         </nav>

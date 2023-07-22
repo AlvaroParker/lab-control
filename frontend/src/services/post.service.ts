@@ -19,6 +19,17 @@ export const enrollUsuario = async (usuario: ServiceTypes.Usuario) => {
     return res;
 };
 
+export const enrollAdmin = async (admin: ServiceTypes.AdminRegistro) => {
+    const res = await axios.post(ServiceTypes.API_URL + `/admin/signin`, {
+        nombre: admin.nombre,
+        apellido_1: admin.apellido_1,
+        apellido_2: admin.apellido_2,
+        email: admin.email,
+        pswd: admin.pswd
+    });
+    return res
+}
+
 export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<WebSocket> => {
     const nuevo_usuario = {
         nombre: usuario.nombre,
@@ -77,5 +88,6 @@ const PostService = {
     editUsuario,
     nuevoRegistro,
     enrollNewUsuario,
+    enrollAdmin
 };
 export default PostService;
