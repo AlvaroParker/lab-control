@@ -9,6 +9,7 @@ import Verificar from './components/Verificar.vue';
 import Registro from './components/Registros.vue';
 import EditUsuario from './components/EditUsuario.vue';
 import QRCode from './components/QRReader/QRCode.vue';
+import NuevoAdmin from './components/NuevoAdmin.vue';
 
 const routes = [
     { path: '/', component: Usuarios, name: 'Home' },
@@ -19,6 +20,7 @@ const routes = [
     { path: '/usuarios/nuevo', component: NuevoUsuario, name: 'NuevoUsuario' },
     { path: '/usuarios/verificar', component: Verificar, name: 'VerificarUsuario' },
     { path: '/registros', component: Registro, name: 'Registro' },
+    { path: '/admin/new', component: NuevoAdmin, name: 'NuevoAdmin'}
 ];
 
 export const router = createRouter({
