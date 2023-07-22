@@ -9,8 +9,8 @@ pub async fn _create_routes(pool: Arc<Pool>) -> Router<Arc<Pool>> {
     // Create a new route for each relevant function in the controller
     Router::new()
         .route("/auth", get(auth))
+        .route("/signin", post(create_user))
         .route_layer(middleware::from_fn_with_state(pool, guard_layer))
         .route("/login", post(login))
-        .route("/signin", post(create_user))
         .route("/logout", post(logout))
 }
