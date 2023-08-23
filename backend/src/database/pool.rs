@@ -10,13 +10,14 @@ use std::process::exit;
 
 #[derive(Clone)]
 pub struct Pool {
+    // Database connection
     db: DatabaseConnection,
+    // Session store for admins/users
     store: PostgresSessionStore,
 }
 
 impl Pool {
     pub async fn new(db: DatabaseConnection) -> Self {
-        // todo: handle this unwrap
         let store = start_store().await.unwrap();
 
         Self { db, store }
@@ -41,7 +42,9 @@ impl Pool {
 }
 
 async fn start_store() -> Result<PostgresSessionStore, Box<dyn std::error::Error>> {
+    // Creates a new sql postgres session store
     let store = PostgresSessionStore::new(&crate::DATABASE_URL.to_string()).await?;
+    // Migrates the session store (creates a new table if it doesn't exist one already)
     store.migrate().await?;
     Ok(store)
 }

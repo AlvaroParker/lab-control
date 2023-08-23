@@ -63,7 +63,7 @@ pub fn server() -> Result<(), Box<dyn Error>> {
         }
     };
     // Check permissions
-    dev.open()?;
+    dev.open_sync(None)?;
     // For each clients that connects to the socket:
     for stream in listener.incoming() {
         let websocket = match accept(stream?) {

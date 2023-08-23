@@ -1,4 +1,4 @@
-use std::{cell::RefCell, fs, io::Read, net::TcpStream, rc::Rc};
+use std::{cell::RefCell, error::Error, fs, io::Read, net::TcpStream, rc::Rc};
 
 use libfprint_rs::{FpDevice, FpPrint, GError};
 use tungstenite::WebSocket;
@@ -6,7 +6,7 @@ use tungstenite::WebSocket;
 use crate::socket::send_message;
 
 // Collect fingerprints from the
-fn collect_prints(paths: Vec<String>) -> Vec<FpPrint<'static>> {
+fn collect_prints(paths: Vec<String>) -> Vec<FpPrint> {
     let mut prints = Vec::new();
 
     for path in paths {
@@ -36,21 +36,22 @@ pub fn run_verification(
     addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
     paths: Vec<String>,
-) -> Result<(), GError<'static>> {
+) -> Result<(), Box<dyn Error>> {
     if !dev.is_open() {
-        dev.open()?;
+        dev.open_sync(None)?;
     }
 
     let prints = collect_prints(paths);
 
     let mut new_print = FpPrint::new(&dev);
-    let _matched_print = dev.identify(
-        prints,
+    let _matched_print = dev.identify_sync(
+        &prints,
+        None,
         Some(callback_function),
         Some(addr.clone()),
         Some(&mut new_print),
     )?;
-    dev.close()?;
+    dev.close_sync(None)?;
     _ = addr.borrow_mut().close(None);
     Ok(())
 }
@@ -67,7 +68,7 @@ fn callback_function(
     if let Some(print) = matched_print {
         let data = match_data.as_ref().unwrap();
         let d = data.borrow_mut();
-        if let Some(path) = print.get_username() {
+        if let Some(path) = print.username() {
             let msg = format!("verification success {}", path);
             send_message(d, &msg);
         }
