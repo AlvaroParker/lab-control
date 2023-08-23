@@ -1,4 +1,4 @@
-use std::{cell::RefCell, env, net::TcpStream, rc::Rc};
+use std::{cell::RefCell, env, error::Error, net::TcpStream, rc::Rc};
 
 use crate::{socket::send_message, write_to_file::write_to_file};
 use libfprint_rs::{FpDevice, FpPrint, GError};
@@ -23,7 +23,7 @@ struct Sucess<'a> {
 pub fn run_enrollment(
     addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
-) -> Result<(), GError<'static>> {
+) -> Result<(), Box<dyn Error>> {
     // Check if enroll returned an error, return with error if it did
     let print = match enroll(Rc::clone(&addr), dev) {
         Ok(p) => p,
@@ -62,18 +62,23 @@ pub fn run_enrollment(
 fn enroll(
     sock_addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
-) -> Result<FpPrint<'static>, GError<'static>> {
+) -> Result<FpPrint, Box<dyn Error>> {
     // Check if the devices is open, if not, open it
     if !dev.is_open() {
-        dev.open()?;
+        dev.open_sync(None)?;
     }
 
     // Create a template print
     let template_print = FpPrint::new(&dev);
     // Enroll
-    let print = dev.enroll(template_print, Some(callback_fn), Some(sock_addr.clone()))?;
+    let print = dev.enroll_sync(
+        template_print,
+        None,
+        Some(callback_fn),
+        Some(sock_addr.clone()),
+    )?;
     // Close the device
-    dev.close()?;
+    dev.close_sync(None)?;
     // Return the device
     Ok(print)
 }
@@ -83,7 +88,7 @@ fn enroll(
 fn callback_fn(
     device: &FpDevice,
     completed_stages: i32,
-    _print: FpPrint,
+    _print: Option<FpPrint>,
     error: Option<GError>,
     user_data: &Option<Rc<RefCell<WebSocket<TcpStream>>>>,
 ) {
@@ -93,7 +98,7 @@ fn callback_fn(
         let d = data.borrow_mut();
         let msg = ProcessMsg {
             current: completed_stages,
-            total: device.get_nr_enroll_stages(),
+            total: device.nr_enroll_stage(),
             error: false,
         };
         let message = serde_json::to_string(&msg).unwrap();
@@ -103,7 +108,7 @@ fn callback_fn(
         let d = data.borrow_mut();
         let msg = ProcessMsg {
             current: completed_stages,
-            total: device.get_nr_enroll_stages(),
+            total: device.nr_enroll_stage(),
             error: true,
         };
         let message = serde_json::to_string(&msg).unwrap();
@@ -112,7 +117,7 @@ fn callback_fn(
         eprintln!(
             "Enroll stage {} of {} failed with error {}",
             completed_stages,
-            device.get_nr_enroll_stages(),
+            device.nr_enroll_stage(),
             error.unwrap()
         );
     }
