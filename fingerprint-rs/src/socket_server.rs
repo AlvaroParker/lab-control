@@ -6,6 +6,8 @@ use std::rc::Rc;
 use libfprint_rs::FpContext;
 use local_ip_address::linux::local_ip;
 use serde::{Deserialize, Serialize};
+use tungstenite::protocol::frame::coding::CloseCode;
+use tungstenite::protocol::CloseFrame;
 use tungstenite::{accept, Message};
 
 use crate::enroll::run_enrollment;
@@ -82,9 +84,16 @@ pub fn server() -> Result<(), Box<dyn Error>> {
             let body: Body = serde_json::from_str(&msg).unwrap();
             match body.action {
                 Action::Verify => {
-                    match run_verification(stream, &dev, body.paths) {
+                    match run_verification(stream.clone(), &dev, body.paths) {
                         Ok(()) => {}
                         Err(err) => {
+                            // Set the error message
+                            let error_msg = format!("Error while running verification: {}", err);
+                            // Close the socket with error
+                            stream.borrow_mut().close(Some(CloseFrame {
+                                code: CloseCode::Error,
+                                reason: error_msg.into(),
+                            }))?;
                             eprintln!("Error while running verification: {}", err);
                         }
                     };
@@ -103,3 +112,4 @@ pub fn server() -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
+

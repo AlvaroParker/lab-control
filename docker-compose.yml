@@ -2,7 +2,7 @@ version: "1.0"
 services:
   database:
     container_name: db-lab
-    image: postgres:latest
+    image: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./backend/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
