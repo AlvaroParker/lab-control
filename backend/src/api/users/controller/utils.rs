@@ -1,14 +1,14 @@
 use crate::api::utils::internal_error;
-use crate::database::entities::personas;
-use crate::{database::entities::personas::Entity as Personas, database::pool::Pool};
+use crate::database::entities::users;
+use crate::{database::entities::users::Entity as Users, database::pool::Pool};
 use axum::http::StatusCode;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-// NewPersona struct used to on `enroll.rs` to enroll a new Persona
+// NewUser struct used to on `enroll.rs` to enroll a new User
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct NewPersona {
+pub struct NewUser {
     pub nombre: String,
     pub apellido_1: String,
     pub apellido_2: String,
@@ -18,17 +18,17 @@ pub struct NewPersona {
     pub rol: String,
 }
 
-// We added the print_path so we a can then deserialize Outer and Serialize it again to an `personas::Model`
+// We added the print_path so we a can then deserialize Outer and Serialize it again to an `users::Model`
 #[derive(Debug, Serialize)]
 pub struct Outer<'a> {
     #[serde(flatten)]
-    pub field_1: NewPersona,
+    pub field_1: NewUser,
     pub print_path: &'a str,
 }
 
-// Create a new Outer instance with a `NewPersona` struct and a `print_path` String
+// Create a new Outer instance with a `NewUser` struct and a `print_path` String
 impl<'a> Outer<'a> {
-    pub fn new(field_1: NewPersona, print_path: &'a str) -> Self {
+    pub fn new(field_1: NewUser, print_path: &'a str) -> Self {
         Self {
             field_1,
             print_path,
@@ -59,10 +59,10 @@ pub async fn rut_exists_or_email(
     rut: &String,
     email: &String,
 ) -> Result<bool, (StatusCode, String)> {
-    let querie = Personas::find().filter(
-        personas::Column::Rut
+    let querie = Users::find().filter(
+        users::Column::Rut
             .eq(rut)
-            .or(personas::Column::CorreoUai.eq(email)),
+            .or(users::Column::CorreoUai.eq(email)),
     );
     Ok(querie
         .one(pool.get_db())

@@ -3,5 +3,5 @@
 pub mod prelude;
 
 pub mod admins;
-pub mod personas;
 pub mod registros;
+pub mod users;

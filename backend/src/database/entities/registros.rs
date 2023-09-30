@@ -17,18 +17,18 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::personas::Entity",
+        belongs_to = "super::users::Entity",
         from = "Column::Rut",
-        to = "super::personas::Column::Rut",
+        to = "super::users::Column::Rut",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Personas,
+    Users,
 }
 
-impl Related<super::personas::Entity> for Entity {
+impl Related<super::users::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Personas.def()
+        Relation::Users.def()
     }
 }
 

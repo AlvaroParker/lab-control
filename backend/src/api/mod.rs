@@ -1,6 +1,6 @@
 mod admins;
 mod guard;
-mod personas;
 mod registros;
 pub mod routes;
+mod users;
 pub(crate) mod utils;

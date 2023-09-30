@@ -1,7 +1,7 @@
-use super::utils::{Action, Body, NewPersona, Outer};
+use super::utils::{Action, Body, NewUser, Outer};
 use crate::{
-    api::{personas::controller::utils::rut_exists_or_email, utils::is_valid_num_rut},
-    database::entities::personas,
+    api::{users::controller::utils::rut_exists_or_email, utils::is_valid_num_rut},
+    database::entities::users,
     database::pool::Pool,
 };
 use axum::{
@@ -15,7 +15,7 @@ use sea_orm::ActiveModelTrait;
 use std::{borrow::Cow, sync::Arc};
 
 // Handle the new connection and upgrade to a WebSocket
-pub async fn enroll_persona(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>) -> Response {
+pub async fn enroll_user(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>) -> Response {
     ws.on_failed_upgrade(|err| {
         tracing::error!("Failed to upgrade connection: {}", err);
     })
@@ -39,16 +39,16 @@ const FP_SENSOR_ERR: u16 = 4003;
 
 // Handle a new socket connection from the client
 async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
-    // Get the first message from the client, this should be a JSON with the new persona data
+    // Get the first message from the client, this should be a JSON with the new user data
     let data = match socket.recv().await {
         Some(Ok(ws::Message::Text(data))) => data,
         _ => return,
     };
 
-    // Validate that the message is a valid JSON of a new persona
+    // Validate that the message is a valid JSON of a new user
     // check if the rut and email provided are valid a don't exist already
-    let persona = match validate_message(data, pool.clone()).await {
-        Ok(persona) => persona,
+    let user = match validate_message(data, pool.clone()).await {
+        Ok(user) => user,
         Err(err) => {
             send_and_close(err, socket).await;
             return;
@@ -74,16 +74,16 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
         }
     }; // Todo: handle the socket closing if the fingerprint panics
 
-    // Create the new persona struct using the Persona JSON provided by the client and
+    // Create the new user struct using the User JSON provided by the client and
     // the path provided by the fingerprint sensor
-    let json_persona = serde_json::json!(Outer::new(persona, &print));
+    let json_user = serde_json::json!(Outer::new(user, &print));
 
-    // Create a new DB model with the json_persona object
-    let persona_model = personas::ActiveModel::from_json(json_persona).unwrap(); // this never
-                                                                                 // fails
+    // Create a new DB model with the json_user object
+    let user_model = users::ActiveModel::from_json(json_user).unwrap(); // this never
+                                                                        // fails
 
     // Insert the new row
-    if let Err(e) = persona_model.insert(pool.get_db()).await {
+    if let Err(e) = user_model.insert(pool.get_db()).await {
         let msg = close_msg(DB_INSERTION_ERR, "Error while saving new user".into());
         // Close the socket with DB_INSErtION_ERR message
         if let Err(socket_err) = socket.send(msg).await {
@@ -191,23 +191,23 @@ async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
 
 // Check if the data provided by the client is a valid NewPerson struct
 // and that the new rut is valid and is not already registered
-async fn validate_message(data: String, pool: Arc<Pool>) -> Result<NewPersona, (u16, String)> {
-    let persona: NewPersona = match serde_json::from_str(&data) {
-        Ok(persona) => persona,
+async fn validate_message(data: String, pool: Arc<Pool>) -> Result<NewUser, (u16, String)> {
+    let user: NewUser = match serde_json::from_str(&data) {
+        Ok(user) => user,
         Err(e) => {
             return Err((DB_INSERTION_ERR, e.to_string()));
         }
     };
 
-    if !is_valid_num_rut(&persona.rut) {
+    if !is_valid_num_rut(&user.rut) {
         return Err((INVALID_RUT_ERR, "Invalid rut".into()));
     }
 
-    let exists = rut_exists_or_email(pool.clone(), &persona.rut, &persona.correo_uai).await;
+    let exists = rut_exists_or_email(pool.clone(), &user.rut, &user.correo_uai).await;
     if let Err(_e) = exists {
         return Err((INTERNAL_SERVER_ERROR, "Internal server error".into()));
     } else if exists.unwrap() {
         return Err((USER_EXISTS_ERR, "Email or rut already registered".into()));
     }
-    Ok(persona)
+    Ok(user)
 }

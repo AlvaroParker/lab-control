@@ -12,7 +12,8 @@ use crate::{
     database::{entities::admins, pool::Pool},
 };
 
-// Struct representing the JSON that user will send to the webserver
+// Struct representing the JSON that admin will send to the webserver
+// This is used to create a new admin
 #[derive(Serialize, Deserialize)]
 pub struct RequestAdmin {
     pub nombre: String,
@@ -21,7 +22,7 @@ pub struct RequestAdmin {
     pub email: String,
     pub pswd: String,
 }
-// Struct representing JSON that the server will response
+// Struct representing the ADMIN JSON that the server will response
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ResponseAdmin {
     pub nombre: String,
@@ -32,8 +33,8 @@ pub struct ResponseAdmin {
 }
 use sea_orm::entity::ActiveValue::Set;
 
-// Aka signin. The user must provide a valid `RequestAdmin` JSON body
-pub async fn create_user(
+// Aka signin. The admin must provide a valid `RequestAdmin` JSON body
+pub async fn create_admin(
     State(pool): State<Arc<Pool>>,
     Json(admin): Json<RequestAdmin>,
 ) -> Result<Json<ResponseAdmin>, (StatusCode, String)> {
@@ -49,8 +50,8 @@ pub async fn create_user(
     .insert(pool.get_db())
     .await
     // If there's any error, send a 500 internal error to the client
-    .map_err(user_exists)?;
-    // From the new created user, create a ResponseAdmin struct
+    .map_err(admin_exists)?;
+    // From the newly created admin, create a ResponseAdmin struct
     let mut admin = ResponseAdmin {
         nombre: new_admin.nombre,
         apellido_1: new_admin.apellido_1,
@@ -58,7 +59,7 @@ pub async fn create_user(
         email: new_admin.email,
         cookie: None,
     };
-    // Create a cookie for the user
+    // Create a cookie for the admin
     create_cookie(&mut admin, pool).await?;
 
     // Send the ResponseAdmin struct to the client
@@ -89,7 +90,7 @@ pub async fn login(
         let password = request_admin.pswd;
         // Verify the password
         let verified = verify_password(password, hash.as_str())?;
-        // If the password is correct, create a cookie for the user
+        // If the password is correct, create a cookie for the admin
         if verified {
             let mut admin = ResponseAdmin {
                 nombre: saved_admin.nombre,
@@ -178,16 +179,16 @@ pub fn verify_password(password: String, hash: &str) -> Result<bool, (StatusCode
     bcrypt::verify(password, hash).map_err(internal_error)
 }
 
-// Handle user exists in `insert` query
-pub fn user_exists(err: DbErr) -> (StatusCode, String) {
+// Handle admin exists in `insert` query
+pub fn admin_exists(err: DbErr) -> (StatusCode, String) {
     match err {
         DbErr::Query(sea_orm::RuntimeErr::SqlxError(sqlx::Error::Database(e))) => {
             // Try to cast Box<dyn Error> to PgDatabaseError
             match e.try_downcast::<sqlx::postgres::PgDatabaseError>() {
                 Ok(err) => {
-                    // If the error code is 23505, it means that the user already exists
+                    // If the error code is 23505, it means that the admin already exists
                     if err.code() == "23505" {
-                        return (StatusCode::BAD_REQUEST, "User already exists".to_string());
+                        return (StatusCode::BAD_REQUEST, "Admin already exists".to_string());
                     }
                 }
                 Err(_) => {}

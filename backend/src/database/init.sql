@@ -1,5 +1,5 @@
 \c fingerprints
-CREATE TABLE IF NOT EXISTS personas(
+CREATE TABLE IF NOT EXISTS users(
   nombre VARCHAR(64) NOT NULL,
   apellido_1 VARCHAR(64) NOT NULL,
   apellido_2 VARCHAR(64) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS personas(
 CREATE TABLE IF NOT EXISTS registros(
   id SERIAL PRIMARY KEY,
   rut VARCHAR(10) NOT NULL,
-  FOREIGN KEY (rut) REFERENCES personas(rut) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (rut) REFERENCES users(rut) ON DELETE CASCADE ON UPDATE CASCADE,
   fecha TIMESTAMP WITH TIME ZONE NOT NULL,
   salida BOOLEAN NOT NULL,
   motivo VARCHAR(20) CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida')) NOT NULL DEFAULT 'ventana'

@@ -1,5 +1,5 @@
 use crate::{
-    database::entities::personas::{self, Entity as Personas},
+    database::entities::users::{self, Entity as Users},
     database::{entities::registros, pool::Pool},
 };
 
@@ -23,14 +23,14 @@ pub struct Salida {
     pub motivo: String,
 }
 
-pub async fn verify_persona(
+pub async fn verify_user(
     State(pool): State<Arc<Pool>>,
     Json(salida): Json<Salida>,
-) -> Result<Json<personas::Model>, (StatusCode, String)> {
+) -> Result<Json<users::Model>, (StatusCode, String)> {
     // Querie to get all prints paths
-    let querie = Personas::find()
+    let querie = Users::find()
         .select_only()
-        .column(personas::Column::PrintPath)
+        .column(users::Column::PrintPath)
         .into_tuple();
 
     // Run querie
@@ -50,20 +50,20 @@ pub async fn verify_persona(
         }
     };
 
-    // Find the corresponding persona by PrintPath
-    let querie_by_path = Personas::find()
-        .filter(personas::Column::PrintPath.eq(matched_print_path))
-        .filter(personas::Column::IsDisabled.eq(false));
+    // Find the corresponding user by PrintPath
+    let querie_by_path = Users::find()
+        .filter(users::Column::PrintPath.eq(matched_print_path))
+        .filter(users::Column::IsDisabled.eq(false));
 
     // Run the querie
-    let persona = querie_by_path
+    let user = querie_by_path
         .one(pool.get_db())
         .await
         .map_err(internal_error)?;
 
-    match persona {
-        Some(persona) => {
-            // Return persona as json and ADD the registro to the Registro table
+    match user {
+        Some(user) => {
+            // Return user as json and ADD the registro to the Registro table
             let now = Local::now();
             let offset_in_sec = now.offset();
 
@@ -71,7 +71,7 @@ pub async fn verify_persona(
             let new_registro = registros::ActiveModel {
                 id: ActiveValue::NotSet,
                 salida: ActiveValue::set(salida.salida),
-                rut: ActiveValue::set(persona.rut.clone()),
+                rut: ActiveValue::set(user.rut.clone()),
                 fecha: ActiveValue::set(now),
                 motivo: ActiveValue::set(salida.motivo),
             };
@@ -79,7 +79,7 @@ pub async fn verify_persona(
                 .insert(pool.get_db())
                 .await
                 .map_err(internal_error)?;
-            return Ok(Json(persona));
+            return Ok(Json(user));
         }
         // If there are no paths matching in the databse, return not found
         None => return Err((StatusCode::NOT_FOUND, "Person not found".into())),

@@ -41,9 +41,9 @@ pub async fn get_all(
     // Use the limit and offset provided, if none use default
     let limit = params.get("limit".into()).unwrap_or(&100);
     let offset = params.get("offset".into()).unwrap_or(&0);
-    // Run custom querie to join `registros` table and `personas` table
+    // Run custom querie to join `registros` table and `users` table
     let querie = format!(
-        r#"SELECT registros.id, registros.rut, registros.fecha, registros.salida, registros.motivo, personas.nombre, personas.apellido_1, personas.apellido_2, personas.correo_uai, personas.rol FROM registros JOIN personas ON registros.rut = personas.rut ORDER BY registros.fecha DESC LIMIT {} OFFSET {};"#,
+        r#"SELECT registros.id, registros.rut, registros.fecha, registros.salida, registros.motivo, users.nombre, users.apellido_1, users.apellido_2, users.correo_uai, users.rol FROM registros JOIN users ON registros.rut = users.rut ORDER BY registros.fecha DESC LIMIT {} OFFSET {};"#,
         limit, offset
     );
     // Querie the database and store the result in a Vector of type `Value` (`serde_json`)
