@@ -2,10 +2,16 @@ use std::{sync::Arc, time::Duration};
 
 use crate::{api::utils::handle_cookie_err, database::entities::admins::Entity as Admin};
 use async_session::{Session, SessionStore};
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, Response, StatusCode},
+    response::IntoResponse,
+    Json,
+};
 use axum_extra::extract::CookieJar;
 use sea_orm::{ActiveModelTrait, DbErr, EntityTrait};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 use crate::{
     api::utils::internal_error,
@@ -75,7 +81,7 @@ pub struct LoginAdmin {
 pub async fn login(
     State(pool): State<Arc<Pool>>,
     Json(request_admin): Json<LoginAdmin>,
-) -> Result<Json<ResponseAdmin>, (StatusCode, String)> {
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     // Find the admin in the DB by email
     let querie = Admin::find_by_id(request_admin.email)
         .one(pool.get_db())
@@ -89,7 +95,7 @@ pub async fn login(
         let password = request_admin.pswd;
         // Verify the password
         let verified = verify_password(password, hash.as_str())?;
-        // If the password is correct, create a cookie for the user
+        // If the password is correct, create a cookie for the admin
         if verified {
             let mut admin = ResponseAdmin {
                 nombre: saved_admin.nombre,
@@ -100,8 +106,16 @@ pub async fn login(
             };
 
             create_cookie(&mut admin, pool).await?;
+            let body = axum::body::Body::from(json!(admin).to_string());
             // Send the ResponseAdmin struct to the client
-            return Ok(Json(admin));
+            let cookie = admin.cookie.as_ref().unwrap().clone();
+            let response = Response::builder()
+                .header(SET_COOKIE, format!("auth-cookie={}", cookie))
+                .header("Content-Type", "application/json")
+                .body(body)
+                .unwrap();
+
+            return Ok(response);
         }
     }
     // Fallback if the admin doesn't exist or the password is incorrect
