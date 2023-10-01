@@ -101,12 +101,10 @@ fn verify_print(paths: Vec<String>) -> Result<String, io::Error> {
             tracing::error!("Error while trying to connect to socket: {}", &err);
             io::Error::new(ErrorKind::ConnectionRefused, err)
         })?;
-    socket
-        .write_message(Message::text(json_body.clone()))
-        .unwrap();
+    socket.send(Message::text(json_body.clone())).unwrap();
     let mut path = String::default();
     loop {
-        let msg = match socket.read_message() {
+        let msg = match socket.read() {
             Ok(msg) => msg,
             Err(e) => {
                 tracing::error!(
