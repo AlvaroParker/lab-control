@@ -22,7 +22,7 @@ services:
     volumes:
       - "./backend:/app"
     working_dir: /app
-    command: bash -c "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo binstall -y cargo-watch && cargo watch -x run"
+    command: bash -c "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo binstall -y cargo-watch && cargo watch -i docs.json -x run"
   frontend:
     container_name: frontend-lab
     image: node:18
