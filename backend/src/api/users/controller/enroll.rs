@@ -131,14 +131,14 @@ async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
             .map_err(|e| e.to_string())?;
     // Send JSON to the socket to start enroll action
     socket
-        .write_message(tungstenite::Message::text(json_body.clone()))
+        .send(tungstenite::Message::text(json_body.clone()))
         .map_err(|e| e.to_string())?;
 
     // Declare a path variable
     let mut path = String::default();
     // Loop until the fingerprint finish to enroll the new print and returned the new print path
     loop {
-        let msg = match socket.read_message() {
+        let msg = match socket.read() {
             Ok(msg) => msg,
             Err(e) => match e {
                 tungstenite::Error::ConnectionClosed => {

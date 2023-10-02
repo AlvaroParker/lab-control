@@ -13,13 +13,14 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use utoipa::ToSchema;
 
 use crate::api::utils::{internal_error, is_valid_num_rut};
 use crate::database::entities::registros;
 use crate::database::pool::Pool;
 
 // The json that we will respont with will have the following data:
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, ToSchema)]
 pub struct RegistroAlumno {
     pub id: i32,
     pub nombre: String,
@@ -27,13 +28,44 @@ pub struct RegistroAlumno {
     pub apellido_2: String,
     pub rut: String,
     pub correo_uai: String,
+    #[schema(value_type = String, format = "date-time")]
     pub fecha: DateTimeWithTimeZone,
     pub salida: bool,
     pub rol: String,
     pub motivo: String,
 }
 
-// Get all the registros
+/// Get all the registros
+#[utoipa::path(
+   get,
+    path = "/registros",
+    tag = "Registros",
+    responses(
+        (status = 200, description = "Success", body = [RegistroAlumno], examples((
+            "Demo" = (description = "Long description",
+                value = json!([{
+                    "id": 1,
+                    "nombre": "Bruce",
+                    "apellido_1": "Banner",
+                    "apellido_2": "The Hulk",
+                    "rut": "12345678-9",
+                    "correo_uai": "bbanner@alumnos.uai.cl",
+                    "fecha": "2021-05-31T15:00:00-03:00",
+                    "salida": true,
+                    "rol": "Alumno",
+                    "motivo": "salida"
+                }])
+            )),
+        )),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    ),
+    request_body = RequestAdmin,
+    security(
+        ("auth-cookie" = [])
+    )
+)]
 pub async fn get_all(
     State(pool): State<Arc<Pool>>,
     Query(params): Query<HashMap<String, i32>>,
@@ -63,14 +95,26 @@ pub async fn get_all(
 }
 
 // RegistroNew is the json body that we will receive when registering a new registro
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct RegistroNew {
     pub rut: String,
     pub salida: bool,
     pub motivo: String,
 }
 
-// Register a new reigstro into the DB
+/// Register a new reigstro into the DB
+#[utoipa::path(
+    post,
+    tag = "Registros",
+    path = "/registros",
+    responses(
+        (status = 200, description = "Success"),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    ),
+    request_body = RegistroNew
+)]
 pub async fn registrar_rut(
     State(pool): State<Arc<Pool>>,
     Json(registro): Json<RegistroNew>,
@@ -94,7 +138,34 @@ pub async fn registrar_rut(
     Ok(())
 }
 
-// Get last registro of a rut
+/// Get last registro of a rut
+#[utoipa::path(
+   get,
+    path = "/registros/last/{rut}",
+    tag = "Registros",
+    responses(
+        (status = 200, description = "Success", body = [RegistroModel], examples((
+            "Demo" = (description = "Long description",
+                value = json!({
+                    "id": 1,
+                    "rut": "12345678-9",
+                    "fecha": "2021-05-31T15:00:00-03:00",
+                    "salida": true,
+                    "motivo": "salida"
+                })
+            )),
+        )),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    ),
+    params(
+        ("rut" = String, Path, description = "Rut of the user", example = "123456789")
+    ),
+    security(
+        ("auth-cookie" = [])
+    )
+)]
 pub async fn get_last(
     State(pool): State<Arc<Pool>>,
     Path(rut): Path<String>,

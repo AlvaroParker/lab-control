@@ -13,7 +13,7 @@ axum = { version = "0.6.18", default-features = false, features = [
   "json",
   "query",
 ] }
-axum-extra = { version = "0.7.4", features = ["cookie"] }
+axum-extra = { version = "0.8.0", features = ["cookie"] }
 axum-server = { version = "0.5.1", default-features = false }
 bcrypt = { features = ["std"], default-features = false, version = "0.15.0" }
 chrono = { default-features = false, version = "0.4.26" }
@@ -22,7 +22,7 @@ regex = { version = "1.8.4", default-features = false, features = [
   "std",
   "unicode-perl",
 ] }
-sea-orm = { version = "0.11.3", features = [
+sea-orm = { version = "0.12.3", features = [
   "macros",
   "with-chrono",
   "sqlx-postgres",
@@ -30,16 +30,20 @@ sea-orm = { version = "0.11.3", features = [
 ], default-features = false }
 serde = { version = "1.0.163", default-features = false }
 serde_json = { default-features = false, version = "1.0.96" }
-sqlx = { version = "=0.6.3", default-features = false, features = [
+sqlx = { version = "0.7.2", default-features = false, features = [
   "runtime-tokio-rustls",
 ] }
-tokio = { version = "1.28.2", default-features = false }
+tokio = { version = "1.28.2", default-features = false, features = [
+  "rt-multi-thread",
+] }
 tower-http = { version = "0.4.0", features = ["cors"] }
 tracing = { default-features = false, version = "0.1.37" }
 tracing-subscriber = { features = [
   "ansi",
 ], default-features = false, version = "0.3.17" }
-tungstenite = "0.19.0"
+tungstenite = "0.20.1"
+utoipa = "3.5.0"
+utoipa-swagger-ui = { version = "3.1.5", features = ["axum"] }
 
 [profile.release]
 opt-level = 3

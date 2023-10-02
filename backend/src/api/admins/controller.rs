@@ -2,10 +2,17 @@ use std::{sync::Arc, time::Duration};
 
 use crate::{api::utils::handle_cookie_err, database::entities::admins::Entity as Admin};
 use async_session::{Session, SessionStore};
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{
+    extract::State,
+    http::{header::SET_COOKIE, Response, StatusCode},
+    response::IntoResponse,
+    Json,
+};
 use axum_extra::extract::CookieJar;
 use sea_orm::{ActiveModelTrait, DbErr, EntityTrait};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use utoipa::ToSchema;
 
 use crate::{
     api::utils::internal_error,
@@ -14,7 +21,7 @@ use crate::{
 
 // Struct representing the JSON that admin will send to the webserver
 // This is used to create a new admin
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct RequestAdmin {
     pub nombre: String,
     pub apellido_1: String,
@@ -23,17 +30,46 @@ pub struct RequestAdmin {
     pub pswd: String,
 }
 // Struct representing the ADMIN JSON that the server will response
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, ToSchema)]
 pub struct ResponseAdmin {
+    #[schema(example = "Bruce")]
     pub nombre: String,
+    #[schema(example = "Banner")]
     pub apellido_1: String,
+    #[schema(example = "The Hulk")]
     pub apellido_2: String,
+    #[schema(example = "bbanner@alumnos.uai.cl")]
     pub email: String,
+    #[schema(nullable)]
     pub cookie: Option<String>,
 }
 use sea_orm::entity::ActiveValue::Set;
 
-// Aka signin. The admin must provide a valid `RequestAdmin` JSON body
+/// Aka signin. The admin must provide a valid `RequestAdmin` JSON body
+#[utoipa::path(
+   post,
+    path = "/admin/signin",
+    tag = "Admins",
+    responses(
+        (status = 200, description = "Success", body = ResponseAdmin, examples((
+            "Demo" = (description = "Long description",
+                value = json!({
+                    "nombre": "Bruce",
+                    "apellido_1": "Banner",
+                    "apellido_2": "The Hulk",
+                    "email": "bbanner@alumnos.uai.cl",
+                })
+            )),
+        )),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    ),
+    request_body = RequestAdmin,
+    security(
+        ("auth-cookie" = [])
+    )
+)]
 pub async fn create_admin(
     State(pool): State<Arc<Pool>>,
     Json(admin): Json<RequestAdmin>,
@@ -67,16 +103,38 @@ pub async fn create_admin(
 }
 
 // Login struct, the client must provide this field in order to login
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct LoginAdmin {
     email: String,
     pswd: String,
 }
-// The client must provide a valid `LoginAdmin` JSON body
+/// Login endpoint, the client must provide a valid `LoginAdmin` JSON body
+#[utoipa::path(
+    post,
+    path = "/admin/login",
+    tag = "Admins",
+    request_body = LoginAdmin,
+    responses(
+        (status = 200, description = "Success", body = ResponseAdmin, examples((
+            "Demo" = (description = "Long description",
+                value = json!({
+                    "nombre": "Bruce",
+                    "apellido_1": "Banner",
+                    "apellido_2": "The Hulk",
+                    "email": "bbanner@alumnos.uai.cl",
+                    "cookie": "eyJhbGciOiJIUzI1NiIsInR"
+                })
+            )),
+        )),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    )
+)]
 pub async fn login(
     State(pool): State<Arc<Pool>>,
     Json(request_admin): Json<LoginAdmin>,
-) -> Result<Json<ResponseAdmin>, (StatusCode, String)> {
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     // Find the admin in the DB by email
     let querie = Admin::find_by_id(request_admin.email)
         .one(pool.get_db())
@@ -101,15 +159,38 @@ pub async fn login(
             };
 
             create_cookie(&mut admin, pool).await?;
+            let body = axum::body::Body::from(json!(admin).to_string());
             // Send the ResponseAdmin struct to the client
-            return Ok(Json(admin));
+            let cookie = admin.cookie.as_ref().unwrap().clone();
+            let response = Response::builder()
+                .header(SET_COOKIE, format!("auth-cookie={}", cookie))
+                .header("Content-Type", "application/json")
+                .body(body)
+                .unwrap();
+
+            return Ok(response);
         }
     }
     // Fallback if the admin doesn't exist or the password is incorrect
     Err((StatusCode::UNAUTHORIZED, "Unauthorized".into()))
 }
 
-// Logout, delete the active session from the database.
+/// Logout endpoint, the client must provide a cookie with his auth token
+#[utoipa::path(
+    post,
+    path = "/admin/logout",
+    tag = "Admins",
+    responses(
+        (status = 200, description = "Success", example = "Logout"),
+        (status = 400, description = "Bad Request"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal Server Error")
+    ),
+    security(
+        (), // <-- Make optional authentication
+        ("auth-cookie" = [])
+    )
+)]
 pub async fn logout(
     State(pool): State<Arc<Pool>>,
     jar: CookieJar,

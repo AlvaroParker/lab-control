@@ -1,2 +1,2 @@
-mod controller;
+pub(crate) mod controller;
 pub mod routes;

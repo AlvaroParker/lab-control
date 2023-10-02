@@ -25,7 +25,7 @@ pub struct EditUser {
     pub rol: Option<String>,
 }
 
-// POST request, extract JSON from request Serializing it to an EditUser struct
+/// POST request, extract JSON from request Serializing it to an EditUser struct
 pub async fn edit_user_by_rut(
     State(pool): State<Arc<Pool>>,
     Path(rut): Path<String>,

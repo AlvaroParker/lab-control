@@ -1,0 +1,551 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "backend",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://192.168.68.117:8001/api"
+    }
+  ],
+  "paths": {
+    "/admin/login": {
+      "post": {
+        "tags": [
+          "Admins"
+        ],
+        "summary": "Login endpoint, the client must provide a valid `LoginAdmin` JSON body",
+        "description": "Login endpoint, the client must provide a valid `LoginAdmin` JSON body",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginAdmin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseAdmin"
+                },
+                "examples": {
+                  "Demo": {
+                    "description": "Long description",
+                    "value": {
+                      "apellido_1": "Banner",
+                      "apellido_2": "The Hulk",
+                      "cookie": "eyJhbGciOiJIUzI1NiIsInR",
+                      "email": "bbanner@alumnos.uai.cl",
+                      "nombre": "Bruce"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/admin/logout": {
+      "post": {
+        "tags": [
+          "Admins"
+        ],
+        "summary": "Logout endpoint, the client must provide a cookie with his auth token",
+        "description": "Logout endpoint, the client must provide a cookie with his auth token",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {},
+          {
+            "auth-cookie": []
+          }
+        ]
+      }
+    },
+    "/admin/signin": {
+      "post": {
+        "tags": [
+          "Admins"
+        ],
+        "summary": "Aka signin. The admin must provide a valid `RequestAdmin` JSON body",
+        "description": "Aka signin. The admin must provide a valid `RequestAdmin` JSON body",
+        "operationId": "create_admin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAdmin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseAdmin"
+                },
+                "examples": {
+                  "Demo": {
+                    "description": "Long description",
+                    "value": {
+                      "apellido_1": "Banner",
+                      "apellido_2": "The Hulk",
+                      "email": "bbanner@alumnos.uai.cl",
+                      "nombre": "Bruce"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "auth-cookie": []
+          }
+        ]
+      }
+    },
+    "/registros": {
+      "get": {
+        "tags": [
+          "Registros"
+        ],
+        "summary": "Get all the registros",
+        "description": "Get all the registros",
+        "operationId": "get_all",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAdmin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegistroAlumno"
+                  }
+                },
+                "examples": {
+                  "Demo": {
+                    "description": "Long description",
+                    "value": [
+                      {
+                        "apellido_1": "Banner",
+                        "apellido_2": "The Hulk",
+                        "correo_uai": "bbanner@alumnos.uai.cl",
+                        "fecha": "2021-05-31T15:00:00-03:00",
+                        "id": 1,
+                        "motivo": "salida",
+                        "nombre": "Bruce",
+                        "rol": "Alumno",
+                        "rut": "12345678-9",
+                        "salida": true
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "auth-cookie": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Registros"
+        ],
+        "summary": "Register a new reigstro into the DB",
+        "description": "Register a new reigstro into the DB",
+        "operationId": "registrar_rut",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroNew"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/registros/last/{rut}": {
+      "get": {
+        "tags": [
+          "Registros"
+        ],
+        "summary": "Get last registro of a rut",
+        "description": "Get last registro of a rut",
+        "operationId": "get_last",
+        "parameters": [
+          {
+            "name": "rut",
+            "in": "path",
+            "description": "Rut of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123456789"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RegistroModel"
+                  }
+                },
+                "examples": {
+                  "Demo": {
+                    "description": "Long description",
+                    "value": {
+                      "fecha": "2021-05-31T15:00:00-03:00",
+                      "id": 1,
+                      "motivo": "salida",
+                      "rut": "12345678-9",
+                      "salida": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "auth-cookie": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginAdmin": {
+        "type": "object",
+        "required": [
+          "email",
+          "pswd"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "pswd": {
+            "type": "string"
+          }
+        }
+      },
+      "RegistroAlumno": {
+        "type": "object",
+        "required": [
+          "id",
+          "nombre",
+          "apellido_1",
+          "apellido_2",
+          "rut",
+          "correo_uai",
+          "fecha",
+          "salida",
+          "rol",
+          "motivo"
+        ],
+        "properties": {
+          "apellido_1": {
+            "type": "string"
+          },
+          "apellido_2": {
+            "type": "string"
+          },
+          "correo_uai": {
+            "type": "string"
+          },
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "rol": {
+            "type": "string"
+          },
+          "rut": {
+            "type": "string"
+          },
+          "salida": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RegistroModel": {
+        "type": "object",
+        "required": [
+          "id",
+          "rut",
+          "fecha",
+          "salida",
+          "motivo"
+        ],
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "rut": {
+            "type": "string"
+          },
+          "salida": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RegistroNew": {
+        "type": "object",
+        "required": [
+          "rut",
+          "salida",
+          "motivo"
+        ],
+        "properties": {
+          "motivo": {
+            "type": "string"
+          },
+          "rut": {
+            "type": "string"
+          },
+          "salida": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RequestAdmin": {
+        "type": "object",
+        "required": [
+          "nombre",
+          "apellido_1",
+          "apellido_2",
+          "email",
+          "pswd"
+        ],
+        "properties": {
+          "apellido_1": {
+            "type": "string"
+          },
+          "apellido_2": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "pswd": {
+            "type": "string"
+          }
+        }
+      },
+      "ResponseAdmin": {
+        "type": "object",
+        "required": [
+          "nombre",
+          "apellido_1",
+          "apellido_2",
+          "email"
+        ],
+        "properties": {
+          "apellido_1": {
+            "type": "string",
+            "example": "Banner"
+          },
+          "apellido_2": {
+            "type": "string",
+            "example": "The Hulk"
+          },
+          "cookie": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "example": "bbanner@alumnos.uai.cl"
+          },
+          "nombre": {
+            "type": "string",
+            "example": "Bruce"
+          }
+        }
+      },
+      "UserModel": {
+        "type": "object",
+        "required": [
+          "nombre",
+          "apellido_1",
+          "apellido_2",
+          "rut",
+          "print_path",
+          "correo_uai",
+          "is_disabled",
+          "rol"
+        ],
+        "properties": {
+          "apellido_1": {
+            "type": "string"
+          },
+          "apellido_2": {
+            "type": "string"
+          },
+          "correo_uai": {
+            "type": "string"
+          },
+          "is_disabled": {
+            "type": "boolean"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "print_path": {
+            "type": "string"
+          },
+          "rol": {
+            "type": "string"
+          },
+          "rut": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "auth-cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "auth-cookie"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Admins",
+      "description": "Admins"
+    },
+    {
+      "name": "Registros",
+      "description": "Registros"
+    }
+  ]
+}
