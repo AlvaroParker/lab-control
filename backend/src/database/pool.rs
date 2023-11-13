@@ -3,7 +3,7 @@ use async_sqlx_session::PostgresSessionStore;
 use sea_orm::{Database, DatabaseConnection, DbErr};
 
 pub async fn connect_db(database_uri: &str) -> Result<DatabaseConnection, DbErr> {
-    Ok(Database::connect(database_uri).await?)
+    Database::connect(database_uri).await
 }
 
 use std::process::exit;

@@ -39,8 +39,8 @@ pub async fn get_all(
     Query(params): Query<HashMap<String, i32>>,
 ) -> Result<Json<Vec<RegistroAlumno>>, (StatusCode, String)> {
     // Use the limit and offset provided, if none use default
-    let limit = params.get("limit".into()).unwrap_or(&100);
-    let offset = params.get("offset".into()).unwrap_or(&0);
+    let limit = params.get("limit").unwrap_or(&100);
+    let offset = params.get("offset").unwrap_or(&0);
     // Run custom querie to join `registros` table and `personas` table
     let querie = format!(
         r#"SELECT registros.id, registros.rut, registros.fecha, registros.salida, registros.motivo, personas.nombre, personas.apellido_1, personas.apellido_2, personas.correo_uai, personas.rol FROM registros JOIN personas ON registros.rut = personas.rut ORDER BY registros.fecha DESC LIMIT {} OFFSET {};"#,
@@ -112,5 +112,5 @@ pub async fn get_last(
             return Err((StatusCode::NO_CONTENT, "".into()));
         }
     }
-    return Err((StatusCode::BAD_REQUEST, "Rut invalido".into()));
+    Err((StatusCode::BAD_REQUEST, "Rut invalido".into()))
 }

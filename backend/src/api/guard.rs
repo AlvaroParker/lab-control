@@ -41,6 +41,6 @@ pub async fn guard_layer<B>(
         }
     } else {
         // If the cookie doesn't exists, return 401
-        return Err((StatusCode::UNAUTHORIZED, "Unauthorized".into()));
+        Err((StatusCode::UNAUTHORIZED, "Unauthorized".into()))
     }
 }
