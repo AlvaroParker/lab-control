@@ -33,7 +33,7 @@ pub async fn get_persona_by_rut(
         let rut = &persona_row.rut;
         let last_registro = get_last_registro(rut, pool.clone()).await?;
         let mut val = serde_json::to_value(&persona_row).unwrap();
-        val["last_registro"] = serde_json::to_value(&last_registro).unwrap();
+        val["last_registro"] = serde_json::to_value(last_registro).unwrap();
 
         // Return the persona with the last registro
         Ok(Json(val))

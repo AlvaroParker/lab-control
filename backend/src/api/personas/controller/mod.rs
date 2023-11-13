@@ -3,7 +3,7 @@ mod enroll;
 mod get_all;
 mod get_by_rut;
 mod remove_by_rut;
-pub(self) mod utils;
+pub mod utils;
 mod verify;
 
 pub use edit::edit_persona_by_rut;

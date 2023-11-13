@@ -79,10 +79,10 @@ pub async fn verify_persona(
                 .insert(pool.get_db())
                 .await
                 .map_err(internal_error)?;
-            return Ok(Json(persona));
+            Ok(Json(persona))
         }
         // If there are no paths matching in the databse, return not found
-        None => return Err((StatusCode::NOT_FOUND, "Person not found".into())),
+        None => Err((StatusCode::NOT_FOUND, "Person not found".into())),
     }
 }
 

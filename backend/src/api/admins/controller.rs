@@ -8,7 +8,7 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use axum_extra::extract::CookieJar;
+use axum_extra::extract::{cookie::Cookie, CookieJar};
 use sea_orm::{ActiveModelTrait, DbErr, EntityTrait};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -106,13 +106,13 @@ pub async fn login(
             };
 
             create_cookie(&mut admin, pool).await?;
-            let body = axum::body::Body::from(json!(admin).to_string());
             // Send the ResponseAdmin struct to the client
-            let cookie = admin.cookie.as_ref().unwrap().clone();
+            let mut cookie = Cookie::new("auth-cookie", admin.cookie.clone().unwrap());
+            cookie.set_path("/");
             let response = Response::builder()
-                .header(SET_COOKIE, format!("auth-cookie={}", cookie))
+                .header(SET_COOKIE, cookie.to_string())
                 .header("Content-Type", "application/json")
-                .body(body)
+                .body(json!(admin).to_string())
                 .unwrap();
 
             return Ok(response);
@@ -194,24 +194,17 @@ pub fn verify_password(password: String, hash: &str) -> Result<bool, (StatusCode
 
 // Handle user exists in `insert` query
 pub fn user_exists(err: DbErr) -> (StatusCode, String) {
-    match err {
-        DbErr::Query(sea_orm::RuntimeErr::SqlxError(sqlx::Error::Database(e))) => {
-            // Try to cast Box<dyn Error> to PgDatabaseError
-            match e.try_downcast::<sqlx::postgres::PgDatabaseError>() {
-                Ok(err) => {
-                    // If the error code is 23505, it means that the user already exists
-                    if err.code() == "23505" {
-                        return (StatusCode::BAD_REQUEST, "User already exists".to_string());
-                    }
-                }
-                Err(_) => {}
+    if let DbErr::Query(sea_orm::RuntimeErr::SqlxError(sqlx::Error::Database(e))) = err {
+        // Try to cast Box<dyn Error> to PgDatabaseError
+        if let Ok(err) = e.try_downcast::<sqlx::postgres::PgDatabaseError>() {
+            if err.code() == "23505" {
+                return (StatusCode::BAD_REQUEST, "User already exists".to_string());
             }
         }
-        _ => {}
-    };
+    }
     // Return internal error if the error is not a duplicate key error
-    return (
+    (
         StatusCode::INTERNAL_SERVER_ERROR,
         "Internal Server Error".to_string(),
-    );
+    )
 }
