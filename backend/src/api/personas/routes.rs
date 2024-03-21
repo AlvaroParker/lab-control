@@ -1,6 +1,6 @@
 use super::controller::{
     edit_persona_by_rut, enroll_persona, get_all_personas, get_persona_by_rut,
-    remove_persona_by_rut, verify_persona,
+    remove_persona_by_rut, reroll_persona, verify_persona,
 };
 use crate::{api::guard::guard_layer, database::pool::Pool};
 
@@ -16,6 +16,7 @@ pub async fn create_routes(pool: Arc<Pool>) -> Router<Arc<Pool>> {
     Router::new()
         .route("/", get(get_all_personas)) //Get all alumnos
         .route("/enroll", get(enroll_persona)) // Create a new alumno
+        .route("/reroll", get(reroll_persona)) // Create a new alumno
         .route("/:rut", put(edit_persona_by_rut))
         .route("/:rut", get(get_persona_by_rut)) // Get an alumno by rut
         .route("/:rut", delete(remove_persona_by_rut)) // Delete an alumnos by rut

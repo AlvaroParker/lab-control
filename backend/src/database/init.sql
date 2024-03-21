@@ -18,13 +18,16 @@ CREATE TABLE IF NOT EXISTS personas(
   )
 );
 
+--  ALTER TABLE registros DROP CONSTRAINT registros_motivo_check;
+-- ALTER TABLE registros ADD CONSTRAINT registros_motivo_check CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida', 'uso libre'));
+-- ALTER TABLE registros ALTER COLUMN motivo SET DEFAULT 'uso libre';
 CREATE TABLE IF NOT EXISTS registros(
   id SERIAL PRIMARY KEY,
   rut VARCHAR(10) NOT NULL,
   FOREIGN KEY (rut) REFERENCES personas(rut) ON DELETE CASCADE ON UPDATE CASCADE,
   fecha TIMESTAMP WITH TIME ZONE NOT NULL,
   salida BOOLEAN NOT NULL,
-  motivo VARCHAR(20) CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida')) NOT NULL DEFAULT 'ventana'
+  motivo VARCHAR(20) CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida', 'uso libre')) NOT NULL DEFAULT 'uso libre'
 );
 
 CREATE TABLE IF NOT EXISTS admins(
