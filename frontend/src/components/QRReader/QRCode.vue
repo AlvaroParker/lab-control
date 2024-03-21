@@ -116,6 +116,18 @@ export default defineComponent({
                                     class="btn btn-danger mb-5"
                                     @click="
                                         () => {
+                                            submitRegistro(false, 'uso libre');
+                                        }
+                                    "
+                                >
+                                    Uso libre
+                                </button>
+                            </div>
+                            <div class="col-12">
+                                <button
+                                    class="btn btn-danger mb-5"
+                                    @click="
+                                        () => {
                                             submitRegistro(false, 'investigacion');
                                         }
                                     "

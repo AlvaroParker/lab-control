@@ -52,6 +52,18 @@ export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<W
     return ws;
 };
 
+export const rerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
+    const url = `${ServiceTypes.WS_URI}/usuarios/reroll`;
+    const ws = new WebSocket(url);
+
+    // Send the user's rut to the server as socket message
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ rut: rutUsuario }));
+    };
+
+    return ws;
+}
+
 export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo: string) => {
     const nombre = cleanVal(edit_usuario.nombre);
     const apellido_1 = cleanVal(edit_usuario.apellido_1);
@@ -88,6 +100,7 @@ const PostService = {
     editUsuario,
     nuevoRegistro,
     enrollNewUsuario,
-    enrollAdmin
+    enrollAdmin,
+    rerollUsuario
 };
 export default PostService;

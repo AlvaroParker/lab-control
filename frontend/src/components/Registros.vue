@@ -17,6 +17,8 @@ export default defineComponent({
                 return 'Asistencia a ramo';
             } else if (motivo === 'ventana') {
                 return 'Uso de ventana';
+            } else if (motivo === 'uso libre') {
+                return 'Uso libre';
             }
             return motivo.charAt(0).toUpperCase() + motivo.slice(1);
         },

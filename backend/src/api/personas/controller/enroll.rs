@@ -31,11 +31,11 @@ struct Sucess<'a> {
 }
 
 // Returning errors, this are implemented as well on the frontend
-const INTERNAL_SERVER_ERROR: u16 = 4500;
-const USER_EXISTS_ERR: u16 = 4000;
-const INVALID_RUT_ERR: u16 = 4001;
-const DB_INSERTION_ERR: u16 = 4002;
-const FP_SENSOR_ERR: u16 = 4003;
+pub(crate) const INTERNAL_SERVER_ERROR: u16 = 4500;
+pub(crate) const USER_EXISTS_ERR: u16 = 4000;
+pub(crate) const INVALID_RUT_ERR: u16 = 4001;
+pub(crate) const DB_INSERTION_ERR: u16 = 4002;
+pub(crate) const FP_SENSOR_ERR: u16 = 4003;
 
 // Handle a new socket connection from the client
 async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
@@ -112,7 +112,7 @@ async fn handle_socket(mut socket: WebSocket, pool: Arc<Pool>) {
 
 // Enroll the print connecting to the Print server socket
 // See fingerprint-rs crate for more info
-async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
+pub(crate) async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
     // Set the body with the proper action
     let body = Body {
         action: Action::Enroll,
@@ -173,7 +173,7 @@ async fn enroll_print(ws: &mut WebSocket) -> Result<String, String> {
 }
 
 // Close message with a custom close code and reason
-fn close_msg(close_code: u16, reason: String) -> ws::Message {
+pub(crate) fn close_msg(close_code: u16, reason: String) -> ws::Message {
     ws::Message::Close(Some(CloseFrame {
         code: close_code,
         reason: Cow::Owned(reason),
@@ -181,7 +181,7 @@ fn close_msg(close_code: u16, reason: String) -> ws::Message {
 }
 
 // Send and close the socket
-async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
+pub(crate) async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
     let (error_code, error_message) = err;
     tracing::info!("{}", error_message);
     if let Err(send_error) = socket.send(close_msg(error_code, error_message)).await {
@@ -191,7 +191,10 @@ async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
 
 // Check if the data provided by the client is a valid NewPerson struct
 // and that the new rut is valid and is not already registered
-async fn validate_message(data: String, pool: Arc<Pool>) -> Result<NewPersona, (u16, String)> {
+pub(crate) async fn validate_message(
+    data: String,
+    pool: Arc<Pool>,
+) -> Result<NewPersona, (u16, String)> {
     let persona: NewPersona = match serde_json::from_str(&data) {
         Ok(persona) => persona,
         Err(e) => {

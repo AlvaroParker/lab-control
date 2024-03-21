@@ -145,28 +145,48 @@ export default defineComponent({
     <Teleport to="body">
         <Transition name="modal">
             <div v-if="showModal" class="modal-mask">
-                <div class="container d-flex justify-content-center mt-3 mb-3 btn-group">
-                    <button
-                        class="btn btn-success btn-space me-4 btn-lg"
-                        :disabled="disabled"
-                        @click.prevent="() => handleSubmit(false, 'ventana')"
-                    >
-                        Ventana
-                    </button>
-                    <button
-                        class="btn btn-success btn-space me-4 btn-lg"
-                        :disabled="disabled"
-                        @click.prevent="() => handleSubmit(false, 'ramo')"
-                    >
-                        Asistencia a ramo
-                    </button>
-                    <button
-                        class="btn btn-success btn-space me-4 btn-lg"
-                        :disabled="disabled"
-                        @click.prevent="() => handleSubmit(false, 'investigacion')"
-                    >
-                        Investigacion
-                    </button>
+                <div class="container d-flex justify-content-center">
+                    <div class="d-flex row mx-5 justify-content-center align-items-center">
+                        <div>
+                            <button
+                                class="btn btn-success btn-space btn-lg mb-5"
+                                :disabled="disabled"
+                                @click.prevent="() => handleSubmit(false, 'ventana')"
+                                style="width: 30rem !important;height: 25rem !important;"
+                            >
+                                Ventana
+                            </button>
+                            <button
+                                class="btn btn-success btn-space btn-lg mt-5"
+                                :disabled="disabled"
+                                @click.prevent="() => handleSubmit(false, 'uso libre')"
+                                style="width: 30rem !important;height: 25rem !important;"
+                            >
+                                Uso Libre
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex row mx-5 justify-content-center align-items-center">
+                        <div>
+                            <button
+                                class="btn btn-success btn-space btn-lg mb-5"
+                                :disabled="disabled"
+                                @click.prevent="() => handleSubmit(false, 'ramo')"
+                                    style="width: 30rem !important;height: 25rem !important;"
+                            >
+                                Asistencia a ramo
+                            </button>
+                            <button
+                                class="btn btn-success btn-space btn-lg mt-5"
+                                :disabled="disabled"
+                                @click.prevent="() => handleSubmit(false, 'investigacion')"
+                                    style="width: 30rem !important;height: 25rem !important;"
+                            >
+                                Investigacion
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </Transition>

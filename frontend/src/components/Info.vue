@@ -7,6 +7,7 @@ import ChileanRutify from 'chilean-rutify';
 import { useRouter } from 'vue-router';
 import DeleteService from '../services/delete.service';
 import { AxiosError } from 'axios';
+import PostService from '../services/post.service';
 
 export default defineComponent({
     data() {
@@ -16,6 +17,12 @@ export default defineComponent({
             format_rut: ChileanRutify.formatRut, // Format rut function
             delete_error: false, // If there was a delete error
             showModal: false, // If we should show modal or not
+            showModalEnroll: false,
+            error_detected: false,
+            message: '',
+            registrando_huella: false,
+            current: 0,
+            total: 1
         };
     },
     setup() {
@@ -41,6 +48,47 @@ export default defineComponent({
         };
     },
     methods: {
+        async handleSubmit() {
+            this.showModalEnroll = false;
+            this.registrando_huella = true;
+            const ws = await PostService.rerollUsuario(this.usuario.rut);
+            ws.onerror = (error) => {
+                console.log(error.message);
+            };
+            ws.onmessage = (data) => {
+                let status = JSON.parse(data.data as string);
+                this.total = status.total;
+                this.current = status.current;
+                let stage = `Registrando huella... ${status.current} de ${status.total}`;
+                console.log(stage);
+            };
+            ws.onclose = (event) => {
+                switch (event.code) {
+                    case 1000:
+                        this.go_home();
+                        break;
+                    case 4000:
+                        this.error_detected = true;
+                        this.message = 'Email o RUT ya registrados';
+                        break;
+                    case 4001:
+                        this.error_detected = true;
+                        this.message = 'RUT invalido';
+                        break;
+                    case 4002:
+                        this.error_detected = true;
+                        this.message = 'Faltan campos por completar';
+                        break;
+                    case 4500:
+                        this.error_detected = true;
+                        this.message = 'Error agregando usuario. Intentelo de nuevo mas tarde.';
+                        break;
+                    default:
+                        break;
+                }
+                this.registrando_huella = false;
+            };
+        },
         // Delete usuario handling
         async deleteUsuario() {
             // Delete usuario DELETE request
@@ -61,6 +109,10 @@ export default defineComponent({
         editUsuario() {
             this.go_edit(this.usuario.rut);
         },
+        async enrollHuella() {
+            await this.handleSubmit();
+            // Todo
+        }
     },
     // Get the usuario before mount
     async beforeCreate() {
@@ -129,16 +181,45 @@ export default defineComponent({
                     </div>
                     <div class="d-flex justify-content-center mt-3">
                         <button
-                            class="ml-4 btn btn-danger btn-space me-4"
+                            class="mx-2 btn btn-danger btn-space me-4"
                             data-toggle="modal"
                             @click="showModal = true"
                         >
                             Eliminar usuario
                         </button>
-                        <button class="btn btn-primary btn-space" @click="editUsuario">
+                        <button class="mx-2 btn btn-primary btn-space" @click="editUsuario">
                             Editar usuario
                         </button>
+                        <button class="mx-2 btn btn-warning btn-space" @click="showModalEnroll = true">
+                            Cambiar huella
+                        </button>
                     </div>
+                    <Teleport to="body">
+                        <Transition name="modal">
+                            <div v-if="showModalEnroll" class="modal-mask">
+                                <div class="modal-container border rounded-3">
+                                    <div class="modal-header justify-content-center mb-3">
+                                        Registrar huella nuevamente?
+                                    </div>
+
+                                    <div class="modal-footer justify-content-center">
+                                        <button
+                                            class="btn btn-danger modal-default-button me-5"
+                                            @click="enrollHuella"
+                                        >
+                                            Registrar
+                                        </button>
+                                        <button
+                                            class="btn btn-primary modal-default-button"
+                                            @click="showModalEnroll = false"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </Teleport>
 
                     <Teleport to="body">
                         <Transition name="modal">
@@ -177,6 +258,29 @@ export default defineComponent({
                         </div>
                     </div>
                 </Transition>
+                <Teleport to="body">
+                    <Transition name="modal">
+                        <div v-if="registrando_huella" class="modal-mask">
+                            <div
+                                class="modal-container d-flex flex-column align-items-center justify-content-center rounded-5"
+                            >
+                                <h6 class="mb-4 justify-content-center text-center">
+                                    Registrando, ponga su huella sobre el lector
+                                </h6>
+                                <v-progress-circular
+                                    v-if="registrando_huella"
+                                    :rotate="-90"
+                                    :size="100"
+                                    :width="15"
+                                    :model-value="(current * 100) / total"
+                                    color="primary"
+                                >
+                                    {{ current }}
+                                </v-progress-circular>
+                            </div>
+                        </div>
+                    </Transition>
+                </Teleport>
             </div>
         </div>
     </section>
