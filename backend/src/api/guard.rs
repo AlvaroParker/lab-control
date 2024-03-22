@@ -15,11 +15,11 @@ use super::utils::handle_cookie_err;
 
 // Guard middleware
 // This function is called before almost every route
-pub async fn guard_layer<B>(
+pub async fn guard_layer(
     State(pool): State<Arc<Pool>>,
     jar: CookieJar,
-    request: Request<B>,
-    next: Next<B>,
+    request: Request<axum::body::Body>,
+    next: Next,
 ) -> Result<Response, (StatusCode, String)> {
     // We check if the cookie jar has an `auth-cookie` set,
     // if it does, we check if the cookie is valid

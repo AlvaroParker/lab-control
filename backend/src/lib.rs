@@ -1,3 +1,4 @@
+use axum_server::Server;
 use lazy_static::lazy_static;
 
 // We declare static env variables or use the defaults
@@ -38,7 +39,7 @@ pub async fn run() {
         .route_layer(middleware::from_fn(log_layer));
 
     // We bind the server to the host ip and to the port 3000
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+    Server::bind("0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
