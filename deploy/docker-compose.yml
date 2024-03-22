@@ -1,8 +1,9 @@
-version: "1.0"
+version: "3"
 services:
   database:
     container_name: database
     image: postgres
+    restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -13,6 +14,7 @@ services:
   backend:
     container_name: backend
     build: .
+    restart: always
     volumes:
       - ./backend:/bin/backend
     environment:
@@ -25,6 +27,7 @@ services:
   web:
     container_name: webserver
     image: nginx:stable
+    restart: always
     depends_on:
       - backend
       - database
