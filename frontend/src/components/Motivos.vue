@@ -44,7 +44,7 @@ export default defineComponent({
 });
 </script>
 <template>
-    <div class="container" v-if="motivos.motivos.length !== 0">
+    <div class="container">
         <div class="card-body text-center" style="margin-top: 50px">
             <h4 class="card-title">Motivos de entrada Lab</h4>
             <p class="card-text">Estos son los motivos de entrada al lab, estos pueden ser genericos como "Uso de ventana", ramos en especifico como "TICS200", nombres de profesores, etc.</p>
