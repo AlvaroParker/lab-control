@@ -58,9 +58,9 @@ export default defineComponent({
                                 class="mb-md-0 mt-md-0 pb-1 form-container"
                                 @submit.prevent="handleSubmit"
                             >
-                                <h2 class="fw-bold mb-1 text-uppercase">Nuevo usuario</h2>
+                                <h2 class="fw-bold mb-1 text-uppercase">Nuevo Admin</h2>
                                 <p class="text-50 mb-2">
-                                    Ingresa los datos para registrar un nuevo usuarios
+                                    Ingresa los datos para registrar un nuevo administrador
                                 </p>
 
                                 <div class="form-outline form-white mb-2">

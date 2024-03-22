@@ -16,6 +16,7 @@ import {
     faUserCircle,
     faSignOutAlt,
     faQrcode,
+    faTrash
 } from '@fortawesome/free-solid-svg-icons';
 
 import App from './App.vue';
@@ -32,6 +33,7 @@ library.add(faUserLock as IconDefinition);
 library.add(faUserCircle as IconDefinition);
 library.add(faSignOutAlt as IconDefinition);
 library.add(faQrcode as IconDefinition);
+library.add(faTrash as IconDefinition);
 
 // Vuetify
 import 'vuetify/styles';

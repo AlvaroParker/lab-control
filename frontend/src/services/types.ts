@@ -9,6 +9,10 @@ namespace ServiceTypes {
         rol: string;
         last_registro: Registro | null;
     }
+    export interface Motivo {
+        id: number;
+        motivo: string;
+    }
     export interface Registro {
         id: number;
         nombre: string;

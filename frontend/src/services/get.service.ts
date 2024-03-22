@@ -21,6 +21,11 @@ export const verifyUsuario = async (
     return res;
 };
 
+export const getMotivos = async (): Promise<AxiosResponse<any, any>> => {
+    const res = await axios.get(ServiceTypes.API_URL + '/motivos');
+    return res
+}
+
 export const getRegistros = async (
     offset: number,
     limit: number
@@ -36,5 +41,6 @@ const GetService = {
     getUsuarioByRut,
     verifyUsuario,
     getRegistros,
+    getMotivos
 };
 export default GetService;

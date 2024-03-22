@@ -1,4 +1,4 @@
-use super::{admins, personas, registros};
+use super::{admins, motivos, personas, registros};
 use crate::database::pool::Pool;
 use axum::{http::Method, Router};
 use std::sync::Arc;
@@ -32,6 +32,10 @@ pub async fn create_routes(state: Arc<Pool>) -> Router {
         .nest(
             "/api/registros",
             registros::routes::create_routes(state.clone()).await,
+        )
+        .nest(
+            "/api/motivos",
+            motivos::routes::create_routes(state.clone()).await,
         )
         .with_state(state)
         .layer(cors)

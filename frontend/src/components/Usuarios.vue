@@ -1,8 +1,9 @@
 <script lang="ts">
 // import ServiceTypes from '../services/types.js';
 import { defineComponent } from 'vue';
-import { useUsuarioStore } from '../stores/UsuarioStore.js';
+import { useUsuarioStore } from '../stores/UsuarioStore';
 import ChileanRutify from 'chilean-rutify';
+import { getMotivos } from '../services/get.service';
 
 export default defineComponent({
     data() {
@@ -14,6 +15,8 @@ export default defineComponent({
     methods: {},
     async beforeMount() {
         this.usuarios.update();
+        const motivos = await getMotivos();
+        console.log(motivos.data)
     },
     mounted() {
         this.usuarios;

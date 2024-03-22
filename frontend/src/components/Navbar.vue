@@ -85,6 +85,13 @@ export default defineComponent({
                     >
                         <font-awesome-icon :icon="['fa', 'plus']" /> Nuevo Admin
                     </router-link>
+                    <router-link
+                        to="/motivos"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                        :class="{ active: 'Motivos' == getName() }"
+                    >
+                        <font-awesome-icon :icon="['fa', 'book']" /> Administrar motivos
+                    </router-link>
                 </div>
             </div>
         </nav>
