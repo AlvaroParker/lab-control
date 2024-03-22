@@ -15,8 +15,6 @@ export default defineComponent({
     methods: {},
     async beforeMount() {
         this.usuarios.update();
-        const motivos = await getMotivos();
-        console.log(motivos.data)
     },
     mounted() {
         this.usuarios;
@@ -53,12 +51,9 @@ export default defineComponent({
                             {{ usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1) }}
                         </td>
                         <td>
-                            <router-link
-                                class="btn btn-primary btn-space"
-                                :to="'usuarios?rut=' + usuario.rut"
-                                ><font-awesome-icon :icon="['fa', 'search']" />
-                                Detalles...</router-link
-                            >
+                            <router-link class="btn btn-primary btn-space"
+                                :to="'usuarios?rut=' + usuario.rut"><font-awesome-icon :icon="['fa', 'search']" />
+                                Detalles...</router-link>
                         </td>
                     </tr>
                 </tbody>

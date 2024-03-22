@@ -8,13 +8,13 @@ edition = "2021"
 [dependencies]
 async-session = "3.0.0"
 async-sqlx-session = { version = "0.4.0", features = ["pg"] }
-axum = { version = "0.6.18", default-features = false, features = [
+axum = { version = "0.7.4", default-features = false, features = [
   "ws",
   "json",
   "query",
 ] }
-axum-extra = { version = "0.8.0", features = ["cookie"] }
-axum-server = { version = "0.5.1", default-features = false }
+axum-extra = { version = "0.9.2", features = ["cookie"] }
+axum-server = { version = "0.6.0", default-features = false }
 bcrypt = { features = ["std"], default-features = false, version = "0.15.0" }
 chrono = { default-features = false, version = "0.4.26" }
 lazy_static = "1.4.0"
@@ -36,14 +36,12 @@ sqlx = { version = "0.7.2", default-features = false, features = [
 tokio = { version = "1.28.2", default-features = false, features = [
   "rt-multi-thread",
 ] }
-tower-http = { version = "0.4.0", features = ["cors"] }
+tower-http = { version = "0.5.2", features = ["cors"] }
 tracing = { default-features = false, version = "0.1.37" }
 tracing-subscriber = { features = [
   "ansi",
 ], default-features = false, version = "0.3.17" }
-tungstenite = "0.20.1"
-utoipa = "3.5.0"
-utoipa-swagger-ui = { version = "3.1.5", features = ["axum"] }
+tungstenite = "0.21.0"
 
 [profile.release]
 opt-level = 3
