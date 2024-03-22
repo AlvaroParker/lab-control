@@ -4,6 +4,8 @@ import ServiceTypes from '../services/types';
 import GetService from '../services/get.service';
 import ChileanRutify from 'chilean-rutify';
 import { AxiosError } from 'axios';
+import { useMotivoStore } from '../stores/MotivoStore';
+// import Motivos from './Motivos.vue';
 
 export default defineComponent({
     data() {
@@ -17,6 +19,7 @@ export default defineComponent({
             disabled: false,
             showModal: false,
             esperando_huella: false,
+            motivos: useMotivoStore()
         };
     },
     setup() {},
@@ -73,7 +76,12 @@ export default defineComponent({
                 });
         },
     },
-    beforeMount() {},
+    async beforeMount() {
+        this.motivos.update();
+    },
+    mounted() {
+        this.motivos;
+    }
 });
 </script>
 <template>
@@ -146,44 +154,18 @@ export default defineComponent({
         <Transition name="modal">
             <div v-if="showModal" class="modal-mask">
                 <div class="container d-flex justify-content-center">
-                    <div class="d-flex row mx-5 justify-content-center align-items-center">
-                        <div>
-                            <button
-                                class="btn btn-success btn-space btn-lg mb-5"
-                                :disabled="disabled"
-                                @click.prevent="() => handleSubmit(false, 'ventana')"
-                                style="width: 30rem !important;height: 25rem !important;"
-                            >
-                                Ventana
-                            </button>
-                            <button
-                                class="btn btn-success btn-space btn-lg mt-5"
-                                :disabled="disabled"
-                                @click.prevent="() => handleSubmit(false, 'uso libre')"
-                                style="width: 30rem !important;height: 25rem !important;"
-                            >
-                                Uso Libre
-                            </button>
-                        </div>
-                    </div>
-                    <div class="d-flex row mx-5 justify-content-center align-items-center">
-                        <div>
-                            <button
-                                class="btn btn-success btn-space btn-lg mb-5"
-                                :disabled="disabled"
-                                @click.prevent="() => handleSubmit(false, 'ramo')"
-                                    style="width: 30rem !important;height: 25rem !important;"
-                            >
-                                Asistencia a ramo
-                            </button>
-                            <button
-                                class="btn btn-success btn-space btn-lg mt-5"
-                                :disabled="disabled"
-                                @click.prevent="() => handleSubmit(false, 'investigacion')"
-                                    style="width: 30rem !important;height: 25rem !important;"
-                            >
-                                Investigacion
-                            </button>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="row">
+                            <div v-for="(motivo) in motivos.getMotivos" :key="motivo.id" class="col-md-4 col-6 d-flex justify-content-center">
+                                <button
+                                    class="btn btn-success m-2"
+                                    :disabled="disabled"
+                                    @click.prevent="() => handleSubmit(false, motivo.motivo)"
+                                    style="width: 15rem; height: 3rem;"
+                                >
+                                    {{ motivo.motivo }}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
