@@ -3,5 +3,6 @@
 pub mod prelude;
 
 pub mod admins;
+pub mod motivos;
 pub mod personas;
 pub mod registros;

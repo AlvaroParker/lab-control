@@ -64,6 +64,11 @@ export const rerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
     return ws;
 }
 
+export const nuevoMotivo = async (motivo: string) => {
+    const res = await axios.post(ServiceTypes.API_URL + `/motivos`, { motivo: motivo });
+    return res;
+}
+
 export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo: string) => {
     const nombre = cleanVal(edit_usuario.nombre);
     const apellido_1 = cleanVal(edit_usuario.apellido_1);
@@ -101,6 +106,7 @@ const PostService = {
     nuevoRegistro,
     enrollNewUsuario,
     enrollAdmin,
-    rerollUsuario
+    rerollUsuario,
+    nuevoMotivo
 };
 export default PostService;
