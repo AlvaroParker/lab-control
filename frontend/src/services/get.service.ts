@@ -36,11 +36,17 @@ export const getRegistros = async (
     return res.data;
 };
 
+export const getAdmins = async(): Promise<Array<ServiceTypes.AdminGeneric> | undefined> => {
+    const res = await axios.get(ServiceTypes.API_URL + '/admin/all');
+    return res.data;
+}
+
 const GetService = {
     getUsuarios,
     getUsuarioByRut,
     verifyUsuario,
     getRegistros,
-    getMotivos
+    getMotivos,
+    getAdmins
 };
 export default GetService;

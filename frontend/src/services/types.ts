@@ -46,6 +46,12 @@ namespace ServiceTypes {
         email: string,
         pswd: string
     }
+    export interface AdminGeneric {
+        nombre: string,
+        apellido_1: string,
+        apellido_2: string,
+        email: string
+    }
     // Check if object has all the properties of Usuario (except for print_path)
     export const isUsuario = (input: any): input is Usuario => {
         const schema: Record<keyof Usuario, string> = {
