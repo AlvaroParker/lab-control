@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS registros(
   rut VARCHAR(10) NOT NULL,
   FOREIGN KEY (rut) REFERENCES personas(rut) ON DELETE CASCADE ON UPDATE CASCADE,
   fecha TIMESTAMP WITH TIME ZONE NOT NULL,
-  salida BOOLEAN NOT NULL
-  -- motivo VARCHAR(20) CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida', 'uso libre')) NOT NULL DEFAULT 'uso libre'
+  salida BOOLEAN NOT NULL,
+  motivo VARCHAR(20) NOT NULL DEFAULT 'Uso libre'
 );
 
 CREATE TABLE IF NOT EXISTS motivos(
