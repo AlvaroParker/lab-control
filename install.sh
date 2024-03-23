@@ -1,14 +1,17 @@
 #!/bin/bash
 
 run=false
+pack=false
 
 # Function to display script usage
 function usage() {
-  echo "Usage: ./script.sh [--run]"
+  echo "Usage: ./install.sh [--run | --pack]"
+  echo "  --run   Run the project."
+  echo "  --pack  Pack the project."
 }
 
 # Parse command-line arguments
-while getopts ":r-:" opt; do
+while getopts ":r-:-:" opt; do
   case $opt in
     r)
       run=true
@@ -17,6 +20,9 @@ while getopts ":r-:" opt; do
       case "${OPTARG}" in
         run)
           run=true
+          ;;
+        pack)
+          pack=true
           ;;
         *)
           usage
@@ -30,6 +36,13 @@ while getopts ":r-:" opt; do
       ;;
   esac
 done
+
+# Check for exclusivity
+if [ "$run" = true ] && [ "$pack" = true ]; then
+  echo "Error: Cannot provide both --run and --pack options simultaneously."
+  usage
+  exit 1
+fi
 
 # Build the frontend and copy files to deploy/ folder
 yarn --cwd frontend install
@@ -45,4 +58,8 @@ cp ./backend/src/database/init.sql deploy/init.sql
 # Execute the last line if the "--run" option is provided
 if [ "$run" = true ]; then
   cd deploy && docker compose up
+fi
+
+if [ "$pack" = true ]; then
+  zip -r deploy.zip deploy
 fi
