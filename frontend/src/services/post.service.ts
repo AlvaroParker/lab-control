@@ -92,6 +92,14 @@ export const nuevoRegistro = async (rut: string, salida: boolean, motivo: string
     return res;
 };
 
+export const changePassword = async (email: string, pswd: string) => {
+    const res = await axios.post(ServiceTypes.API_URL + `/admin/change`, {
+        email: email,
+        pswd: pswd
+    });
+    return res;
+}
+
 const cleanVal = (s: string | undefined) => {
     if (!s || s.trim().length === 0) {
         return undefined;
@@ -107,6 +115,7 @@ const PostService = {
     enrollNewUsuario,
     enrollAdmin,
     rerollUsuario,
-    nuevoMotivo
+    nuevoMotivo,
+    changePassword
 };
 export default PostService;

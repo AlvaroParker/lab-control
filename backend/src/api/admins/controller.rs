@@ -9,7 +9,8 @@ use axum::{
     Json,
 };
 use axum_extra::extract::{cookie::Cookie, CookieJar};
-use sea_orm::{ActiveModelTrait, DbErr, EntityTrait};
+use sea_orm::{ActiveModelTrait, DbErr, EntityTrait, FromQueryResult, IntoActiveModel};
+use sea_orm::{DbBackend, Statement};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -147,6 +148,74 @@ pub async fn logout(
         .map_err(|e| internal_error(e.root_cause()))?;
     // Return 200 OK logout sucessful
     Ok("Logout".into())
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct AdminReq {
+    pub nombre: String,
+    pub apellido_1: String,
+    pub apellido_2: String,
+    pub email: String,
+}
+
+pub async fn get_admins(
+    State(pool): State<Arc<Pool>>,
+) -> Result<Json<Vec<AdminReq>>, (StatusCode, String)> {
+    let query =
+        r#"SELECT admins.nombre, admins.apellido_1, admins.apellido_2, admins.email FROM admins"#;
+    let value = sea_orm::query::JsonValue::find_by_statement(Statement::from_string(
+        DbBackend::Postgres,
+        query,
+    ))
+    .all(pool.get_db())
+    .await
+    .map_err(internal_error)?;
+
+    let admins: Vec<AdminReq> =
+        serde_json::from_value(serde_json::Value::Array(value)).map_err(internal_error)?;
+    Ok(Json(admins))
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Email {
+    pub email: String,
+}
+pub async fn delete_admin(
+    State(pool): State<Arc<Pool>>,
+    Json(email): Json<Email>,
+) -> Result<(), (StatusCode, String)> {
+    let query = Admin::delete_by_id(email.email)
+        .exec(pool.get_db())
+        .await
+        .map_err(internal_error)?;
+    if query.rows_affected == 0 {
+        return Err((StatusCode::NOT_FOUND, "Admin not found".into()));
+    }
+    Ok(())
+}
+
+pub async fn change_password(
+    State(pool): State<Arc<Pool>>,
+    Json(request_admin): Json<LoginAdmin>,
+) -> Result<(), (StatusCode, String)> {
+    // Find the admin in the DB by email
+    let querie = Admin::find_by_id(request_admin.email)
+        .one(pool.get_db())
+        .await
+        .map_err(internal_error)?;
+    // If the admin exists, verify the password
+    if let Some(saved_admin) = querie {
+        let hashed_password = hash_password(request_admin.pswd)?;
+        let mut saved_admin = saved_admin.into_active_model();
+        saved_admin.pswd = Set(hashed_password);
+        let _ = Admin::update(saved_admin)
+            .exec(pool.get_db())
+            .await
+            .map_err(internal_error)?;
+        return Ok(());
+    }
+    // Fallback if the admin doesn't exist or the password is incorrect
+    return Err((StatusCode::NOT_FOUND, "Admin not found".into()));
 }
 
 // Create a cookie for the given `Admin`

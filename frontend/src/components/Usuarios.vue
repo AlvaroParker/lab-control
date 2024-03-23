@@ -3,7 +3,6 @@
 import { defineComponent } from 'vue';
 import { useUsuarioStore } from '../stores/UsuarioStore';
 import ChileanRutify from 'chilean-rutify';
-import { getMotivos } from '../services/get.service';
 
 export default defineComponent({
     data() {

@@ -36,8 +36,7 @@ export default defineComponent({
                 pswd: this.password,
                 email: this.email
             }
-            PostService.enrollAdmin(admin).then((res) => {
-                console.log(res.data);
+            PostService.enrollAdmin(admin).then((_) => {
             }).catch((err) => {
                 console.log(err);
             })

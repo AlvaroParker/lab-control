@@ -1,5 +1,5 @@
 import ServiceTypes from './types';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 axios.defaults.withCredentials = true;
 
@@ -19,8 +19,16 @@ export const deleteMotivo = async (id: number) => {
     return res;
 }
 
+export const deleteAdmin = async(email: string): Promise<AxiosResponse<any, any> | undefined> => {
+    const res = await axios.post(ServiceTypes.API_URL + `/admin/delete`, {
+        email: email
+    });
+    return res;
+}
+
 const DeleteService = {
     deleteUsuario,
-    deleteMotivo
+    deleteMotivo,
+    deleteAdmin
 };
 export default DeleteService;
