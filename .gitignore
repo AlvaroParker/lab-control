@@ -5,3 +5,6 @@ package-lock.json
 .tmp/
 .tmp
 deploy.zip
+deploy/init.sql
+deploy/frontend
+deploy/backend
