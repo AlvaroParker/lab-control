@@ -36,3 +36,5 @@ In order to build the production backend you'll need `cc`, `openssl` and `openss
 
 Configure the `.env` variables properly. Then run `./install` and your deployment files will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
 by running `docker compose up`
+
+*Note: to copy a docker volume: `cp -a /var/lib/docker/volumes/source_volume /var/lib/docker/volumes/target_volume` and `docker volume create target_volume`*
