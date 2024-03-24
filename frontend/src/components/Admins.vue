@@ -130,8 +130,9 @@ export default defineComponent({
         <Transition name="modal">
             <div v-if="showModalError" class="modal-mask">
                 <div class="modal-container border rounded-3">
-                    <div class="modal-header justify-content-center mb-3">
-                        No puedes eliminar tu propio usuario!
+                    <div class="modal-header justify-content-center mb-3 text-center text-red">
+                        <p><font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
+                        No puedes eliminar tu propio usuario!</p>
                     </div>
 
                     <div class="modal-footer justify-content-center">
@@ -150,7 +151,7 @@ export default defineComponent({
         <Transition name="modal">
             <div v-if="showModalPswd" class="modal-mask">
                 <div class="modal-container border rounded-3">
-                    <div class="modal-header justify-content-center mb-3">
+                    <div class="modal-header justify-content-center mb-3 text-center">
                         Ingrese la nueva contrasena para {{ selected.nombre }} {{ selected.apellido_1 }} {{ selected.apellido_2 }}
                         ({{ selected.email }})
                     </div>
@@ -160,7 +161,7 @@ export default defineComponent({
                             Contrasenas no coinciden</p>
                     </div>
                     <div class="modal-footer justify-content-center mb-5">
-                        <input v-model="inputPswd1" placeholder="Ingrese contrasena" type="password" required>
+                        <input v-model="inputPswd1" placeholder="Ingrese contrasena" type="password"  required>
                     </div>
 
                     <div class="modal-footer justify-content-center my-5">

@@ -12,6 +12,11 @@ export default defineComponent({
         return {
             registros: useRegistrosStore(),
             format_rut: ChileanRutify.formatRut,
+            dateTo: '',
+            showModal: false,
+            inputToFecha: '',
+            inputFromFecha: '',
+            missingFechas: false
         };
     },
     methods: {
@@ -26,15 +31,26 @@ export default defineComponent({
             return motivo.charAt(0).toUpperCase() + motivo.slice(1);
         },
         async getRegistrosCSV() {
+            if (this.inputFromFecha === '' || this.inputFromFecha === '') {
+                this.missingFechas = true;
+                return;
+            }
             try {
-                let registros = await getCSVRegistro();
+                let registros = await getCSVRegistro(this.inputFromFecha,this.inputToFecha);
                 fileDownload(registros?.data, 'registros.csv')
 
             } catch (err: AxiosError | any) {
                 if (err instanceof AxiosError) {
+                    this.missingFechas = true;
                     console.log(err.message)
+                    return;
                 }
             }
+            this.missingFechas = false;
+            this.showModal = false;
+            this.inputFromFecha = '';
+            this.inputToFecha = '';
+
         },
     },
     async beforeMount() {
@@ -60,9 +76,9 @@ export default defineComponent({
             </button>
             <button
                 class="btn btn-primary ms-2"
-                @click="getRegistrosCSV"
+                @click="showModal = true"
             >
-                Descargar ultimo mes
+                Descargar registros (CSV)
             </button>
             <button
                 class="btn btn-primary ms-2"
@@ -112,6 +128,45 @@ export default defineComponent({
             </v-table>
         </div>
     </div>
+    <Teleport to="body">
+        <Transition name="modal">
+            <div v-if="showModal" class="modal-mask">
+                <div class="modal-container border rounded-3">
+                    <div class="modal-header justify-content-center mb-3 text-center">
+                        Selecciona el rango de fechas para la descarga
+                    </div>
+
+
+                    <div class="modal-footer justify-content-center my-5" v-if="missingFechas">
+                        <p class="text-red">
+                    <font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
+                            Porfavor selecciona ambas fechas</p>
+                    </div>
+                    <div class="modal-footer justify-content-center mb-3">
+                        <input v-model="inputFromFecha" type="date" required>
+                    </div>
+                    <div class="modal-footer justify-content-center mb-3">
+                        <input v-model="inputToFecha" type="date" required>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button
+                            class="btn btn-danger modal-default-button me-5"
+                            @click="() => getRegistrosCSV()"
+                        >
+                            Descargar
+                        </button>
+                        <button
+                            class="btn btn-primary modal-default-button"
+                            @click="showModal = false; inputFromFecha = ''; inputToFecha = ''; missingFechas = false"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+    </Teleport>
+
 </template>
 
 <style>

@@ -5,7 +5,7 @@ use axum::extract::{Path, Query};
 use axum::http::header;
 use axum::response::IntoResponse;
 use axum::{extract::State, http::StatusCode, Json};
-use chrono::{Datelike, Local, Utc};
+use chrono::{Local, Utc};
 use sea_orm::prelude::DateTimeWithTimeZone;
 
 use sea_orm::ActiveValue::{NotSet, Set};
@@ -66,16 +66,22 @@ pub async fn get_all(
 
 pub async fn get_last_month(
     State(pool): State<Arc<Pool>>,
+    Query(params): Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let now = Utc::now();
-    let month = format!("{}-{:02}-{:02}", now.year(), now.month(), 1);
+    let offset = params
+        .get("from")
+        .ok_or((StatusCode::BAD_REQUEST, "Limit not provided".to_string()))?;
+    let limit = params
+        .get("to")
+        .ok_or((StatusCode::BAD_REQUEST, "Offset not provided".to_string()))?;
+
     let query = format!(
         r#"SELECT registros.id, registros.rut, registros.fecha, registros.salida, 
     registros.motivo, personas.nombre, personas.apellido_1, personas.apellido_2, 
     personas.correo_uai, personas.rol FROM registros 
     JOIN personas ON registros.rut = personas.rut 
-    WHERE registros.fecha >= '{}' ORDER BY registros.fecha DESC;"#,
-        month
+    WHERE registros.fecha >= '{}' AND registros.fecha <= '{}' ORDER BY registros.fecha DESC;"#,
+        offset, limit
     );
 
     let values: Vec<Value> = sea_orm::query::JsonValue::find_by_statement(Statement::from_string(

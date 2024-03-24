@@ -20,7 +20,7 @@ export default defineComponent({
 
         const go_home = () => {
             router.push({
-                name: 'Home',
+                name: 'Admin',
             });
         };
         return {
@@ -37,10 +37,11 @@ export default defineComponent({
                 email: this.email
             }
             PostService.enrollAdmin(admin).then((_) => {
+                this.go_home();
             }).catch((err) => {
                 console.log(err);
+                this.go_home();
             })
-            this.go_home();
         },
     },
 });

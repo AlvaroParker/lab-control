@@ -14,7 +14,7 @@ where
     (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
 }
 // This might be to much overhead for the server
-pub fn is_valid_num_rut(rut: &String) -> bool {
+pub fn is_valid_num_rut(rut: &str) -> bool {
     let follow_rut = regex::Regex::new(r"^\d{8}[0-9kK]$").unwrap();
     let follow_rut_7 = regex::Regex::new(r"^\d{7}[0-9kK]$").unwrap();
     (rut.len() == 9 && follow_rut.is_match(rut)) || (rut.len() == 8 && follow_rut_7.is_match(rut))

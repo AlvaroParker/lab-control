@@ -41,8 +41,8 @@ export const getAdmins = async(): Promise<Array<ServiceTypes.AdminGeneric> | und
     return res.data;
 }
 
-export const getCSVRegistro = async(): Promise<AxiosResponse<any, any> | undefined> => {
-    const res = await axios.get(ServiceTypes.API_URL + '/registros/reporte');
+export const getCSVRegistro = async(from_date: string, to_date: string): Promise<AxiosResponse<any, any> | undefined> => {
+    const res = await axios.get(ServiceTypes.API_URL + `/registros/reporte?from=${from_date}&to=${to_date}`,);
     return res;
 
 }

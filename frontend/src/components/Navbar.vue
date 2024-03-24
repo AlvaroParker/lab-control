@@ -57,7 +57,7 @@ export default defineComponent({
                     <router-link
                         to="/"
                         class="list-group-item list-group-item-action py-2 ripple"
-                        :class="{ active: 'Home' == getName() }"
+                        :class="{ active: 'Home' == getName() || 'Info' == getName() || 'EditUsuario' == getName() }"
                     >
                         <font-awesome-icon :icon="['fa', 'book']" /> Usuarios
                     </router-link>
