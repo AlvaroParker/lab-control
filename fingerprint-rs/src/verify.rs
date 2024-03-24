@@ -1,7 +1,7 @@
-use std::{cell::RefCell, error::Error, fs, io::Read, net::TcpStream, rc::Rc, thread};
+use std::{cell::RefCell, error::Error, fs, io::Read, net::TcpStream, rc::Rc};
 
-use libfprint_rs::{Cancellable, CancellableExt, FpDevice, FpPrint, GError};
-use tungstenite::{Message, WebSocket};
+use libfprint_rs::{FpDevice, FpPrint, GError};
+use tungstenite::WebSocket;
 
 use crate::socket::send_message;
 
