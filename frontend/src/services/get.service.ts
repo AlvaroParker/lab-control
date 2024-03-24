@@ -41,6 +41,12 @@ export const getAdmins = async(): Promise<Array<ServiceTypes.AdminGeneric> | und
     return res.data;
 }
 
+export const getCSVRegistro = async(): Promise<AxiosResponse<any, any> | undefined> => {
+    const res = await axios.get(ServiceTypes.API_URL + '/registros/reporte');
+    return res;
+
+}
+
 const GetService = {
     getUsuarios,
     getUsuarioByRut,
