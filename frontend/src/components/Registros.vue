@@ -3,6 +3,9 @@
 import { defineComponent } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useRegistrosStore } from '../stores/RegistrosStore';
+import { getCSVRegistro} from '../services/get.service';
+import fileDownload from 'js-file-download'
+import { AxiosError } from 'axios';
 
 export default defineComponent({
     data() {
@@ -21,6 +24,17 @@ export default defineComponent({
                 return 'Uso libre';
             }
             return motivo.charAt(0).toUpperCase() + motivo.slice(1);
+        },
+        async getRegistrosCSV() {
+            try {
+                let registros = await getCSVRegistro();
+                fileDownload(registros?.data, 'registros.csv')
+
+            } catch (err: AxiosError | any) {
+                if (err instanceof AxiosError) {
+                    console.log(err.message)
+                }
+            }
         },
     },
     async beforeMount() {
@@ -43,6 +57,12 @@ export default defineComponent({
                 :disabled="registros.offset === 0"
             >
                 Prev
+            </button>
+            <button
+                class="btn btn-primary ms-2"
+                @click="getRegistrosCSV"
+            >
+                Descargar ultimo mes
             </button>
             <button
                 class="btn btn-primary ms-2"

@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, Query};
+use axum::http::header;
+use axum::response::IntoResponse;
 use axum::{extract::State, http::StatusCode, Json};
-use chrono::{Local, Utc};
+use chrono::{Datelike, Local, Utc};
 use sea_orm::prelude::DateTimeWithTimeZone;
 
 use sea_orm::ActiveValue::{NotSet, Set};
@@ -60,6 +62,49 @@ pub async fn get_all(
 
     // Return the registros
     Ok(Json(registros_rows))
+}
+
+pub async fn get_last_month(
+    State(pool): State<Arc<Pool>>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let now = Utc::now();
+    let month = format!("{}-{:02}-{:02}", now.year(), now.month(), 1);
+    let query = format!(
+        r#"SELECT registros.id, registros.rut, registros.fecha, registros.salida, 
+    registros.motivo, personas.nombre, personas.apellido_1, personas.apellido_2, 
+    personas.correo_uai, personas.rol FROM registros 
+    JOIN personas ON registros.rut = personas.rut 
+    WHERE registros.fecha >= '{}' ORDER BY registros.fecha DESC;"#,
+        month
+    );
+
+    let values: Vec<Value> = sea_orm::query::JsonValue::find_by_statement(Statement::from_string(
+        DbBackend::Postgres,
+        &query,
+    ))
+    .all(pool.get_db())
+    .await
+    .map_err(internal_error)?;
+
+    let registros_rows: Vec<RegistroAlumno> =
+        serde_json::from_value(serde_json::Value::Array(values)).map_err(internal_error)?;
+
+    let buff = Vec::new();
+    let mut wrtr = csv::Writer::from_writer(buff);
+
+    for registro in registros_rows {
+        wrtr.serialize(registro).map_err(internal_error)?;
+    }
+
+    let headers = [
+        (header::CONTENT_TYPE, "text/csv; charset=utf-8"),
+        (
+            header::CONTENT_DISPOSITION,
+            "attachment; filename=\"Reporte.csv\"",
+        ),
+    ];
+    let v = wrtr.into_inner().map_err(internal_error)?;
+    Ok((headers, v))
 }
 
 // RegistroNew is the json body that we will receive when registering a new registro
