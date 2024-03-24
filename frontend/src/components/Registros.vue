@@ -132,7 +132,7 @@ export default defineComponent({
         <Transition name="modal">
             <div v-if="showModal" class="modal-mask">
                 <div class="modal-container border rounded-3">
-                    <div class="modal-header justify-content-center mb-3">
+                    <div class="modal-header justify-content-center mb-3 text-center">
                         Selecciona el rango de fechas para la descarga
                     </div>
 

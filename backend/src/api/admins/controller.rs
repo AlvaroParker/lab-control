@@ -215,7 +215,7 @@ pub async fn change_password(
         return Ok(());
     }
     // Fallback if the admin doesn't exist or the password is incorrect
-    return Err((StatusCode::NOT_FOUND, "Admin not found".into()));
+    Err((StatusCode::NOT_FOUND, "Admin not found".into()))
 }
 
 // Create a cookie for the given `Admin`
