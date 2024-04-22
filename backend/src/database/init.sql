@@ -1,4 +1,4 @@
-\c fingerprints
+\c access_control
 CREATE TABLE IF NOT EXISTS personas(
   nombre VARCHAR(64) NOT NULL,
   apellido_1 VARCHAR(64) NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS personas(
   print_path VARCHAR(128) UNIQUE NOT NULL,
   correo_uai VARCHAR(64) UNIQUE NOT NULL,
   is_disabled BOOLEAN NOT NULL,
-  rol VARCHAR(10) CHECK (rol IN ('alumno', 'ayudante', 'docente')) NOT NULL DEFAULT 'alumno',
+  rol VARCHAR(64) NOT NULL,
   PRIMARY KEY(rut),
   CONSTRAINT no_empty_strings CHECK (
     nombre <> ''
@@ -17,6 +17,12 @@ CREATE TABLE IF NOT EXISTS personas(
     and correo_uai<> ''
   )
 );
+
+CREATE TABLE IF NOT EXISTS roles(
+  id SERIAL PRIMARY KEY,
+  rol VARCHAR(64) UNIQUE NOT NULL
+);
+
 
 --  ALTER TABLE registros DROP CONSTRAINT registros_motivo_check;
 -- ALTER TABLE registros ADD CONSTRAINT registros_motivo_check CHECK (motivo IN ('ventana', 'investigacion', 'ramo', 'salida', 'uso libre'));
@@ -60,3 +66,6 @@ INSERT INTO admins (
   '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS' 
 );
 
+INSERT INTO roles(rol) VALUES ('alumno');
+INSERT INTO roles(rol) VALUES ('ayudante');
+INSERT INTO roles(rol) VALUES ('docente');

@@ -13,6 +13,10 @@ namespace ServiceTypes {
         id: number;
         motivo: string;
     }
+    export interface Rol {
+        id: number;
+        rol: string;
+    }
     export interface Registro {
         id: number;
         nombre: string;

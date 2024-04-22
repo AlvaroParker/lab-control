@@ -1,3 +1,3 @@
 mod controller;
 mod models;
-pub mod routes;
+pub(crate) mod routes;

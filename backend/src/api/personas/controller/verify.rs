@@ -3,7 +3,7 @@ use crate::{
     database::{entities::registros, pool::Pool},
 };
 
-use super::utils::{Action, Body};
+use crate::api::personas::models::{Action, Body};
 use crate::api::utils::internal_error;
 use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Local, Utc};

@@ -12,11 +12,19 @@ export const deleteUsuario = async (rut: string) => {
 };
 
 export const deleteMotivo = async (id: number) => {
-    const res = await axios.delete(ServiceTypes.API_URL + `/motivos/${id}`);
+    const res = await axios.delete(ServiceTypes.API_URL + `/metadata/motivos/${id}`);
     if (res.status == 401) {
         // redirect
     }
     return res;
+}
+
+export const deleteRol = async (id: number) => {
+    const res = await axios.delete(ServiceTypes.API_URL + `/metadata/roles/${id}`);
+    if (res.status == 401) {
+        // redirect
+    }
+    return res
 }
 
 export const deleteAdmin = async(email: string): Promise<AxiosResponse<any, any> | undefined> => {

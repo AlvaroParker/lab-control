@@ -65,7 +65,12 @@ export const rerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
 }
 
 export const nuevoMotivo = async (motivo: string) => {
-    const res = await axios.post(ServiceTypes.API_URL + `/motivos`, { motivo: motivo });
+    const res = await axios.post(ServiceTypes.API_URL + `/metadata/motivos`, { motivo: motivo });
+    return res;
+}
+
+export const newRol = async (motivo: string) => {
+    const res = await axios.post(ServiceTypes.API_URL + `/metadata/roles`, { motivo: motivo });
     return res;
 }
 

@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
 import ServiceTypes from '../services/types.js';
 import PostService from '../services/post.service.js';
+import { useRolStore } from '../stores/RolStore.js';
+
 
 export default defineComponent({
     data() {
@@ -12,6 +14,7 @@ export default defineComponent({
             // We will store the user here
             usuario: {} as ServiceTypes.Usuario,
             valid_rut: true,
+            rols: useRolStore(),
             registrando_huella: false,
             error_detected: false,
             message: '',
@@ -47,6 +50,9 @@ export default defineComponent({
         };
     },
     methods: {
+        Capitalize(word: string) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        },
         async handleSubmit() {
             this.registrando_huella = true;
             const rut = normalizeRut(this.usuario.rut);
@@ -97,6 +103,9 @@ export default defineComponent({
                 this.registrando_huella = false;
             }
         },
+    },
+    async beforeMount() {
+        this.rols.update()
     },
     watch: {
         rut() {
@@ -167,7 +176,7 @@ export default defineComponent({
                                 </div>
                                 <div>
                                     <v-select
-                                        :items="['Alumno', 'Ayudante', 'Docente']"
+                                        :items="rols.getRols.map((x) => Capitalize(x.rol))"
                                         density="comfortable"
                                         label="Rol"
                                         :disabled="registrando_huella"

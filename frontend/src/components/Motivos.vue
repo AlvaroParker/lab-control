@@ -68,7 +68,7 @@ export default defineComponent({
                         <th scope="col">Eliminar</th>
                     </tr>
                 </thead>
-                <tbody v-for="motivo in motivos.getMotivos">
+                <tbody v-if="motivos.getMotivos.length != 0" v-for="motivo in motivos.getMotivos">
                     <tr id="{{motivo.id}}">
                         <td>{{motivo.id}}</td>
                         <td>{{ motivo.motivo }}</td>

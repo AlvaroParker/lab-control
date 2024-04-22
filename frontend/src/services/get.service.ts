@@ -22,8 +22,14 @@ export const verifyUsuario = async (
 };
 
 export const getMotivos = async (): Promise<AxiosResponse<any, any>> => {
-    const res = await axios.get(ServiceTypes.API_URL + '/motivos');
+    const res = await axios.get(ServiceTypes.API_URL + '/metadata/motivos');
     return res
+}
+
+export const getRoles = async(): Promise<AxiosResponse<any, any>> => {
+
+    const res = await axios.get(ServiceTypes.API_URL + '/metadata/roles');
+    return res;
 }
 
 export const getRegistros = async (
@@ -53,6 +59,7 @@ const GetService = {
     verifyUsuario,
     getRegistros,
     getMotivos,
-    getAdmins
+    getAdmins,
+    getRoles
 };
 export default GetService;

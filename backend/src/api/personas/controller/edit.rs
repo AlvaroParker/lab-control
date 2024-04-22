@@ -1,3 +1,4 @@
+use crate::api::personas::models::EditPersona;
 use crate::api::utils::internal_error;
 use crate::{
     api::utils::is_valid_num_rut,
@@ -11,19 +12,7 @@ use axum::{
 };
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-
-// The POST json body takes `EditPersona` parameters as arguments.
-#[derive(Serialize, Deserialize)]
-pub struct EditPersona {
-    pub nombre: Option<String>,
-    pub apellido_1: Option<String>,
-    pub apellido_2: Option<String>,
-    pub correo_uai: Option<String>,
-    pub rut: Option<String>,
-    pub rol: Option<String>,
-}
 
 // POST request, extract JSON from request Serializing it to an EditPersona struct
 pub async fn edit_persona_by_rut(

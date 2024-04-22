@@ -1,3 +1,4 @@
+use super::models::{AdminReq, Email, LoginAdmin, RequestAdmin, ResponseAdmin};
 use std::{sync::Arc, time::Duration};
 
 use crate::{api::utils::handle_cookie_err, database::entities::admins::Entity as Admin};
@@ -11,7 +12,6 @@ use axum::{
 use axum_extra::extract::{cookie::Cookie, CookieJar};
 use sea_orm::{ActiveModelTrait, DbErr, EntityTrait, FromQueryResult, IntoActiveModel};
 use sea_orm::{DbBackend, Statement};
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
@@ -19,24 +19,6 @@ use crate::{
     database::{entities::admins, pool::Pool},
 };
 
-// Struct representing the JSON that user will send to the webserver
-#[derive(Serialize, Deserialize)]
-pub struct RequestAdmin {
-    pub nombre: String,
-    pub apellido_1: String,
-    pub apellido_2: String,
-    pub email: String,
-    pub pswd: String,
-}
-// Struct representing JSON that the server will response
-#[derive(Serialize, Deserialize, Clone)]
-pub struct ResponseAdmin {
-    pub nombre: String,
-    pub apellido_1: String,
-    pub apellido_2: String,
-    pub email: String,
-    pub cookie: Option<String>,
-}
 use sea_orm::entity::ActiveValue::Set;
 
 // Aka signin. The user must provide a valid `RequestAdmin` JSON body
@@ -72,12 +54,6 @@ pub async fn create_user(
     Ok(Json(admin))
 }
 
-// Login struct, the client must provide this field in order to login
-#[derive(Serialize, Deserialize)]
-pub struct LoginAdmin {
-    email: String,
-    pswd: String,
-}
 // The client must provide a valid `LoginAdmin` JSON body
 pub async fn login(
     State(pool): State<Arc<Pool>>,
@@ -150,14 +126,6 @@ pub async fn logout(
     Ok("Logout".into())
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct AdminReq {
-    pub nombre: String,
-    pub apellido_1: String,
-    pub apellido_2: String,
-    pub email: String,
-}
-
 pub async fn get_admins(
     State(pool): State<Arc<Pool>>,
 ) -> Result<Json<Vec<AdminReq>>, (StatusCode, String)> {
@@ -176,10 +144,6 @@ pub async fn get_admins(
     Ok(Json(admins))
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct Email {
-    pub email: String,
-}
 pub async fn delete_admin(
     State(pool): State<Arc<Pool>>,
     Json(email): Json<Email>,
