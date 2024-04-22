@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import AuthService from '../services/auth.service';
-import ServiceTypes from '../services/types';
+import { AuthService, ServiceTypes } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -14,13 +13,13 @@ export default defineComponent({
             return this.$route.name;
         },
         async getUser() {
-            const user = await AuthService.getUser();
+            const user = await AuthService.GetUser();
             if (user) {
                 this.user = user;
             }
         },
         async logout() {
-            await AuthService.logout();
+            await AuthService.Logout();
             this.$router.push('/').then(() => {
                 location.reload();
             });
@@ -91,6 +90,14 @@ export default defineComponent({
                         :class="{ active: 'Motivos' == getName() }"
                     >
                         <font-awesome-icon :icon="['fa', 'book']" /> Administrar motivos
+                    </router-link>
+
+                    <router-link
+                        to="/roles"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                        :class="{ active: 'Roles' == getName() }"
+                    >
+                        <font-awesome-icon :icon="['fa', 'book']" /> Administrar roles
                     </router-link>
                     <router-link
                         to="/admin"

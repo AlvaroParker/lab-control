@@ -1,8 +1,10 @@
-use super::utils::{Action, Body, NewPersona, Outer};
+use crate::api::personas::models::{Action, Body, NewPersona, Outer};
 use crate::{
-    api::{personas::controller::utils::rut_exists_or_email, utils::is_valid_num_rut},
-    database::entities::personas,
-    database::pool::Pool,
+    api::{
+        personas::{controller::utils::rut_exists_or_email, models::Sucess},
+        utils::is_valid_num_rut,
+    },
+    database::{entities::personas, pool::Pool},
 };
 use axum::{
     extract::{
@@ -20,14 +22,6 @@ pub async fn enroll_persona(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>)
         tracing::error!("Failed to upgrade connection: {}", err);
     })
     .on_upgrade(move |socket| handle_socket(socket, pool.clone()))
-}
-
-// The result of the enrollment is a JSON, this struct is used to deserialize the JSON
-// if result is true, the enrollment was successful and the path is the path to the fingerprint
-#[derive(serde::Deserialize)]
-struct Sucess<'a> {
-    result: bool,
-    path: Option<&'a str>,
 }
 
 // Returning errors, this are implemented as well on the frontend

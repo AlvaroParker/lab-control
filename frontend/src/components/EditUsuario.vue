@@ -3,10 +3,9 @@ import { defineComponent } from 'vue';
 // import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { formatRut } from 'chilean-rutify';
-import GetService from '../services/get.service.js';
-import ServiceTypes from '../services/types.js';
-import PostService from '../services/post.service.js';
 import { AxiosError } from 'axios';
+
+import { GetService, ServiceTypes, PostService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -49,8 +48,10 @@ export default defineComponent({
         // Get the user before mounting the component
         const rut = this.$route.query.rut;
         if (rut && typeof rut === 'string') {
-            const usuario = await GetService.getUsuarioByRut(rut);
-            this.usuario = usuario ?? this.usuario;
+            const [usuario, status] = await GetService.GetUsuarioByRut(rut);
+            if (status === Status.OK && usuario) {
+                this.usuario = usuario;
+            }
         }
     },
     methods: {
@@ -60,14 +61,12 @@ export default defineComponent({
                 !this.edit_usuario.rut || this.edit_usuario.rut.trim() === ''
                     ? ''
                     : ChileanRutify.normalizeRut(this.edit_usuario.rut) ?? '';
-            console.log(rut);
             // Set the rut to edit_usuario object
             this.edit_usuario.rut = rut;
             // Make the PUT request
             try {
-                const res = await PostService.editUsuario(this.edit_usuario, this.usuario.rut);
-                console.log('Here');
-                if (res.status === 200) {
+                const res = await PostService.EditUsuario(this.edit_usuario, this.usuario.rut);
+                if (res === Status.OK) {
                     this.go_home();
                 } else {
                     this.error_message = 'Error al publicar las ediciones.';
@@ -146,7 +145,6 @@ export default defineComponent({
                                 <div class="form-outline form-white mb-2">
                                     <v-text-field
                                         v-model="edit_usuario.rut"
-                                        :rules="rutRules"
                                         :label="formatRut(usuario.rut)"
                                     ></v-text-field>
                                 </div>

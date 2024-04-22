@@ -1,0 +1,23 @@
+{
+  "name": "lab-control",
+  "version": "1.0.0",
+  "description": "Node module for Lab-Control web API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "Alvaro Parker",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "axios": "^1.6.8",
+    "isomorphic-ws": "^5.0.0",
+    "js-cookie": "^3.0.5"
+  }
+}

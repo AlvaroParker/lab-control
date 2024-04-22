@@ -1,3 +1,15 @@
+export enum Status {
+    OK = 200,
+    CREATED = 201,
+    NO_CONTENT = 204,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    CONFLICT = 409,
+    INTERNAL_SERVER_ERROR = 500,
+    UNKNOWN = 0,
+}
 namespace ServiceTypes {
     export interface Usuario {
         nombre: string;
@@ -12,6 +24,10 @@ namespace ServiceTypes {
     export interface Motivo {
         id: number;
         motivo: string;
+    }
+    export interface Rol {
+        id: number;
+        rol: string;
     }
     export interface Registro {
         id: number;
@@ -75,10 +91,5 @@ namespace ServiceTypes {
 
         return missingProperties.length === 0;
     };
-    // This is defined when deploying the server
-    const IP = import.meta.env.VITE_BACKEND_IP as string;
-    const PORT = import.meta.env.VITE_BACKEND_PORT as string;
-    export const API_URL = `https://${IP}:${PORT}/api`;
-    export const WS_URI = `wss://${IP}:${PORT}/api`;
 }
 export default ServiceTypes;

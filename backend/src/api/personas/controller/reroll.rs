@@ -2,7 +2,10 @@ use super::enroll::{
     close_msg, enroll_print, send_and_close, DB_INSERTION_ERR, FP_SENSOR_ERR, INVALID_RUT_ERR,
 };
 use crate::{
-    api::utils::{internal_error, is_valid_num_rut},
+    api::{
+        personas::models::Rut,
+        utils::{internal_error, is_valid_num_rut},
+    },
     database::{
         entities::personas::{self, Entity as Personas},
         pool::Pool,
@@ -18,11 +21,6 @@ use axum::{
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ColumnTrait, EntityTrait, IntoActiveModel, QueryFilter};
 use std::sync::Arc;
-
-#[derive(serde::Deserialize, serde::Serialize, Clone, Debug)]
-struct Rut {
-    rut: String,
-}
 
 // Handle the new connection and upgrade to a WebSocket
 pub async fn reroll_persona(ws: WebSocketUpgrade, State(pool): State<Arc<Pool>>) -> Response {

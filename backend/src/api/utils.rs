@@ -1,5 +1,6 @@
 use axum::http::StatusCode;
 use regex;
+use sea_orm::DbErr;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -34,4 +35,27 @@ pub fn handle_cookie_err(err: async_session::Error) -> (StatusCode, String) {
 pub struct Claims {
     exp: usize,
     iat: usize,
+}
+
+pub fn conflict_err(err: DbErr, message: &str) -> (StatusCode, String) {
+    if let DbErr::Query(sea_orm::RuntimeErr::SqlxError(sqlx::Error::Database(e))) = err {
+        // Try to cast Box<dyn Error> to PgDatabaseError
+        if let Ok(err) = e.try_downcast::<sqlx::postgres::PgDatabaseError>() {
+            match err.code() {
+                "23505" => return (StatusCode::BAD_REQUEST, message.to_string()),
+                "23502" => {
+                    return (
+                        StatusCode::BAD_REQUEST,
+                        "Missing required field".to_string(),
+                    )
+                }
+                _ => {}
+            }
+        }
+    }
+    // Return internal error if the error is not a duplicate key error
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        "Internal Server Error".to_string(),
+    )
 }

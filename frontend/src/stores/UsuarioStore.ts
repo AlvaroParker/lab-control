@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import ServiceTypes from '../services/types';
-import GetService from '../services/get.service';
+import ServiceTypes, { Status } from '../services/types';
+import {GetService} from 'lab-control';
 
 export const useUsuarioStore = defineStore('UsuarioStore', {
     state: () => {
@@ -13,9 +13,11 @@ export const useUsuarioStore = defineStore('UsuarioStore', {
         getUsuarios: (state): Array<ServiceTypes.Usuario> => {
             if (!state.request_made) {
                 state.request_made = true;
-                GetService.getUsuarios().then((usuarios) => {
-                    if (usuarios) {
+                GetService.GetUsuarios().then(([usuarios, status]) => {
+                    if (status == Status.OK) {
                         state.usuarios = usuarios;
+                    } else {
+                        state.usuarios = new Array<ServiceTypes.Usuario>();
                     }
                 });
             }
@@ -24,10 +26,12 @@ export const useUsuarioStore = defineStore('UsuarioStore', {
     },
     actions: {
         update() {
-            GetService.getUsuarios()
-                .then((usuarios) => {
-                    if (usuarios) {
+            GetService.GetUsuarios()
+                .then(([usuarios, status]) => {
+                    if (status == Status.OK) {
                         this.usuarios = usuarios;
+                    } else {
+                        this.usuarios = new Array<ServiceTypes.Usuario>();
                     }
                 })
                 .catch((_) => {});
