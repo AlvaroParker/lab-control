@@ -13,9 +13,9 @@ export const useMotivoStore= defineStore('MotivoStore', {
         getMotivos: (state): Array<ServiceTypes.Motivo> => {
             if (!state.request_made) {
                 state.request_made = true;
-                GetService.getMotivos().then((motivos) => {
-                    if (motivos.data) {
-                        state.motivos= motivos.data;
+                GetService.getMotivos().then(([motivos, _]) => {
+                    if (motivos) {
+                        state.motivos= motivos;
                     }
                 });
             }
@@ -25,9 +25,9 @@ export const useMotivoStore= defineStore('MotivoStore', {
     actions: {
         update() {
             GetService.getMotivos()
-                .then((motivos) => {
-                    if (motivos.data) {
-                        this.motivos = motivos.data;
+                .then(([motivos, _]) => {
+                    if (motivos) {
+                        this.motivos = motivos;
                     }
                 })
                 .catch((_) => {});

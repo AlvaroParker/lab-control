@@ -4,6 +4,8 @@ import QRTypes from './QRTypes.js';
 import { defineComponent } from 'vue';
 import PostService from '../../services/post.service.js';
 import ChileanRutify from 'chilean-rutify';
+import { Status } from '../../services/types';
+import { useMotivoStore } from '../../stores/MotivoStore';
 
 export default defineComponent({
     data() {
@@ -11,6 +13,7 @@ export default defineComponent({
             camera: 'auto', // Camera status, either 'auto' or 'off'
             rut: '', // Get the rut from the qr code
             motivo: '', // Motive of access/exit
+            motivos: useMotivoStore(),
             showModal: false, // Either to show modal with motive choice or not
             formatRut: ChileanRutify.formatRut, // Function to format rut
         };
@@ -29,7 +32,10 @@ export default defineComponent({
         // Submit the new registro, with salida and motivo
         async submitRegistro(salida: boolean, motivo: string) {
             // Send the POST request
-            await PostService.nuevoRegistro(this.rut, salida, motivo);
+            const status = await PostService.nuevoRegistro(this.rut, salida, motivo);
+            if (status !== Status.OK) {
+                // TODO: Handle errors
+            }
             this.showModal = false;
             // Reset camera
             this.turnOffCamera();
@@ -70,6 +76,12 @@ export default defineComponent({
     unmounted() {
         this.camera = 'off';
     },
+    async beforeMount() {
+        this.motivos.update();
+    },
+    mounted() {
+        this.motivos;
+    },
     components: {
         QrcodeStream,
     },
@@ -98,65 +110,10 @@ export default defineComponent({
                     </div>
 
                     <div class="container modal-body">
-                        <div class="row justify-content-center align-items-center">
+                        <div class="row justify-content-center align-items-center" v-for="motivo in motivos.getMotivos">
                             <div class="col-12">
-                                <button
-                                    class="btn btn-danger mb-5"
-                                    @click="
-                                        () => {
-                                            submitRegistro(false, 'ventana');
-                                        }
-                                    "
-                                >
-                                    Ventana
-                                </button>
-                            </div>
-                            <div class="col-12">
-                                <button
-                                    class="btn btn-danger mb-5"
-                                    @click="
-                                        () => {
-                                            submitRegistro(false, 'uso libre');
-                                        }
-                                    "
-                                >
-                                    Uso libre
-                                </button>
-                            </div>
-                            <div class="col-12">
-                                <button
-                                    class="btn btn-danger mb-5"
-                                    @click="
-                                        () => {
-                                            submitRegistro(false, 'investigacion');
-                                        }
-                                    "
-                                >
-                                    Investigacion
-                                </button>
-                            </div>
-                            <div class="col-12">
-                                <button
-                                    class="btn btn-danger mb-5"
-                                    @click="
-                                        () => {
-                                            submitRegistro(false, 'ramo');
-                                        }
-                                    "
-                                >
-                                    Asistencia a ramo
-                                </button>
-                            </div>
-                            <div class="col-12">
-                                <button
-                                    class="btn btn-danger mb-5"
-                                    @click="
-                                        () => {
-                                            submitRegistro(true, 'salida');
-                                        }
-                                    "
-                                >
-                                    Salida
+                                <button class="btn btn-danger mb-5" @click="() => {submitRegistro(false, motivo.motivo);}">
+                                    {{ motivo.motivo }}
                                 </button>
                             </div>
                         </div>

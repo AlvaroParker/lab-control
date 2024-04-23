@@ -6,6 +6,7 @@ import { useRegistrosStore } from '../stores/RegistrosStore';
 import { getCSVRegistro} from '../services/get.service';
 import fileDownload from 'js-file-download'
 import { AxiosError } from 'axios';
+import { Status } from '../services/types';
 
 export default defineComponent({
     data() {
@@ -36,8 +37,10 @@ export default defineComponent({
                 return;
             }
             try {
-                let registros = await getCSVRegistro(this.inputFromFecha,this.inputToFecha);
-                fileDownload(registros?.data, 'registros.csv')
+                let [registros, status] = await getCSVRegistro(this.inputFromFecha,this.inputToFecha);
+                if (status === Status.OK && registros) {
+                    fileDownload(registros, 'registros.csv')
+                }
 
             } catch (err: AxiosError | any) {
                 if (err instanceof AxiosError) {

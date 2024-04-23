@@ -231,7 +231,7 @@ pub fn user_exists(err: DbErr) -> (StatusCode, String) {
         // Try to cast Box<dyn Error> to PgDatabaseError
         if let Ok(err) = e.try_downcast::<sqlx::postgres::PgDatabaseError>() {
             if err.code() == "23505" {
-                return (StatusCode::BAD_REQUEST, "User already exists".to_string());
+                return (StatusCode::CONFLICT, "User already exists".to_string());
             }
         }
     }

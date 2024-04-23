@@ -92,6 +92,14 @@ export default defineComponent({
                     >
                         <font-awesome-icon :icon="['fa', 'book']" /> Administrar motivos
                     </router-link>
+
+                    <router-link
+                        to="/roles"
+                        class="list-group-item list-group-item-action py-2 ripple"
+                        :class="{ active: 'Roles' == getName() }"
+                    >
+                        <font-awesome-icon :icon="['fa', 'book']" /> Administrar roles
+                    </router-link>
                     <router-link
                         to="/admin"
                         class="list-group-item list-group-item-action py-2 ripple"

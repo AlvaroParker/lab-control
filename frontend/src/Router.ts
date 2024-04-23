@@ -12,6 +12,7 @@ import QRCode from './components/QRReader/QRCode.vue';
 import NuevoAdmin from './components/NuevoAdmin.vue';
 import Motivos from './components/Motivos.vue';
 import Admins from './components/Admins.vue';
+import Roles from './components/Roles.vue';
 
 const routes = [
     { path: '/', component: Usuarios, name: 'Home' },
@@ -24,6 +25,7 @@ const routes = [
     { path: '/registros', component: Registro, name: 'Registro' },
     { path: '/admin/new', component: NuevoAdmin, name: 'NuevoAdmin'},
     { path: '/motivos', component: Motivos, name: 'Motivos'},
+    { path: '/roles', component: Roles, name: 'Roles'},
     { path: '/admin', component:Admins, name: 'Admin'}
 ];
 

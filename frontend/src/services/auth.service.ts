@@ -1,4 +1,4 @@
-import ServiceTypes from './types';
+import ServiceTypes, { Status } from './types';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
@@ -7,26 +7,40 @@ axios.defaults.withCredentials = true;
 export const login = async (
     email: string,
     pswd: string
-): Promise<ServiceTypes.Admin | undefined> => {
-    console.log(ServiceTypes.API_URL);
-    return axios
-        .post(ServiceTypes.API_URL + '/admin/login', {
+): Promise<[ServiceTypes.Admin | null, Status]> => {
+    try {
+        const res = await axios.post(ServiceTypes.API_URL + '/admin/login', {
             email,
             pswd,
-        })
-        .then((response) => {
-            if (response.data.cookie) {
-                const cookie = response.data.cookie;
-                Cookies.set('auth-cookie', cookie, {
-                    expires: 1,
-                    SameSite: 'Lax',
-                });
-                delete response.data.cookie;
-                localStorage.setItem('user', JSON.stringify(response.data));
-            }
-
-            return response.data;
         });
+
+        switch (res.status) {
+            case 200:
+                return [res.data, Status.OK];
+            case 400:
+                return [null, Status.BAD_REQUEST];
+            case 401:
+                return [null, Status.UNAUTHORIZED];
+            case 404:
+                return [null, Status.NOT_FOUND];
+            case 500:
+                return [null, Status.INTERNAL_SERVER_ERROR];
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            switch (error.response?.status) {
+                case 400:
+                    return [null, Status.BAD_REQUEST];
+                case 401:
+                    return [null, Status.UNAUTHORIZED];
+                case 404:
+                    return [null, Status.NOT_FOUND];
+                case 500:
+                    return [null, Status.INTERNAL_SERVER_ERROR];
+            }
+        }
+    }
+    return [null, Status.UNKNOWN];
 };
 
 export const is_authenticated = async (): Promise<boolean> => {
@@ -40,24 +54,30 @@ export const is_authenticated = async (): Promise<boolean> => {
     }
 };
 
-const getUser = async () => {
+const getUser = async (): Promise<ServiceTypes.Admin | null> => {
     if (await is_authenticated()) {
         const user = localStorage.getItem('user');
         if (user) {
             const user_js = JSON.parse(user);
             return user_js as ServiceTypes.Admin;
         } else {
-            return undefined;
+            return null;
         }
     } else {
-        return undefined;
+        return null;
     }
 };
 
-const logout = async () => {
-    await axios.post(ServiceTypes.API_URL + '/admin/logout');
-    Cookies.remove('auth-cookie');
-    localStorage.removeItem('user');
+const logout = async (): Promise<Status> => {
+    try {
+        await axios.post(ServiceTypes.API_URL + '/admin/logout');
+        Cookies.remove('auth-cookie');
+        localStorage.removeItem('user');
+
+        return Status.OK;
+    } catch (error) {
+        return Status.UNKNOWN;
+    }
 };
 
 const getToken = () => {

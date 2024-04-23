@@ -2,6 +2,7 @@
 import { defineComponent } from 'vue';
 import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
+import { Status } from '../services/types';
 
 export default defineComponent({
     data() {
@@ -26,8 +27,8 @@ export default defineComponent({
     methods: {
         handleSubmit() {
             AuthService.login(this.username, this.password)
-                .then((res) => {
-                    if (res) {
+                .then(([_, status]) => {
+                    if (status === Status.OK) {
                         this.$router.push('/').then(() => {
                             location.reload();
                         });

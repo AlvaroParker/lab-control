@@ -5,7 +5,7 @@ import { useAdminStore } from '../stores/AdminStore';
 import ChileanRutify from 'chilean-rutify';
 import { deleteAdmin } from '../services/delete.service';
 import AuthService from '../services/auth.service';
-import ServiceTypes from '../services/types';
+import ServiceTypes, { Status } from '../services/types';
 import { changePassword } from '../services/post.service';
 
 export default defineComponent({
@@ -32,7 +32,10 @@ export default defineComponent({
         },
         async eliminarAdmin(email: string) {
             if (this.user.email !== email) {
-                await deleteAdmin(email);
+                const status = await deleteAdmin(email);
+                if (status !== Status.OK) {
+                    // TODO: Handle error
+                }
                 this.admins.update();
                 this.selected = {} as ServiceTypes.AdminGeneric;
                 this.showModal = false;
@@ -47,7 +50,10 @@ export default defineComponent({
         async cambiarPswd() {
             if (this.inputPswd1 === this.inputPswd2)
             {
-                await changePassword(this.selected.email, this.inputPswd1);
+                const status = await changePassword(this.selected.email, this.inputPswd1);
+                if (status !== Status.OK) {
+                    // TODO: Handle error on password change
+                }
             }
             this.showModalPswd = false;
             this.selected = {} as ServiceTypes.AdminGeneric;

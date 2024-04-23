@@ -2,7 +2,7 @@
 // import ServiceTypes from '../services/types.js';
 import { defineComponent } from 'vue';
 import GetService from '../services/get.service';
-import ServiceTypes from '../services/types';
+import ServiceTypes, { Status } from '../services/types';
 import ChileanRutify from 'chilean-rutify';
 import { useRouter } from 'vue-router';
 import DeleteService from '../services/delete.service';
@@ -94,7 +94,7 @@ export default defineComponent({
             // Delete usuario DELETE request
             try {
                 const res = await DeleteService.deleteUsuario(this.usuario.rut);
-                if (res.status === 200) {
+                if (res === Status.OK) {
                     this.showModal = false;
                     this.go_home();
                 } else {
@@ -121,8 +121,8 @@ export default defineComponent({
             this.display_not_found = true;
         } else {
             GetService.getUsuarioByRut(rut)
-                .then((usuario) => {
-                    if (usuario) {
+                .then(([usuario, status]) => {
+                    if (status === Status.OK && usuario) {
                         this.usuario = usuario;
                     } else {
                         this.display_not_found = true;

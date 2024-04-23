@@ -26,6 +26,9 @@ pub async fn post_rol(
     State(pool): State<Arc<Pool>>,
     Json(rol): Json<Rol>,
 ) -> Result<(), (StatusCode, String)> {
+    if rol.rol.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "Empty rol".to_string()));
+    }
     let mut query = roles::ActiveModel::new();
     query.rol = Set(rol.rol);
     query.id = NotSet;

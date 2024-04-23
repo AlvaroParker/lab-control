@@ -31,6 +31,9 @@ pub async fn post_motivo(
     State(pool): State<Arc<Pool>>,
     Json(motivo): Json<Motivo>,
 ) -> Result<(), (StatusCode, String)> {
+    if motivo.motivo.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "Empty motivo".to_string()));
+    }
     let mut query = motivos::ActiveModel::new();
     if motivo.motivo.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "Empty motivo".to_string()));

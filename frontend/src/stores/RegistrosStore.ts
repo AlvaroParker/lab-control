@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import ServiceTypes from '../services/types';
+import ServiceTypes, { Status } from '../services/types';
 import GetService from '../services/get.service';
 
 export const useRegistrosStore = defineStore('RegistrosStore', {
@@ -18,26 +18,32 @@ export const useRegistrosStore = defineStore('RegistrosStore', {
     },
     actions: {
         async update() {
-            const registros = await GetService.getRegistros(this.offset, this.limit);
-            this.registros = registros ?? this.registros;
+            const [registros, status] = await GetService.getRegistros(this.offset, this.limit);
+            if (status === Status.OK) {
+                this.registros = registros!;
+            }
             return this.registros;
         },
         async next() {
             this.offset += 10;
-            const registro = await GetService.getRegistros(this.offset, this.limit);
+            const [registro, status] = await GetService.getRegistros(this.offset, this.limit);
             // Ignore this error
-            if (registro?.length !== 0) {
-                this.registros = registro as Array<ServiceTypes.Registro>;
-            } else {
-                this.offset -= 10;
+            if (status === Status.OK) {
+                if (registro?.length !== 0) {
+                    this.registros = registro as Array<ServiceTypes.Registro>;
+                } else {
+                    this.offset -= 10;
+                }
             }
         },
         async prev() {
             if (this.offset >= 10) {
                 this.offset -= 10;
             }
-            const registros = await GetService.getRegistros(this.offset, this.limit);
-            this.registros = registros ?? this.registros;
+            const [registros, status] = await GetService.getRegistros(this.offset, this.limit);
+            if (status === Status.OK) {
+                this.registros = registros ?? this.registros;
+            }
         },
         clear() {
             this.registros = [];

@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import PostService from '../services/post.service';
-import ServiceTypes from '../services/types';
+import ServiceTypes, { Status } from '../services/types';
 
 export default defineComponent({
     data() {
@@ -36,11 +36,13 @@ export default defineComponent({
                 pswd: this.password,
                 email: this.email
             }
-            PostService.enrollAdmin(admin).then((_) => {
-                this.go_home();
-            }).catch((err) => {
-                console.log(err);
-                this.go_home();
+            PostService.enrollAdmin(admin).then((status) => {
+                if (status === Status.OK) {
+                    this.go_home();
+                } else {
+                    // Error happenned, todo
+                    this.go_home();
+                }
             })
         },
     },
