@@ -48,6 +48,7 @@ npm --prefix frontend/lab-control install
 npm --prefix frontend/lab-control run build
 
 # Build the frontend and copy files to deploy/ folder
+yarn --cwd frontend add ./lab-control
 yarn --cwd frontend install
 yarn --cwd frontend run build
 rm -rf deploy/frontend && cp -r frontend/dist deploy/frontend
