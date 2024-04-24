@@ -18,6 +18,8 @@ export const Login = async (
 
         switch (res.status) {
             case 200:
+                delete res.data.cookie;
+                localStorage.setItem('user', JSON.stringify(res.data));
                 return [res.data, Status.OK];
             case 400:
                 return [null, Status.BAD_REQUEST];

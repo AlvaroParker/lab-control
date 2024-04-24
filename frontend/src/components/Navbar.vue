@@ -14,6 +14,7 @@ export default defineComponent({
         },
         async getUser() {
             const user = await AuthService.GetUser();
+            console.log(user)
             if (user) {
                 this.user = user;
             }
