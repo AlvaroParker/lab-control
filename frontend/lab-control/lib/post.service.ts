@@ -1,13 +1,15 @@
 import ServiceTypes, { Status } from './types';
 import axios, { isAxiosError } from 'axios';
 import WebSocket from 'isomorphic-ws';
+import { getURL, getWSURL } from '.';
 
 axios.defaults.withCredentials = true;
 
 
-export const enrollAdmin = async (admin: ServiceTypes.AdminRegistro): Promise<Status> => {
+export const EnrollAdmin = async (admin: ServiceTypes.AdminRegistro): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/admin/signin`, {
+        const res = await axios.post(api_url + `/admin/signin`, {
             nombre: admin.nombre,
             apellido_1: admin.apellido_1,
             apellido_2: admin.apellido_2,
@@ -39,7 +41,7 @@ export const enrollAdmin = async (admin: ServiceTypes.AdminRegistro): Promise<St
     return Status.UNKNOWN;
 }
 
-export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<WebSocket> => {
+export const EnrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<WebSocket> => {
     const nuevo_usuario = {
         nombre: usuario.nombre,
         apellido_1: usuario.apellido_1,
@@ -51,8 +53,9 @@ export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<W
         is_disabled: false,
         rol: usuario.rol.toLowerCase(),
     };
+    const WS_URI = getWSURL();
 
-    const url = `${ServiceTypes.WS_URI}/usuarios/enroll`;
+    const url = `${WS_URI}/usuarios/enroll`;
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
@@ -61,8 +64,9 @@ export const enrollNewUsuario = async (usuario: ServiceTypes.Usuario): Promise<W
     return ws;
 };
 
-export const rerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
-    const url = `${ServiceTypes.WS_URI}/usuarios/reroll`;
+export const RerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
+    const WS_URI = getWSURL();
+    const url = `${WS_URI}/usuarios/reroll`;
     const ws = new WebSocket(url);
 
     // Send the user's rut to the server as socket message
@@ -73,9 +77,10 @@ export const rerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
     return ws;
 }
 
-export const nuevoMotivo = async (motivo: string): Promise<Status> => {
+export const NewMotivo = async (motivo: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/metadata/motivos`, { motivo: motivo });
+        const res = await axios.post(api_url + `/metadata/motivos`, { motivo: motivo });
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -105,9 +110,10 @@ export const nuevoMotivo = async (motivo: string): Promise<Status> => {
     return Status.UNKNOWN;
 }
 
-export const newRol = async (rol: string): Promise<Status> => {
+export const NewRol = async (rol: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/metadata/roles`, { rol: rol});
+        const res = await axios.post(api_url + `/metadata/roles`, { rol: rol });
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -137,7 +143,8 @@ export const newRol = async (rol: string): Promise<Status> => {
     return Status.UNKNOWN;
 }
 
-export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo: string): Promise<Status> => {
+export const EditUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo: string): Promise<Status> => {
+    const api_url = getURL();
     const nombre = cleanVal(edit_usuario.nombre);
     const apellido_1 = cleanVal(edit_usuario.apellido_1);
     const apellido_2 = cleanVal(edit_usuario.apellido_2);
@@ -145,7 +152,7 @@ export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo:
     const rut = cleanVal(edit_usuario.rut);
     const rol = cleanVal(edit_usuario.rol ? edit_usuario.rol.toLowerCase() : undefined);
     try {
-        const res = await axios.put(ServiceTypes.API_URL + `/usuarios/${rut_viejo}`, {
+        const res = await axios.put(api_url + `/usuarios/${rut_viejo}`, {
             nombre,
             apellido_1,
             apellido_2,
@@ -178,9 +185,10 @@ export const editUsuario = async (edit_usuario: ServiceTypes.Usuario, rut_viejo:
     return Status.UNKNOWN;
 };
 
-export const nuevoRegistro = async (rut: string, salida: boolean, motivo: string): Promise<Status> => {
+export const NewRegistro = async (rut: string, salida: boolean, motivo: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/registros`, { rut, salida, motivo });
+        const res = await axios.post(api_url + `/registros`, { rut, salida, motivo });
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -206,9 +214,10 @@ export const nuevoRegistro = async (rut: string, salida: boolean, motivo: string
     return Status.UNKNOWN;
 };
 
-export const changePassword = async (email: string, pswd: string): Promise<Status> => {
+export const ChangePassword = async (email: string, pswd: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/admin/change`, {
+        const res = await axios.post(api_url + `/admin/change`, {
             email: email,
             pswd: pswd
         });
@@ -246,12 +255,13 @@ const cleanVal = (s: string | undefined) => {
 };
 
 const PostService = {
-    editUsuario,
-    nuevoRegistro,
-    enrollNewUsuario,
-    enrollAdmin,
-    rerollUsuario,
-    nuevoMotivo,
-    changePassword
+    EditUsuario,
+    NewRegistro,
+    EnrollNewUsuario,
+    EnrollAdmin,
+    RerollUsuario,
+    NewMotivo,
+    ChangePassword,
+    NewRol
 };
 export default PostService;

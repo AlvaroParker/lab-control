@@ -1,15 +1,17 @@
 import ServiceTypes, { Status } from './types';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { getURL } from '.';
 
 axios.defaults.withCredentials = true;
 
-export const login = async (
+export const Login = async (
     email: string,
     pswd: string
 ): Promise<[ServiceTypes.Admin | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + '/admin/login', {
+        const res = await axios.post(api_url + '/admin/login', {
             email,
             pswd,
         });
@@ -43,10 +45,10 @@ export const login = async (
     return [null, Status.UNKNOWN];
 };
 
-export const is_authenticated = async (): Promise<boolean> => {
+export const IsAuthenticated = async (): Promise<boolean> => {
     // This only check if it has a cookie that will be used to authenticated. If the cookie is no longer valid
     // Then the server will response with Unauthorized and this should be handled with a redirect
-    const token = getToken();
+    const token = GetToken();
     if (token) {
         return true;
     } else {
@@ -54,8 +56,8 @@ export const is_authenticated = async (): Promise<boolean> => {
     }
 };
 
-const getUser = async (): Promise<ServiceTypes.Admin | null> => {
-    if (await is_authenticated()) {
+const GetUser = async (): Promise<ServiceTypes.Admin | null> => {
+    if (await IsAuthenticated()) {
         const user = localStorage.getItem('user');
         if (user) {
             const user_js = JSON.parse(user);
@@ -68,9 +70,10 @@ const getUser = async (): Promise<ServiceTypes.Admin | null> => {
     }
 };
 
-const logout = async (): Promise<Status> => {
+const Logout = async (): Promise<Status> => {
+    const api_url = getURL();
     try {
-        await axios.post(ServiceTypes.API_URL + '/admin/logout');
+        await axios.post(api_url + '/admin/logout');
         Cookies.remove('auth-cookie');
         localStorage.removeItem('user');
 
@@ -80,7 +83,7 @@ const logout = async (): Promise<Status> => {
     }
 };
 
-const getToken = () => {
+const GetToken = () => {
     // Check if cookie has expired
     let cookie = Cookies.get('auth-cookie'); // => 'value'
     if (cookie) {
@@ -90,9 +93,9 @@ const getToken = () => {
 };
 
 const AuthService = {
-    login,
-    getToken,
-    getUser,
-    logout,
+    Login,
+    GetToken,
+    GetUser,
+    Logout
 };
 export default AuthService;

@@ -1,13 +1,11 @@
 <script lang="ts">
 // import ServiceTypes from '../services/types.js';
 import { defineComponent } from 'vue';
-import GetService from '../services/get.service';
-import ServiceTypes, { Status } from '../services/types';
 import ChileanRutify from 'chilean-rutify';
 import { useRouter } from 'vue-router';
-import DeleteService from '../services/delete.service';
 import { AxiosError } from 'axios';
-import PostService from '../services/post.service';
+
+import { ServiceTypes, GetService, DeleteService, PostService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -51,7 +49,7 @@ export default defineComponent({
         async handleSubmit() {
             this.showModalEnroll = false;
             this.registrando_huella = true;
-            const ws = await PostService.rerollUsuario(this.usuario.rut);
+            const ws = await PostService.RerollUsuario(this.usuario.rut);
             ws.onerror = (error) => {
                 console.log(error.message);
             };
@@ -93,7 +91,7 @@ export default defineComponent({
         async deleteUsuario() {
             // Delete usuario DELETE request
             try {
-                const res = await DeleteService.deleteUsuario(this.usuario.rut);
+                const res = await DeleteService.DeleteUsuario(this.usuario.rut);
                 if (res === Status.OK) {
                     this.showModal = false;
                     this.go_home();
@@ -120,7 +118,7 @@ export default defineComponent({
         if (!rut || typeof rut !== 'string') {
             this.display_not_found = true;
         } else {
-            GetService.getUsuarioByRut(rut)
+            GetService.GetUsuarioByRut(rut)
                 .then(([usuario, status]) => {
                     if (status === Status.OK && usuario) {
                         this.usuario = usuario;

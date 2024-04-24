@@ -3,10 +3,10 @@
 import { defineComponent } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useRegistrosStore } from '../stores/RegistrosStore';
-import { getCSVRegistro} from '../services/get.service';
 import fileDownload from 'js-file-download'
 import { AxiosError } from 'axios';
-import { Status } from '../services/types';
+
+import { Status, GetService } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -37,7 +37,7 @@ export default defineComponent({
                 return;
             }
             try {
-                let [registros, status] = await getCSVRegistro(this.inputFromFecha,this.inputToFecha);
+                let [registros, status] = await GetService.GetCSVRegistro(this.inputFromFecha,this.inputToFecha);
                 if (status === Status.OK && registros) {
                     fileDownload(registros, 'registros.csv')
                 }

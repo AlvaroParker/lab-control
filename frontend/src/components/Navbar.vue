@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import AuthService from '../services/auth.service';
-import ServiceTypes from '../services/types';
+import { AuthService, ServiceTypes } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -14,13 +13,13 @@ export default defineComponent({
             return this.$route.name;
         },
         async getUser() {
-            const user = await AuthService.getUser();
+            const user = await AuthService.GetUser();
             if (user) {
                 this.user = user;
             }
         },
         async logout() {
-            await AuthService.logout();
+            await AuthService.Logout();
             this.$router.push('/').then(() => {
                 location.reload();
             });

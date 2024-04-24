@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import ServiceTypes, { Status } from '../services/types';
-import GetService from '../services/get.service';
+import {GetService} from 'lab-control'
 
 export const useAdminStore = defineStore('AdminStore', {
     state: () => {
@@ -13,7 +13,7 @@ export const useAdminStore = defineStore('AdminStore', {
         getAdmins: (state): Array<ServiceTypes.AdminGeneric> => {
             if (!state.request_made) {
                 state.request_made = true;
-                GetService.getAdmins().then(([admins, status]) => {
+                GetService.GetAdmins().then(([admins, status]) => {
                     if (status === Status.OK && admins) {
                         state.admins = admins;
                     }
@@ -24,7 +24,7 @@ export const useAdminStore = defineStore('AdminStore', {
     },
     actions: {
         update() {
-            GetService.getAdmins()
+            GetService.GetAdmins()
                 .then(([admins, status]) => {
                     if (status === Status.OK && admins){
                         this.admins = admins;

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import ServiceTypes, { Status } from '../services/types';
-import GetService from '../services/get.service';
+import {GetService} from 'lab-control'
 
 export const useRegistrosStore = defineStore('RegistrosStore', {
     state: () => {
@@ -18,7 +18,7 @@ export const useRegistrosStore = defineStore('RegistrosStore', {
     },
     actions: {
         async update() {
-            const [registros, status] = await GetService.getRegistros(this.offset, this.limit);
+            const [registros, status] = await GetService.GetRegistros(this.offset, this.limit);
             if (status === Status.OK) {
                 this.registros = registros!;
             }
@@ -26,7 +26,7 @@ export const useRegistrosStore = defineStore('RegistrosStore', {
         },
         async next() {
             this.offset += 10;
-            const [registro, status] = await GetService.getRegistros(this.offset, this.limit);
+            const [registro, status] = await GetService.GetRegistros(this.offset, this.limit);
             // Ignore this error
             if (status === Status.OK) {
                 if (registro?.length !== 0) {
@@ -40,7 +40,7 @@ export const useRegistrosStore = defineStore('RegistrosStore', {
             if (this.offset >= 10) {
                 this.offset -= 10;
             }
-            const [registros, status] = await GetService.getRegistros(this.offset, this.limit);
+            const [registros, status] = await GetService.GetRegistros(this.offset, this.limit);
             if (status === Status.OK) {
                 this.registros = registros ?? this.registros;
             }

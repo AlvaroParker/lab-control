@@ -91,10 +91,5 @@ namespace ServiceTypes {
 
         return missingProperties.length === 0;
     };
-    // This is defined when deploying the server
-    const IP = import.meta.env.VITE_BACKEND_IP as string;
-    const PORT = import.meta.env.VITE_BACKEND_PORT as string;
-    export const API_URL = `https://${IP}:${PORT}/api`;
-    export const WS_URI = `wss://${IP}:${PORT}/api`;
 }
 export default ServiceTypes;

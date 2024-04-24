@@ -3,10 +3,9 @@
 import { defineComponent } from 'vue';
 import { useAdminStore } from '../stores/AdminStore';
 import ChileanRutify from 'chilean-rutify';
-import { deleteAdmin } from '../services/delete.service';
-import AuthService from '../services/auth.service';
-import ServiceTypes, { Status } from '../services/types';
-import { changePassword } from '../services/post.service';
+
+import {DeleteService, AuthService, Status, ServiceTypes, PostService} from 'lab-control'
+
 
 export default defineComponent({
     data() {
@@ -32,7 +31,7 @@ export default defineComponent({
         },
         async eliminarAdmin(email: string) {
             if (this.user.email !== email) {
-                const status = await deleteAdmin(email);
+                const status = await DeleteService.DeleteAdmin(email);
                 if (status !== Status.OK) {
                     // TODO: Handle error
                 }
@@ -42,7 +41,7 @@ export default defineComponent({
             }
         },
         async getUser() {
-            const user = await AuthService.getUser();
+            const user = await AuthService.GetUser();
             if (user) {
                 this.user = user;
             }
@@ -50,7 +49,7 @@ export default defineComponent({
         async cambiarPswd() {
             if (this.inputPswd1 === this.inputPswd2)
             {
-                const status = await changePassword(this.selected.email, this.inputPswd1);
+                const status = await PostService.ChangePassword(this.selected.email, this.inputPswd1);
                 if (status !== Status.OK) {
                     // TODO: Handle error on password change
                 }

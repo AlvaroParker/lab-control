@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
-import { Status } from '../services/types';
+
+import { AuthService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -26,7 +26,7 @@ export default defineComponent({
     },
     methods: {
         handleSubmit() {
-            AuthService.login(this.username, this.password)
+            AuthService.Login(this.username, this.password)
                 .then(([_, status]) => {
                     if (status === Status.OK) {
                         this.$router.push('/').then(() => {

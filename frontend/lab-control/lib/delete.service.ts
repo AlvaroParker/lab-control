@@ -1,11 +1,13 @@
+import { getURL } from '.';
 import ServiceTypes, { Status } from './types';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-export const deleteUsuario = async (rut: string): Promise<Status> => {
+export const DeleteUsuario = async (rut: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.delete(ServiceTypes.API_URL + `/usuarios/${rut}`);
+        const res = await axios.delete(api_url + `/usuarios/${rut}`);
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -31,9 +33,10 @@ export const deleteUsuario = async (rut: string): Promise<Status> => {
     return Status.UNKNOWN;
 };
 
-export const deleteMotivo = async (id: number): Promise<Status> => {
+export const DeleteMotivo = async (id: number): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.delete(ServiceTypes.API_URL + `/metadata/motivos/${id}`);
+        const res = await axios.delete(api_url + `/metadata/motivos/${id}`);
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -59,9 +62,10 @@ export const deleteMotivo = async (id: number): Promise<Status> => {
     return Status.UNKNOWN;
 }
 
-export const deleteRol = async (id: number): Promise<Status> => {
+export const DeleteRol = async (id: number): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.delete(ServiceTypes.API_URL + `/metadata/roles/${id}`);
+        const res = await axios.delete(api_url + `/metadata/roles/${id}`);
         switch (res.status) {
             case 200:
                 return Status.OK;
@@ -87,9 +91,10 @@ export const deleteRol = async (id: number): Promise<Status> => {
     return Status.UNKNOWN;
 }
 
-export const deleteAdmin = async(email: string): Promise<Status> => {
+export const DeleteAdmin = async (email: string): Promise<Status> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + `/admin/delete`, {
+        const res = await axios.post(api_url + `/admin/delete`, {
             email: email
         });
         switch (res.status) {
@@ -118,8 +123,9 @@ export const deleteAdmin = async(email: string): Promise<Status> => {
 }
 
 const DeleteService = {
-    deleteUsuario,
-    deleteMotivo,
-    deleteAdmin
+    DeleteUsuario,
+    DeleteMotivo,
+    DeleteAdmin,
+    DeleteRol
 };
 export default DeleteService;

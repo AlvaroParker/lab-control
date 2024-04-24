@@ -1,11 +1,13 @@
+import { getURL } from '.';
 import ServiceTypes, { Status } from './types';
 import axios, { isAxiosError } from 'axios';
 
 axios.defaults.withCredentials = true;
 
-export const getUsuarios = async (): Promise<[Array<ServiceTypes.Usuario>, Status]> => {
+export const GetUsuarios = async (): Promise<[Array<ServiceTypes.Usuario>, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + '/usuarios');
+        const res = await axios.get(api_url + '/usuarios');
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -15,7 +17,7 @@ export const getUsuarios = async (): Promise<[Array<ServiceTypes.Usuario>, Statu
                 return [[], Status.INTERNAL_SERVER_ERROR];
             default:
                 return [[], Status.UNKNOWN];
-        
+
         }
     } catch (err) {
         if (isAxiosError(err)) {
@@ -34,9 +36,10 @@ export const getUsuarios = async (): Promise<[Array<ServiceTypes.Usuario>, Statu
     return [[], Status.UNKNOWN];
 };
 
-export const getUsuarioByRut = async (rut: string): Promise<[ServiceTypes.Usuario | null, Status]> => {
+export const GetUsuarioByRut = async (rut: string): Promise<[ServiceTypes.Usuario | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + `/usuarios/${rut}`);
+        const res = await axios.get(api_url + `/usuarios/${rut}`);
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -68,12 +71,13 @@ export const getUsuarioByRut = async (rut: string): Promise<[ServiceTypes.Usuari
     return [null, Status.UNKNOWN];
 };
 
-export const verifyUsuario = async (
+export const VerifyUsuario = async (
     salida: boolean,
     motivo: string
 ): Promise<[ServiceTypes.Usuario | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.post(ServiceTypes.API_URL + '/usuarios/verify', { salida, motivo });
+        const res = await axios.post(api_url + '/usuarios/verify', { salida, motivo });
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -103,9 +107,10 @@ export const verifyUsuario = async (
     return [null, Status.UNKNOWN];
 };
 
-export const getMotivos = async (): Promise<[Array<ServiceTypes.Motivo> | null, Status]> => {
+export const GetMotivos = async (): Promise<[Array<ServiceTypes.Motivo> | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + '/metadata/motivos');
+        const res = await axios.get(api_url + '/metadata/motivos');
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -134,9 +139,10 @@ export const getMotivos = async (): Promise<[Array<ServiceTypes.Motivo> | null, 
     return [null, Status.UNKNOWN];
 }
 
-export const getRoles = async(): Promise<[Array<ServiceTypes.Rol> | null, Status]> => {
+export const GetRoles = async (): Promise<[Array<ServiceTypes.Rol> | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + '/metadata/roles');
+        const res = await axios.get(api_url + '/metadata/roles');
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -164,13 +170,14 @@ export const getRoles = async(): Promise<[Array<ServiceTypes.Rol> | null, Status
     return [null, Status.UNKNOWN];
 }
 
-export const getRegistros = async (
+export const GetRegistros = async (
     offset: number,
     limit: number
 ): Promise<[Array<ServiceTypes.Registro> | null, Status]> => {
+    const api_url = getURL();
     try {
         const res = await axios.get(
-            ServiceTypes.API_URL + `/registros?limit=${limit}&offset=${offset}`
+            api_url + `/registros?limit=${limit}&offset=${offset}`
         );
         switch (res.status) {
             case 200:
@@ -193,9 +200,10 @@ export const getRegistros = async (
     return [null, Status.UNKNOWN];
 };
 
-export const getAdmins = async(): Promise<[Array<ServiceTypes.AdminGeneric> |null, Status]> => {
+export const GetAdmins = async (): Promise<[Array<ServiceTypes.AdminGeneric> | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + '/admin/all');
+        const res = await axios.get(api_url + '/admin/all');
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -222,9 +230,10 @@ export const getAdmins = async(): Promise<[Array<ServiceTypes.AdminGeneric> |nul
     return [null, Status.UNKNOWN];
 }
 
-export const getCSVRegistro = async(from_date: string, to_date: string): Promise<[string | null, Status]> => {
+export const GetCSVRegistro = async (from_date: string, to_date: string): Promise<[string | null, Status]> => {
+    const api_url = getURL();
     try {
-        const res = await axios.get(ServiceTypes.API_URL + `/registros/reporte?from=${from_date}&to=${to_date}`,);
+        const res = await axios.get(api_url + `/registros/reporte?from=${from_date}&to=${to_date}`,);
         switch (res.status) {
             case 200:
                 return [res.data, Status.OK];
@@ -251,12 +260,13 @@ export const getCSVRegistro = async(from_date: string, to_date: string): Promise
 }
 
 const GetService = {
-    getUsuarios,
-    getUsuarioByRut,
-    verifyUsuario,
-    getRegistros,
-    getMotivos,
-    getAdmins,
-    getRoles
+    GetUsuarios,
+    GetUsuarioByRut,
+    VerifyUsuario,
+    GetRegistros,
+    GetMotivos,
+    GetAdmins,
+    GetRoles,
+    GetCSVRegistro
 };
 export default GetService;

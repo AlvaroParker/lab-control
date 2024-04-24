@@ -3,9 +3,8 @@
 import { defineComponent } from 'vue';
 import {useMotivoStore} from '../stores/MotivoStore'
 import ChileanRutify from 'chilean-rutify';
-import { deleteMotivo } from '../services/delete.service';
-import { nuevoMotivo } from '../services/post.service';
-import { Status } from '../services/types';
+
+import { DeleteService, PostService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -21,7 +20,7 @@ export default defineComponent({
     },
     methods: {
         async agregarNuevoMotivo() {
-            const res = await nuevoMotivo(this.inputMotivo);
+            const res = await PostService.NewMotivo(this.inputMotivo);
             if (res === Status.BAD_REQUEST) {
                 this.errorBadRequest = true;
             } else {
@@ -31,7 +30,7 @@ export default defineComponent({
             }
         },
         async eliminar(id: number) {
-            const status = await deleteMotivo(id);
+            const status = await DeleteService.DeleteMotivo(id);
             if (status !== Status.OK) {
                 // TODO: Handle error
             }

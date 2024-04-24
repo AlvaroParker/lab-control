@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
-import PostService from '../services/post.service';
-import ServiceTypes, { Status } from '../services/types';
+
+import { PostService, ServiceTypes, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -36,7 +36,7 @@ export default defineComponent({
                 pswd: this.password,
                 email: this.email
             }
-            PostService.enrollAdmin(admin).then((status) => {
+            PostService.EnrollAdmin(admin).then((status) => {
                 if (status === Status.OK) {
                     this.go_home();
                 } else {

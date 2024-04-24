@@ -1,11 +1,12 @@
 <script lang="ts">
 import { QrcodeStream } from 'vue3-qrcode-reader';
-import QRTypes from './QRTypes.js';
+import QRTypes from './QRTypes';
 import { defineComponent } from 'vue';
-import PostService from '../../services/post.service.js';
 import ChileanRutify from 'chilean-rutify';
-import { Status } from '../../services/types';
 import { useMotivoStore } from '../../stores/MotivoStore';
+
+import {PostService} from 'lab-control'
+import { Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -32,7 +33,7 @@ export default defineComponent({
         // Submit the new registro, with salida and motivo
         async submitRegistro(salida: boolean, motivo: string) {
             // Send the POST request
-            const status = await PostService.nuevoRegistro(this.rut, salida, motivo);
+            const status = await PostService.NewRegistro(this.rut, salida, motivo);
             if (status !== Status.OK) {
                 // TODO: Handle errors
             }

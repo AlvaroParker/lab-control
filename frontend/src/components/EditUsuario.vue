@@ -3,10 +3,9 @@ import { defineComponent } from 'vue';
 // import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { formatRut } from 'chilean-rutify';
-import GetService from '../services/get.service.js';
-import ServiceTypes, { Status } from '../services/types.js';
-import PostService from '../services/post.service.js';
 import { AxiosError } from 'axios';
+
+import { GetService, ServiceTypes, PostService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -49,7 +48,7 @@ export default defineComponent({
         // Get the user before mounting the component
         const rut = this.$route.query.rut;
         if (rut && typeof rut === 'string') {
-            const [usuario, status] = await GetService.getUsuarioByRut(rut);
+            const [usuario, status] = await GetService.GetUsuarioByRut(rut);
             if (status === Status.OK && usuario) {
                 this.usuario = usuario;
             }
@@ -66,7 +65,7 @@ export default defineComponent({
             this.edit_usuario.rut = rut;
             // Make the PUT request
             try {
-                const res = await PostService.editUsuario(this.edit_usuario, this.usuario.rut);
+                const res = await PostService.EditUsuario(this.edit_usuario, this.usuario.rut);
                 if (res === Status.OK) {
                     this.go_home();
                 } else {

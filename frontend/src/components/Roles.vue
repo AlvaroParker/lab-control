@@ -3,9 +3,8 @@
 import { defineComponent } from 'vue';
 import { useRolStore } from '../stores/RolStore'
 import ChileanRutify from 'chilean-rutify';
-import { deleteRol } from '../services/delete.service';
-import { newRol } from '../services/post.service';
-import { Status } from '../services/types';
+
+import { DeleteService, PostService, Status } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -21,7 +20,7 @@ export default defineComponent({
     },
     methods: {
         async agregarNuevoRol() {
-            const res = await newRol(this.inputRol);
+            const res = await PostService.NewRol(this.inputRol);
             if (res === Status.BAD_REQUEST) {
                 this.errorBadRequest = true;
             } else {
@@ -31,7 +30,7 @@ export default defineComponent({
             }
         },
         async eliminar(id: number) {
-            const status = await deleteRol(id);
+            const status = await  DeleteService.DeleteRol(id);
             if (status !== Status.OK) {
                 // TODO: Handle error
             }

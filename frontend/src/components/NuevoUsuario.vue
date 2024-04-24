@@ -3,9 +3,9 @@ import { defineComponent } from 'vue';
 // import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
-import ServiceTypes from '../services/types.js';
-import PostService from '../services/post.service.js';
 import { useRolStore } from '../stores/RolStore.js';
+
+import { ServiceTypes, PostService } from 'lab-control';
 
 
 export default defineComponent({
@@ -60,7 +60,7 @@ export default defineComponent({
                 this.usuario.rut = rut;
                 this.registrando_huella = true;
 
-                const ws = await PostService.enrollNewUsuario(this.usuario);
+                const ws = await PostService.EnrollNewUsuario(this.usuario);
                 ws.onerror = (error) => {
                     this.error_detected = true;
                     console.log(error.message);

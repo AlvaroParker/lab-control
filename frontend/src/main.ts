@@ -1,6 +1,12 @@
 import { createApp } from 'vue';
 import './style.css';
 import { createPinia } from 'pinia';
+import {setIPandPort} from 'lab-control'
+
+
+const IP = import.meta.env.VITE_BACKEND_IP as string;
+const PORT = import.meta.env.VITE_BACKEND_PORT as string;
+setIPandPort(IP, PORT)
 
 // Font awesome
 import { IconDefinition, library } from '@fortawesome/fontawesome-svg-core';

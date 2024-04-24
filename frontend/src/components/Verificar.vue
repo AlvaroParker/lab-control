@@ -1,9 +1,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import ServiceTypes, { Status } from '../services/types';
-import GetService from '../services/get.service';
 import ChileanRutify from 'chilean-rutify';
 import { useMotivoStore } from '../stores/MotivoStore';
+
+import { ServiceTypes, GetService, Status } from 'lab-control';
+
 // import Motivos from './Motivos.vue';
 
 export default defineComponent({
@@ -29,7 +30,7 @@ export default defineComponent({
             this.showModal = false;
             const timeout = 2000;
             this.disabled = true;
-            GetService.verifyUsuario(salida, motivo)
+            GetService.VerifyUsuario(salida, motivo)
                 .then(([usuario, status]) => {
                     if (status === Status.OK && usuario) {
                         this.esperando_huella = false;
