@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import ServiceTypes, { Status } from '../services/types';
+import {ServiceTypes, Status} from 'lab-control'
 import {GetService} from 'lab-control'
 
 export const useAdminStore = defineStore('AdminStore', {

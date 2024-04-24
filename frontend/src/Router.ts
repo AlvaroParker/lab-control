@@ -1,6 +1,6 @@
 import 'vue-router';
 import { createRouter, createWebHistory } from 'vue-router';
-import { is_authenticated } from './services/auth.service';
+import { AuthService } from 'lab-control';
 import Usuarios from './components/Usuarios.vue';
 import Login from './components/Login.vue';
 import Info from './components/Info.vue';
@@ -35,7 +35,7 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, _from) => {
-    const is_auth = await is_authenticated();
+    const is_auth = await AuthService.IsAuthenticated();
     if (
         !is_auth &&
         to.name !== 'Login' &&

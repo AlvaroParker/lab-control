@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-// import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
 import { useRolStore } from '../stores/RolStore.js';

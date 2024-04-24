@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import ServiceTypes, { Status } from '../services/types';
-import {GetService} from 'lab-control'
+import {GetService, Status, ServiceTypes} from 'lab-control'
 
 export const useRegistrosStore = defineStore('RegistrosStore', {
     state: () => {

@@ -1,5 +1,4 @@
 <script lang="ts">
-// import ServiceTypes from '../services/types.js';
 import { defineComponent } from 'vue';
 import { useRolStore } from '../stores/RolStore'
 import ChileanRutify from 'chilean-rutify';
