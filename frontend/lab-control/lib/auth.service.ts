@@ -96,6 +96,7 @@ const AuthService = {
     Login,
     GetToken,
     GetUser,
-    Logout
+    Logout,
+    IsAuthenticated
 };
 export default AuthService;

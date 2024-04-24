@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-// import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { formatRut } from 'chilean-rutify';
 import { AxiosError } from 'axios';

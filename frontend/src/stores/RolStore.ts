@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import ServiceTypes from '../services/types';
-import {GetService} from 'lab-control';
+import {GetService, ServiceTypes} from 'lab-control';
 
 export const useRolStore= defineStore('RolStore', {
     state: () => {
