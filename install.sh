@@ -44,6 +44,9 @@ if [ "$run" = true ] && [ "$pack" = true ]; then
   exit 1
 fi
 
+npm --prefix frontend/lab-control install
+npm --prefix frontend/lab-control run build
+
 # Build the frontend and copy files to deploy/ folder
 yarn --cwd frontend install
 yarn --cwd frontend run build
