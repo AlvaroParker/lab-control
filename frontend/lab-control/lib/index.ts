@@ -28,7 +28,9 @@ export function getURL() {
 }
 
 export function getWSURL() {
-  return `ws://${IP}:${PORT}`
+  if (HTTPS)
+    return `wss://${IP}:${PORT}/api`
+  return `ws://${IP}:${PORT}/api`
 }
 
 export function setIPandPort(ip: string, port: string) {

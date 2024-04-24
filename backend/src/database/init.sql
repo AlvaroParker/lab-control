@@ -1,4 +1,4 @@
-\c access_control
+\c fingerprints
 CREATE TABLE IF NOT EXISTS personas(
   nombre VARCHAR(64) NOT NULL,
   apellido_1 VARCHAR(64) NOT NULL,
