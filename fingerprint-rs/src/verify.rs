@@ -1,4 +1,4 @@
-use std::{cell::RefCell, error::Error, fs, io::Read, net::TcpStream, rc::Rc};
+use std::{cell::RefCell, fs, io::Read, net::TcpStream, rc::Rc};
 
 use libfprint_rs::{FpDevice, FpPrint, GError};
 use tungstenite::WebSocket;
@@ -36,7 +36,7 @@ pub fn run_verification(
     addr: Rc<RefCell<WebSocket<TcpStream>>>,
     dev: &FpDevice,
     paths: Vec<String>,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), GError> {
     if !dev.is_open() {
         dev.open_sync(None)?;
     }

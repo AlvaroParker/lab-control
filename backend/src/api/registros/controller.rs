@@ -6,34 +6,18 @@ use axum::http::header;
 use axum::response::IntoResponse;
 use axum::{extract::State, http::StatusCode, Json};
 use chrono::{Local, Utc};
-use sea_orm::prelude::DateTimeWithTimeZone;
 
 use sea_orm::ActiveValue::{NotSet, Set};
 use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DbBackend, EntityTrait, FromQueryResult,
     QueryFilter, QueryOrder, Statement,
 };
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+use crate::api::registros::models::{RegistroAlumno, RegistroNew};
 use crate::api::utils::{internal_error, is_valid_num_rut};
 use crate::database::entities::registros;
 use crate::database::pool::Pool;
-
-// The json that we will respont with will have the following data:
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RegistroAlumno {
-    pub id: i32,
-    pub nombre: String,
-    pub apellido_1: String,
-    pub apellido_2: String,
-    pub rut: String,
-    pub correo_uai: String,
-    pub fecha: DateTimeWithTimeZone,
-    pub salida: bool,
-    pub rol: String,
-    pub motivo: String,
-}
 
 // Get all the registros
 pub async fn get_all(
@@ -113,14 +97,6 @@ pub async fn get_last_month(
     Ok((headers, v))
 }
 
-// RegistroNew is the json body that we will receive when registering a new registro
-#[derive(Serialize, Deserialize)]
-pub struct RegistroNew {
-    pub rut: String,
-    pub salida: bool,
-    pub motivo: String,
-}
-
 // Register a new reigstro into the DB
 pub async fn registrar_rut(
     State(pool): State<Arc<Pool>>,
@@ -163,5 +139,5 @@ pub async fn get_last(
             return Err((StatusCode::NO_CONTENT, "".into()));
         }
     }
-    Err((StatusCode::BAD_REQUEST, "Rut invalido".into()))
+    Err((StatusCode::BAD_REQUEST, "Invalid rut".into()))
 }

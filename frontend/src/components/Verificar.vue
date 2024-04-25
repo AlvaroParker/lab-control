@@ -1,10 +1,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-import ServiceTypes from '../services/types';
-import GetService from '../services/get.service';
 import ChileanRutify from 'chilean-rutify';
-import { AxiosError } from 'axios';
 import { useMotivoStore } from '../stores/MotivoStore';
+
+import { ServiceTypes, GetService, Status } from 'lab-control';
+
 // import Motivos from './Motivos.vue';
 
 export default defineComponent({
@@ -30,50 +30,36 @@ export default defineComponent({
             this.showModal = false;
             const timeout = 2000;
             this.disabled = true;
-            GetService.verifyUsuario(salida, motivo)
-                .then((res) => {
-                    if (res?.data) {
+            GetService.VerifyUsuario(salida, motivo)
+                .then(([usuario, status]) => {
+                    if (status === Status.OK && usuario) {
                         this.esperando_huella = false;
-                        this.usuario = res.data;
+                        this.usuario = usuario;
                         this.display = true;
-                        console.log(this.usuario);
                         setTimeout(() => {
                             this.display = false;
                             this.usuario = {} as ServiceTypes.Usuario;
                             this.disabled = false;
                         }, timeout);
-                    } else {
-                        this.esperando_huella = true;
+                    } else if (status === Status.NOT_FOUND){
+                        this.esperando_huella = false;
                         this.usuario = {} as ServiceTypes.Usuario;
                         this.not_found = true;
-                        this.not_found = true;
-                        this.display = true;
-                        setTimeout(() => {
-                            this.display = false;
-                            this.usuario = {} as ServiceTypes.Usuario;
-                            this.not_found = false;
-                            this.disabled = false;
-                        }, timeout);
-                    }
-                })
-                .catch((err) => {
-                    this.esperando_huella = false;
-                    this.usuario = {} as ServiceTypes.Usuario;
-                    const axios_err = err as AxiosError;
-                    if (axios_err.response?.status === 404) {
                         this.display = true;
                         this.disabled = true;
-                        this.not_found = true;
                         setTimeout(() => {
+                            this.usuario = {} as ServiceTypes.Usuario;
+                            this.not_found = false;
                             this.display = false;
                             this.disabled = false;
-                            this.not_found = false;
                         }, timeout);
                     } else {
+                        this.esperando_huella = false;
+                        this.usuario = {} as ServiceTypes.Usuario;
                         this.display = false;
                         this.sensor_error = true;
                     }
-                });
+                })
         },
     },
     async beforeMount() {

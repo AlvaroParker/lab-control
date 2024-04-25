@@ -1,10 +1,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
-// import AuthService from '../services/auth.service';
 import { useRouter } from 'vue-router';
 import ChileanRutify, { normalizeRut } from 'chilean-rutify';
-import ServiceTypes from '../services/types.js';
-import PostService from '../services/post.service.js';
+import { useRolStore } from '../stores/RolStore.js';
+
+import { ServiceTypes, PostService } from 'lab-control';
+
 
 export default defineComponent({
     data() {
@@ -12,6 +13,7 @@ export default defineComponent({
             // We will store the user here
             usuario: {} as ServiceTypes.Usuario,
             valid_rut: true,
+            rols: useRolStore(),
             registrando_huella: false,
             error_detected: false,
             message: '',
@@ -47,6 +49,9 @@ export default defineComponent({
         };
     },
     methods: {
+        Capitalize(word: string) {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        },
         async handleSubmit() {
             this.registrando_huella = true;
             const rut = normalizeRut(this.usuario.rut);
@@ -54,7 +59,7 @@ export default defineComponent({
                 this.usuario.rut = rut;
                 this.registrando_huella = true;
 
-                const ws = await PostService.enrollNewUsuario(this.usuario);
+                const ws = await PostService.EnrollNewUsuario(this.usuario);
                 ws.onerror = (error) => {
                     this.error_detected = true;
                     console.log(error.message);
@@ -97,6 +102,9 @@ export default defineComponent({
                 this.registrando_huella = false;
             }
         },
+    },
+    async beforeMount() {
+        this.rols.update()
     },
     watch: {
         rut() {
@@ -167,7 +175,7 @@ export default defineComponent({
                                 </div>
                                 <div>
                                     <v-select
-                                        :items="['Alumno', 'Ayudante', 'Docente']"
+                                        :items="rols.getRols.map((x) => Capitalize(x.rol))"
                                         density="comfortable"
                                         label="Rol"
                                         :disabled="registrando_huella"

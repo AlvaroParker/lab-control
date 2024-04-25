@@ -6,3 +6,4 @@ pub mod admins;
 pub mod motivos;
 pub mod personas;
 pub mod registros;
+pub mod roles;

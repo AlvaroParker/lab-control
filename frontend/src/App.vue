@@ -1,6 +1,6 @@
 <script lang="ts">
 import Navbar from './components/Navbar.vue';
-import { is_authenticated } from './services/auth.service';
+import { AuthService } from 'lab-control';
 
 export default {
     data() {
@@ -14,7 +14,7 @@ export default {
     },
     methods: {
         async is_user_auth() {
-            this.is_auth = await is_authenticated();
+            this.is_auth = await AuthService.IsAuthenticated();
         },
         getName() {
             return this.$route.name;

@@ -8,3 +8,4 @@ deploy.zip
 deploy/init.sql
 deploy/frontend
 deploy/backend
+frontend/lab-control/node_modules/

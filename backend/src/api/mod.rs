@@ -1,6 +1,6 @@
 mod admins;
 mod guard;
-mod motivos;
+mod metadata;
 mod personas;
 mod registros;
 pub mod routes;
