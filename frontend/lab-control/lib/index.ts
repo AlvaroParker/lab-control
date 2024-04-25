@@ -5,7 +5,6 @@ import PostService from "./post.service";
 import ServiceTypes from './types'
 import { Status } from "./types";
 
-
 export let IP = "192.168.68.115"
 export let PORT = "8080"
 export let HTTPS = true
@@ -37,7 +36,6 @@ export function setIPandPort(ip: string, port: string) {
   IP = ip;
   PORT = port;
 }
-
 
 export {
   AuthService,

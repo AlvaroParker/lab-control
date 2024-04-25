@@ -1,6 +1,6 @@
 {
   "name": "lab-control",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Node module for Lab-Control web API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "author": "Alvaro Parker",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/ws": "^8.5.10",
     "typescript": "^5.4.5"
