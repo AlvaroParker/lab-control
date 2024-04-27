@@ -1,12 +1,11 @@
 import { createApp } from 'vue';
 import './style.css';
 import { createPinia } from 'pinia';
-import {setIPandPort} from 'lab-control'
-
+import { setIPandPort } from 'lab-control';
 
 const IP = import.meta.env.VITE_BACKEND_IP as string;
 const PORT = import.meta.env.VITE_BACKEND_PORT as string;
-setIPandPort(IP, PORT)
+setIPandPort(IP, PORT);
 
 // Font awesome
 import { IconDefinition, library } from '@fortawesome/fontawesome-svg-core';
@@ -25,7 +24,7 @@ import {
     faTrash,
     faLock,
     faPencilAlt,
-    faExclamationTriangle
+    faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
 
 import App from './App.vue';
@@ -44,7 +43,7 @@ library.add(faSignOutAlt as IconDefinition);
 library.add(faQrcode as IconDefinition);
 library.add(faTrash as IconDefinition);
 library.add(faLock as IconDefinition);
-library.add(faPencilAlt as IconDefinition)
+library.add(faPencilAlt as IconDefinition);
 library.add(faExclamationTriangle as IconDefinition);
 
 // Vuetify

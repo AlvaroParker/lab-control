@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useRegistrosStore } from '../stores/RegistrosStore';
-import fileDownload from 'js-file-download'
+import fileDownload from 'js-file-download';
 import { AxiosError } from 'axios';
 
 import { Status, GetService } from 'lab-control';
@@ -16,7 +16,7 @@ export default defineComponent({
             showModal: false,
             inputToFecha: '',
             inputFromFecha: '',
-            missingFechas: false
+            missingFechas: false,
         };
     },
     methods: {
@@ -36,15 +36,17 @@ export default defineComponent({
                 return;
             }
             try {
-                let [registros, status] = await GetService.GetCSVRegistro(this.inputFromFecha,this.inputToFecha);
+                let [registros, status] = await GetService.GetCSVRegistro(
+                    this.inputFromFecha,
+                    this.inputToFecha
+                );
                 if (status === Status.OK && registros) {
-                    fileDownload(registros, 'registros.csv')
+                    fileDownload(registros, 'registros.csv');
                 }
-
             } catch (err: AxiosError | any) {
                 if (err instanceof AxiosError) {
                     this.missingFechas = true;
-                    console.log(err.message)
+                    console.log(err.message);
                     return;
                 }
             }
@@ -52,7 +54,6 @@ export default defineComponent({
             this.showModal = false;
             this.inputFromFecha = '';
             this.inputToFecha = '';
-
         },
     },
     async beforeMount() {
@@ -76,10 +77,7 @@ export default defineComponent({
             >
                 Prev
             </button>
-            <button
-                class="btn btn-primary ms-2"
-                @click="showModal = true"
-            >
+            <button class="btn btn-primary ms-2" @click="showModal = true">
                 Descargar registros (CSV)
             </button>
             <button
@@ -138,17 +136,17 @@ export default defineComponent({
                         Selecciona el rango de fechas para la descarga
                     </div>
 
-
                     <div class="modal-footer justify-content-center my-5" v-if="missingFechas">
                         <p class="text-red">
-                    <font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
-                            Porfavor selecciona ambas fechas</p>
+                            <font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
+                            Porfavor selecciona ambas fechas
+                        </p>
                     </div>
                     <div class="modal-footer justify-content-center mb-3">
-                        <input v-model="inputFromFecha" type="date" required>
+                        <input v-model="inputFromFecha" type="date" required />
                     </div>
                     <div class="modal-footer justify-content-center mb-3">
-                        <input v-model="inputToFecha" type="date" required>
+                        <input v-model="inputToFecha" type="date" required />
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button
@@ -159,7 +157,12 @@ export default defineComponent({
                         </button>
                         <button
                             class="btn btn-primary modal-default-button"
-                            @click="showModal = false; inputFromFecha = ''; inputToFecha = ''; missingFechas = false"
+                            @click="
+                                showModal = false;
+                                inputFromFecha = '';
+                                inputToFecha = '';
+                                missingFechas = false;
+                            "
                         >
                             Cancelar
                         </button>
@@ -168,7 +171,6 @@ export default defineComponent({
             </div>
         </Transition>
     </Teleport>
-
 </template>
 
 <style>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {GetService, ServiceTypes, Status} from 'lab-control';
+import { GetService, ServiceTypes, Status } from 'lab-control';
 
 export const useUsuarioStore = defineStore('UsuarioStore', {
     state: () => {

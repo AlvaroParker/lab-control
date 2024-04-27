@@ -7,7 +7,8 @@
         "dev": "vite",
         "build": "vue-tsc && vite build",
         "preview": "vite preview",
-        "format": "prettier --ignore-path .gitignore --config .prettierrc --ignore-path .prettierignore --write \"**/*.+(js|ts|json|vue)\""
+        "format": "npx prettier ./src --write",
+        "lint": "npx eslint ./src"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "1.x",
@@ -35,12 +36,16 @@
         "ws": "^8.16.0"
     },
     "devDependencies": {
+        "@eslint/js": "^9.1.1",
         "@vitejs/plugin-vue": "^5.0.4",
         "dotenv": "^16.4.5",
+        "eslint": "^9.1.1",
         "node-sass": "^9.0.0",
+        "prettier": "3.2.5",
         "sass": "^1.72.0",
         "sass-loader": "^14.1.1",
-        "typescript": "^5.3.3",
+        "typescript": "^5.4.5",
+        "typescript-eslint": "^7.7.1",
         "vite": "^5.2.3",
         "vue-tsc": "^2.0.7"
     }

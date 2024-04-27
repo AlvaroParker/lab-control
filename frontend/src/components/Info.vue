@@ -19,7 +19,7 @@ export default defineComponent({
             message: '',
             registrando_huella: false,
             current: 0,
-            total: 1
+            total: 1,
         };
     },
     setup() {
@@ -109,7 +109,7 @@ export default defineComponent({
         async enrollHuella() {
             await this.handleSubmit();
             // Todo
-        }
+        },
     },
     // Get the usuario before mount
     async beforeCreate() {
@@ -187,7 +187,10 @@ export default defineComponent({
                         <button class="mx-2 btn btn-primary btn-space" @click="editUsuario">
                             Editar usuario
                         </button>
-                        <button class="mx-2 btn btn-warning btn-space" @click="showModalEnroll = true">
+                        <button
+                            class="mx-2 btn btn-warning btn-space"
+                            @click="showModalEnroll = true"
+                        >
                             Cambiar huella
                         </button>
                     </div>

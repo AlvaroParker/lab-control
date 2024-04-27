@@ -3,8 +3,7 @@ import { defineComponent } from 'vue';
 import { useAdminStore } from '../stores/AdminStore';
 import ChileanRutify from 'chilean-rutify';
 
-import {DeleteService, AuthService, Status, ServiceTypes, PostService} from 'lab-control'
-
+import { DeleteService, AuthService, Status, ServiceTypes, PostService } from 'lab-control';
 
 export default defineComponent({
     data() {
@@ -18,15 +17,13 @@ export default defineComponent({
             user: {} as ServiceTypes.Admin,
             inputPswd1: '',
             inputPswd2: '',
-            missingPswd: false
+            missingPswd: false,
         };
     },
     methods: {
         handleCambiar() {
-            if (this.inputPswd1 === this.inputPswd2 && this.inputPswd1 !== '') 
-                this.cambiarPswd()
-            else 
-                this.missingPswd = true
+            if (this.inputPswd1 === this.inputPswd2 && this.inputPswd1 !== '') this.cambiarPswd();
+            else this.missingPswd = true;
         },
         async eliminarAdmin(email: string) {
             if (this.user.email !== email) {
@@ -46,16 +43,18 @@ export default defineComponent({
             }
         },
         async cambiarPswd() {
-            if (this.inputPswd1 === this.inputPswd2)
-            {
-                const status = await PostService.ChangePassword(this.selected.email, this.inputPswd1);
+            if (this.inputPswd1 === this.inputPswd2) {
+                const status = await PostService.ChangePassword(
+                    this.selected.email,
+                    this.inputPswd1
+                );
                 if (status !== Status.OK) {
                     // TODO: Handle error on password change
                 }
             }
             this.showModalPswd = false;
             this.selected = {} as ServiceTypes.AdminGeneric;
-        }
+        },
     },
     async beforeMount() {
         this.admins.update();
@@ -89,14 +88,30 @@ export default defineComponent({
                             {{ admin.email }}
                         </td>
                         <td>
-                            <button class="btn btn-danger btn-space" @click="if (admin.email == user.email) {showModalError = true} else {showModal = true; selected=admin}"
-                                ><font-awesome-icon :icon="['fa', 'trash']" />
-                                Eliminar </button>
+                            <button
+                                class="btn btn-danger btn-space"
+                                @click="
+                                    if (admin.email == user.email) {
+                                        showModalError = true;
+                                    } else {
+                                        showModal = true;
+                                        selected = admin;
+                                    }
+                                "
+                            >
+                                <font-awesome-icon :icon="['fa', 'trash']" /> Eliminar
+                            </button>
                         </td>
                         <td>
-                            <button class="btn btn-warning btn-space" @click="showModalPswd = true; selected = admin"
-                                ><font-awesome-icon :icon="['fa', 'pencil-alt']" />
-                                Cambiar </button>
+                            <button
+                                class="btn btn-warning btn-space"
+                                @click="
+                                    showModalPswd = true;
+                                    selected = admin;
+                                "
+                            >
+                                <font-awesome-icon :icon="['fa', 'pencil-alt']" /> Cambiar
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -108,9 +123,7 @@ export default defineComponent({
         <Transition name="modal">
             <div v-if="showModal" class="modal-mask">
                 <div class="modal-container border rounded-3">
-                    <div class="modal-header justify-content-center mb-3">
-                        Eliminar admin?
-                    </div>
+                    <div class="modal-header justify-content-center mb-3">Eliminar admin?</div>
 
                     <div class="modal-footer justify-content-center">
                         <button
@@ -121,7 +134,10 @@ export default defineComponent({
                         </button>
                         <button
                             class="btn btn-primary modal-default-button"
-                            @click="showModal = false; selected = {} as ServiceTypes.AdminGeneric"
+                            @click="
+                                showModal = false;
+                                selected = {} as ServiceTypes.AdminGeneric;
+                            "
                         >
                             Cancelar
                         </button>
@@ -135,14 +151,19 @@ export default defineComponent({
             <div v-if="showModalError" class="modal-mask">
                 <div class="modal-container border rounded-3">
                     <div class="modal-header justify-content-center mb-3 text-center text-red">
-                        <p><font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
-                        No puedes eliminar tu propio usuario!</p>
+                        <p>
+                            <font-awesome-icon :icon="['fa', 'exclamation-triangle']" /> No puedes
+                            eliminar tu propio usuario!
+                        </p>
                     </div>
 
                     <div class="modal-footer justify-content-center">
                         <button
                             class="btn btn-primary modal-default-button"
-                            @click="showModalError = false; selected = {} as ServiceTypes.AdminGeneric"
+                            @click="
+                                showModalError = false;
+                                selected = {} as ServiceTypes.AdminGeneric;
+                            "
                         >
                             Cancelar
                         </button>
@@ -156,20 +177,31 @@ export default defineComponent({
             <div v-if="showModalPswd" class="modal-mask">
                 <div class="modal-container border rounded-3">
                     <div class="modal-header justify-content-center mb-3 text-center">
-                        Ingrese la nueva contrasena para {{ selected.nombre }} {{ selected.apellido_1 }} {{ selected.apellido_2 }}
-                        ({{ selected.email }})
+                        Ingrese la nueva contrasena para {{ selected.nombre }}
+                        {{ selected.apellido_1 }} {{ selected.apellido_2 }} ({{ selected.email }})
                     </div>
                     <div class="modal-footer justify-content-center my-5" v-if="missingPswd">
                         <p class="text-red">
-                    <font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
-                            Contrasenas no coinciden</p>
+                            <font-awesome-icon :icon="['fa', 'exclamation-triangle']" />
+                            Contrasenas no coinciden
+                        </p>
                     </div>
                     <div class="modal-footer justify-content-center mb-5">
-                        <input v-model="inputPswd1" placeholder="Ingrese contrasena" type="password"  required>
+                        <input
+                            v-model="inputPswd1"
+                            placeholder="Ingrese contrasena"
+                            type="password"
+                            required
+                        />
                     </div>
 
                     <div class="modal-footer justify-content-center my-5">
-                        <input v-model="inputPswd2" placeholder="Ingrese contrasena" type="password" required>
+                        <input
+                            v-model="inputPswd2"
+                            placeholder="Ingrese contrasena"
+                            type="password"
+                            required
+                        />
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button
@@ -180,7 +212,11 @@ export default defineComponent({
                         </button>
                         <button
                             class="btn btn-primary modal-default-button"
-                            @click="showModalPswd = false; selected = {} as ServiceTypes.AdminGeneric; missingPswd = false"
+                            @click="
+                                showModalPswd = false;
+                                selected = {} as ServiceTypes.AdminGeneric;
+                                missingPswd = false;
+                            "
                         >
                             Cancelar
                         </button>
@@ -189,7 +225,6 @@ export default defineComponent({
             </div>
         </Transition>
     </Teleport>
-
 </template>
 
 <style></style>

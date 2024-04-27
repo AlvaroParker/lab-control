@@ -6,7 +6,6 @@ import { useRolStore } from '../stores/RolStore.js';
 
 import { ServiceTypes, PostService } from 'lab-control';
 
-
 export default defineComponent({
     data() {
         return {
@@ -104,7 +103,7 @@ export default defineComponent({
         },
     },
     async beforeMount() {
-        this.rols.update()
+        this.rols.update();
     },
     watch: {
         rut() {

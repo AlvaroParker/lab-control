@@ -19,7 +19,7 @@ export default defineComponent({
             disabled: false,
             showModal: false,
             esperando_huella: false,
-            motivos: useMotivoStore()
+            motivos: useMotivoStore(),
         };
     },
     setup() {},
@@ -30,36 +30,35 @@ export default defineComponent({
             this.showModal = false;
             const timeout = 2000;
             this.disabled = true;
-            GetService.VerifyUsuario(salida, motivo)
-                .then(([usuario, status]) => {
-                    if (status === Status.OK && usuario) {
-                        this.esperando_huella = false;
-                        this.usuario = usuario;
-                        this.display = true;
-                        setTimeout(() => {
-                            this.display = false;
-                            this.usuario = {} as ServiceTypes.Usuario;
-                            this.disabled = false;
-                        }, timeout);
-                    } else if (status === Status.NOT_FOUND){
-                        this.esperando_huella = false;
-                        this.usuario = {} as ServiceTypes.Usuario;
-                        this.not_found = true;
-                        this.display = true;
-                        this.disabled = true;
-                        setTimeout(() => {
-                            this.usuario = {} as ServiceTypes.Usuario;
-                            this.not_found = false;
-                            this.display = false;
-                            this.disabled = false;
-                        }, timeout);
-                    } else {
-                        this.esperando_huella = false;
-                        this.usuario = {} as ServiceTypes.Usuario;
+            GetService.VerifyUsuario(salida, motivo).then(([usuario, status]) => {
+                if (status === Status.OK && usuario) {
+                    this.esperando_huella = false;
+                    this.usuario = usuario;
+                    this.display = true;
+                    setTimeout(() => {
                         this.display = false;
-                        this.sensor_error = true;
-                    }
-                })
+                        this.usuario = {} as ServiceTypes.Usuario;
+                        this.disabled = false;
+                    }, timeout);
+                } else if (status === Status.NOT_FOUND) {
+                    this.esperando_huella = false;
+                    this.usuario = {} as ServiceTypes.Usuario;
+                    this.not_found = true;
+                    this.display = true;
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.usuario = {} as ServiceTypes.Usuario;
+                        this.not_found = false;
+                        this.display = false;
+                        this.disabled = false;
+                    }, timeout);
+                } else {
+                    this.esperando_huella = false;
+                    this.usuario = {} as ServiceTypes.Usuario;
+                    this.display = false;
+                    this.sensor_error = true;
+                }
+            });
         },
     },
     async beforeMount() {
@@ -67,7 +66,7 @@ export default defineComponent({
     },
     mounted() {
         this.motivos;
-    }
+    },
 });
 </script>
 <template>
@@ -142,19 +141,22 @@ export default defineComponent({
                 <div class="container d-flex justify-content-center">
                     <div class="d-flex justify-content-center align-items-center">
                         <div class="row">
-                            <div v-for="(motivo) in motivos.getMotivos" :key="motivo.id" class="col-md-4 col-6 d-flex justify-content-center">
+                            <div
+                                v-for="motivo in motivos.getMotivos"
+                                :key="motivo.id"
+                                class="col-md-4 col-6 d-flex justify-content-center"
+                            >
                                 <button
                                     class="btn btn-success m-2"
                                     :disabled="disabled"
                                     @click.prevent="() => handleSubmit(false, motivo.motivo)"
-                                    style="width: 15rem; height: 3rem;"
+                                    style="width: 15rem; height: 3rem"
                                 >
                                     {{ motivo.motivo }}
                                 </button>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </Transition>

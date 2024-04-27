@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import {GetService, ServiceTypes} from 'lab-control';
+import { GetService, ServiceTypes } from 'lab-control';
 
-export const useRolStore= defineStore('RolStore', {
+export const useRolStore = defineStore('RolStore', {
     state: () => {
         return {
             rols: new Array<ServiceTypes.Rol>(),
@@ -32,7 +32,7 @@ export const useRolStore= defineStore('RolStore', {
                 .catch((_) => {});
         },
         clear() {
-            this.rols= new Array<ServiceTypes.Rol>();
+            this.rols = new Array<ServiceTypes.Rol>();
         },
     },
     // actions

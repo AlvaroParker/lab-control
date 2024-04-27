@@ -5,7 +5,7 @@ import { defineComponent } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useMotivoStore } from '../../stores/MotivoStore';
 
-import {PostService} from 'lab-control'
+import { PostService } from 'lab-control';
 import { Status } from 'lab-control';
 
 export default defineComponent({
@@ -111,9 +111,19 @@ export default defineComponent({
                     </div>
 
                     <div class="container modal-body">
-                        <div class="row justify-content-center align-items-center" v-for="motivo in motivos.getMotivos">
+                        <div
+                            class="row justify-content-center align-items-center"
+                            v-for="motivo in motivos.getMotivos"
+                        >
                             <div class="col-12">
-                                <button class="btn btn-danger mb-5" @click="() => {submitRegistro(false, motivo.motivo);}">
+                                <button
+                                    class="btn btn-danger mb-5"
+                                    @click="
+                                        () => {
+                                            submitRegistro(false, motivo.motivo);
+                                        }
+                                    "
+                                >
                                     {{ motivo.motivo }}
                                 </button>
                             </div>
