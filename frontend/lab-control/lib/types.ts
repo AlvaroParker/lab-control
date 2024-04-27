@@ -11,64 +11,64 @@ export enum Status {
     UNKNOWN = 0,
 }
 export interface Usuario {
-    nombre: string;
-    apellido_1: string;
-    apellido_2: string;
-    rut: string;
-    print_path: string;
-    correo_uai: string;
-    rol: string;
-    last_registro: Registro | null;
+    nombre: string
+    apellido_1: string
+    apellido_2: string
+    rut: string
+    print_path: string
+    correo_uai: string
+    rol: string
+    last_registro: Registro | null
 }
 export interface Motivo {
-    id: number;
-    motivo: string;
+    id: number
+    motivo: string
 }
 export interface Rol {
-    id: number;
-    rol: string;
+    id: number
+    rol: string
 }
 export interface Registro {
-    id: number;
-    nombre: string;
-    apellido_1: string;
-    apellido_2: string;
-    correo_uai: string;
-    rut: string;
-    fecha: string;
-    salida: boolean;
-    rol: string;
-    motivo: string;
+    id: number
+    nombre: string
+    apellido_1: string
+    apellido_2: string
+    correo_uai: string
+    rut: string
+    fecha: string
+    salida: boolean
+    rol: string
+    motivo: string
 }
 export interface Admin {
-    nombre: string;
-    apellido_1: string;
-    apellido_2: string;
-    email: string;
-    token: string;
+    nombre: string
+    apellido_1: string
+    apellido_2: string
+    email: string
+    token: string
 }
 export interface Registro {
-    id: number;
-    fecha: string;
-    motivo: string;
-    rut: string;
-    salida: boolean;
+    id: number
+    fecha: string
+    motivo: string
+    rut: string
+    salida: boolean
 }
 export interface AdminRegistro {
-    nombre: string,
-    apellido_1: string,
-    apellido_2: string,
-    email: string,
+    nombre: string
+    apellido_1: string
+    apellido_2: string
+    email: string
     pswd: string
 }
 export interface AdminGeneric {
-    nombre: string,
-    apellido_1: string,
-    apellido_2: string,
+    nombre: string
+    apellido_1: string
+    apellido_2: string
     email: string
 }
 // Check if object has all the properties of Usuario (except for print_path)
-export const isUsuario = (input: Usuario): boolean=> {
+export const isUsuario = (input: Usuario): boolean => {
     if (
         input &&
         typeof input.nombre === 'string' &&
@@ -77,8 +77,14 @@ export const isUsuario = (input: Usuario): boolean=> {
         typeof input.rut === 'string' &&
         typeof input.correo_uai === 'string' &&
         typeof input.rol === 'string' &&
-        input.nombre && input.apellido_1 && input.apellido_2 && input.rut && input.correo_uai && input.rol
-    ) return true
-    
+        input.nombre &&
+        input.apellido_1 &&
+        input.apellido_2 &&
+        input.rut &&
+        input.correo_uai &&
+        input.rol
+    )
+        return true
+
     return false
-};
+}
