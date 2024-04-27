@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import {ServiceTypes, Status} from 'lab-control'
-import {GetService} from 'lab-control'
+import { ServiceTypes, Status } from 'lab-control';
+import { GetService } from 'lab-control';
 
 export const useAdminStore = defineStore('AdminStore', {
     state: () => {
@@ -26,7 +26,7 @@ export const useAdminStore = defineStore('AdminStore', {
         update() {
             GetService.GetAdmins()
                 .then(([admins, status]) => {
-                    if (status === Status.OK && admins){
+                    if (status === Status.OK && admins) {
                         this.admins = admins;
                     }
                 })

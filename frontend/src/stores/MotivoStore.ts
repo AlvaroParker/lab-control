@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import {GetService, ServiceTypes } from 'lab-control'
+import { GetService, ServiceTypes } from 'lab-control';
 
-export const useMotivoStore= defineStore('MotivoStore', {
+export const useMotivoStore = defineStore('MotivoStore', {
     state: () => {
         return {
             motivos: new Array<ServiceTypes.Motivo>(),
@@ -16,7 +16,7 @@ export const useMotivoStore= defineStore('MotivoStore', {
                     console.log(status);
                     console.log(motivos);
                     if (motivos) {
-                        state.motivos= motivos;
+                        state.motivos = motivos;
                     }
                 });
             }

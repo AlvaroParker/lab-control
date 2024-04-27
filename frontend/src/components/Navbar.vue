@@ -56,7 +56,12 @@ export default defineComponent({
                     <router-link
                         to="/"
                         class="list-group-item list-group-item-action py-2 ripple"
-                        :class="{ active: 'Home' == getName() || 'Info' == getName() || 'EditUsuario' == getName() }"
+                        :class="{
+                            active:
+                                'Home' == getName() ||
+                                'Info' == getName() ||
+                                'EditUsuario' == getName(),
+                        }"
                     >
                         <font-awesome-icon :icon="['fa', 'book']" /> Usuarios
                     </router-link>
@@ -190,7 +195,9 @@ body {
     left: 0;
     padding: 58px 0 0;
     /* Height of navbar */
-    box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+    box-shadow:
+        0 2px 5px 0 rgb(0 0 0 / 5%),
+        0 2px 10px 0 rgb(0 0 0 / 5%);
     width: 240px;
     z-index: 600;
 }
@@ -203,7 +210,9 @@ body {
 
 .sidebar .active {
     border-radius: 5px;
-    box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+    box-shadow:
+        0 2px 5px 0 rgb(0 0 0 / 16%),
+        0 2px 10px 0 rgb(0 0 0 / 12%);
 }
 
 .sidebar-sticky {

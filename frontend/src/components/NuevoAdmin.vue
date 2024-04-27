@@ -12,7 +12,7 @@ export default defineComponent({
             apellido_2: '',
             password: '',
             email: '',
-            newAdminErr: null
+            newAdminErr: null,
         };
     },
     setup() {
@@ -29,13 +29,13 @@ export default defineComponent({
     },
     methods: {
         handleSubmit() {
-            const admin:  ServiceTypes.AdminRegistro = {
+            const admin: ServiceTypes.AdminRegistro = {
                 nombre: this.nombre,
                 apellido_1: this.apellido_1,
                 apellido_2: this.apellido_2,
                 pswd: this.password,
-                email: this.email
-            }
+                email: this.email,
+            };
             PostService.EnrollAdmin(admin).then((status) => {
                 if (status === Status.OK) {
                     this.go_home();
@@ -43,7 +43,7 @@ export default defineComponent({
                     // Error happenned, todo
                     this.go_home();
                 }
-            })
+            });
         },
     },
 });
@@ -106,9 +106,7 @@ export default defineComponent({
                                     ></v-text-field>
                                 </div>
 
-                                <button
-                                    class="btn btn-primary btn-lg px-5 mt-2 mb"
-                                >
+                                <button class="btn btn-primary btn-lg px-5 mt-2 mb">
                                     Registrar admin
                                 </button>
                             </form>

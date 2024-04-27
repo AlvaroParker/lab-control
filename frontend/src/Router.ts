@@ -23,10 +23,10 @@ const routes = [
     { path: '/usuarios/nuevo', component: NuevoUsuario, name: 'NuevoUsuario' },
     { path: '/usuarios/verificar', component: Verificar, name: 'VerificarUsuario' },
     { path: '/registros', component: Registro, name: 'Registro' },
-    { path: '/admin/new', component: NuevoAdmin, name: 'NuevoAdmin'},
-    { path: '/motivos', component: Motivos, name: 'Motivos'},
-    { path: '/roles', component: Roles, name: 'Roles'},
-    { path: '/admin', component:Admins, name: 'Admin'}
+    { path: '/admin/new', component: NuevoAdmin, name: 'NuevoAdmin' },
+    { path: '/motivos', component: Motivos, name: 'Motivos' },
+    { path: '/roles', component: Roles, name: 'Roles' },
+    { path: '/admin', component: Admins, name: 'Admin' },
 ];
 
 export const router = createRouter({
