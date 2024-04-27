@@ -28,7 +28,7 @@ namespace AuthService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { AuthService, Status } from 'lab-control';
      * 
      * const [user, status] = await AuthService.Login("some@email.com", "somePassword123");
@@ -96,7 +96,7 @@ namespace AuthService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { AuthService } from 'lab-control';
      * 
      * const user = await AuthService.GetUser();
@@ -127,7 +127,7 @@ namespace AuthService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { AuthService, Status } from 'lab-control';
      * 
      * const status = await AuthService.Logout();

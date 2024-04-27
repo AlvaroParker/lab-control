@@ -27,7 +27,7 @@ namespace DeleteService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { DeleteService, Status } from 'lab-control';
      * 
      * const status = await DeleteService.DeleteUsuario("12345678-9");
@@ -70,7 +70,7 @@ namespace DeleteService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { DeleteService, Status } from 'lab-control';
      * 
      * const status = await DeleteService.DeleteMotivo(1);
@@ -115,7 +115,7 @@ namespace DeleteService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { DeleteService, Status } from 'lab-control';
      * 
      * const status = await DeleteService.DeleteRol(1);
@@ -160,7 +160,7 @@ namespace DeleteService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { DeleteService, Status } from 'lab-control';
      * 
      * const status = await DeleteService.DeleteAdmin("some@email.com");

@@ -27,7 +27,7 @@ namespace PostService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const admin = {
@@ -109,7 +109,7 @@ namespace PostService {
      * @example
      * Example of how to use the function:
      * 
-     * ```typescript
+     * ```
      * import { PostService, ServiceTypes } from 'lab-control';
      * 
      * const usuario: ServiceTypes.Usuario = {
@@ -188,8 +188,7 @@ namespace PostService {
      * 
      * @example
      * Example of how to use the function:
-     * 
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const ws = await PostService.RerollUsuario("12345678-9");
@@ -221,7 +220,7 @@ namespace PostService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const status = await PostService.NewMotivo("Ayudantia");
@@ -263,7 +262,7 @@ namespace PostService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const status = await PostService.NewRol("alumno");
@@ -307,7 +306,7 @@ namespace PostService {
      * 
      * @example
      * A simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const edit_usuario = {
@@ -372,7 +371,7 @@ namespace PostService {
      * 
      * @example
      * A simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const status = await PostService.NewRegistro("12345678-9", false, "Ayudantia");
@@ -415,7 +414,7 @@ namespace PostService {
      * 
      * @example
      * A simple example:
-     * ```typescript
+     * ```
      * import { PostService, Status } from 'lab-control';
      * 
      * const status = await PostService.ChangePassword("some@email.com", "newPassword");

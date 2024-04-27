@@ -28,7 +28,7 @@ namespace GetService {
      * 
      * @example
      * Simple example: 
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [usuarios, status] = await GetService.GetUsuarios();
@@ -75,7 +75,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [usuario, status] = await GetService.GetUsuarioByRut('12345678-9');
@@ -122,7 +122,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [usuario, status] = await GetService.VerifyUsuario(false, 'Asistencia Ramo');
@@ -169,7 +169,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [motivos, status] = await GetService.GetMotivos();
@@ -215,7 +215,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [roles, status] = await GetService.GetRoles();
@@ -260,7 +260,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [registros, status] = await GetService.GetRegistros(0, 10); // Get the first 10 records
@@ -311,7 +311,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [admins, status] = await GetService.GetAdmins();
@@ -357,7 +357,7 @@ namespace GetService {
      * 
      * @example
      * Simple example:
-     * ```typescript
+     * ```
      * import { GetService, Status } from 'lab-control';
      * 
      * const [csv, status] = await GetService.GetCSVRegistro('2021-01-01', '2021-12-31'); // Get the records from 2021
