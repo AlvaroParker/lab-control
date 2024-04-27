@@ -1,5 +1,6 @@
 {
   "name": "lab-control",
+  "type": "module",
   "version": "2.0.0",
   "description": "Node module for Lab-Control web API",
   "main": "dist/index.js",
@@ -11,8 +12,12 @@
   "author": "Alvaro Parker",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.1.1",
     "@types/ws": "^8.5.10",
-    "typescript": "^5.4.5"
+    "eslint": "^8.57.0",
+    "prettier": "3.2.5",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.1"
   },
   "dependencies": {
     "@types/js-cookie": "^3.0.6",
