@@ -95,15 +95,22 @@ namespace PostService {
      *      console.log(data.current); // Prints the current scan
      * }
      * ```
+     * The websocket connection also has custom close codes that can be handled using the `onclose` event of the `WebSocket` object:
+     * 
+     * - `1000`: The user was successfully enrolled
+     * - `4000`: Email o RUT already registered
+     * - `4001`: Invalid RUT
+     * - `4002`: Missing fields
+     * - `4500`: Internal server error
      * 
      * @param usuario - User data to enroll
      * @returns `WebSocket` - WebSocket connection
      * 
      * @example
      * Example of how to use the function:
+     * 
      * ```typescript
      * import { PostService, ServiceTypes } from 'lab-control';
-     * 
      * 
      * const usuario: ServiceTypes.Usuario = {
      *      nombre: "John",
@@ -168,13 +175,20 @@ namespace PostService {
      *      console.log(data.current); // Prints the current scan
      * }
      * ```
+     * The websocket connection also has custom close codes that can be handled using the `onclose` event of the `WebSocket` object:
      * 
+     * - `1000`: The user was successfully enrolled
+     * - `4000`: Email o RUT already registered
+     * - `4001`: Invalid RUT
+     * - `4002`: Missing fields
+     * - `4500`: Internal server error
      * 
      * @param rutUsuario - The rut of the user to reroll
      * @returns `WebSocket` - WebSocket connection
      * 
      * @example
      * Example of how to use the function:
+     * 
      * ```typescript
      * import { PostService, Status } from 'lab-control';
      * 
