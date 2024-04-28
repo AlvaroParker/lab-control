@@ -1,10 +1,8 @@
 import * as ServiceTypes from './types'
 import { Status } from './types'
-import axios from 'axios'
+import { axiosInstace as axios } from '.'
+import { isAxiosError } from 'axios'
 import Cookies from 'js-cookie'
-import { getURL } from '.'
-
-axios.defaults.withCredentials = true
 
 /**
  * This function logs in a user given its email and password. If the user is successfully logged in,
@@ -31,9 +29,8 @@ export const Login = async (
     email: string,
     pswd: string
 ): Promise<[ServiceTypes.Admin | null, Status]> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + '/admin/login', {
+        const res = await axios.post('/admin/login', {
             email,
             pswd,
         })
@@ -43,7 +40,7 @@ export const Login = async (
             return [res.data, Status.OK]
         }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             switch (error.response?.status) {
                 case 400:
                     return [null, Status.BAD_REQUEST]
@@ -125,9 +122,8 @@ export const GetUser = async (): Promise<ServiceTypes.Admin | null> => {
  * ```
  */
 export const Logout = async (): Promise<Status> => {
-    const api_url = getURL()
     try {
-        await axios.post(api_url + '/admin/logout')
+        await axios.post('/admin/logout')
         Cookies.remove('auth-cookie')
         localStorage.removeItem('user')
 

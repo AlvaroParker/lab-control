@@ -1,3 +1,4 @@
+import axios from 'axios'
 import * as AuthService from './auth.service'
 import * as DeleteService from './delete.service'
 import * as GetService from './get.service'
@@ -8,6 +9,10 @@ import { Status } from './types'
 export let IP = '192.168.68.115'
 export let PORT = '8080'
 export let HTTPS = true
+
+export const axiosInstace = axios.create({
+    withCredentials: true,
+})
 
 export function getPort() {
     return PORT
@@ -33,6 +38,8 @@ export function getWSURL() {
 export function setIPandPort(ip: string, port: string) {
     IP = ip
     PORT = port
+    const baseURL = getURL()
+    axiosInstace.defaults.baseURL = baseURL
 }
 
 export {

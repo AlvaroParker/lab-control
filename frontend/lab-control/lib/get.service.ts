@@ -1,9 +1,8 @@
-import { getURL } from '.'
 import * as ServiceTypes from './types'
 import { Status } from './types'
-import axios, { isAxiosError } from 'axios'
+import { isAxiosError } from 'axios'
+import { axiosInstace as axios } from '.'
 
-axios.defaults.withCredentials = true
 
 /**
  * Gets the list of users from the server
@@ -28,9 +27,8 @@ axios.defaults.withCredentials = true
 export const GetUsuarios = async (): Promise<
     [Array<ServiceTypes.Usuario>, Status]
 > => {
-    const api_url = getURL()
     try {
-        const res = await axios.get(api_url + '/usuarios')
+        const res = await axios.get('/usuarios')
         if (res.status === 200) {
             return [res.data, Status.OK]
         }
@@ -77,9 +75,8 @@ export const GetUsuarios = async (): Promise<
 export const GetUsuarioByRut = async (
     rut: string
 ): Promise<[ServiceTypes.Usuario | null, Status]> => {
-    const api_url = getURL()
     try {
-        const res = await axios.get(api_url + `/usuarios/${rut}`)
+        const res = await axios.get(`/usuarios/${rut}`)
         if (res.status) return [res.data, Status.OK]
     } catch (err) {
         if (isAxiosError(err)) {
@@ -126,9 +123,8 @@ export const VerifyUsuario = async (
     salida: boolean,
     motivo: string
 ): Promise<[ServiceTypes.Usuario | null, Status]> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + '/usuarios/verify', {
+        const res = await axios.post('/usuarios/verify', {
             salida,
             motivo,
         })
@@ -173,9 +169,8 @@ export const VerifyUsuario = async (
 export const GetMotivos = async (): Promise<
     [Array<ServiceTypes.Motivo> | null, Status]
 > => {
-    const api_url = getURL()
     try {
-        const res = await axios.get(api_url + '/metadata/motivos')
+        const res = await axios.get('/metadata/motivos')
         if (res.status) return [res.data, Status.OK]
     } catch (error) {
         if (isAxiosError(error)) {
@@ -219,9 +214,8 @@ export const GetMotivos = async (): Promise<
 export const GetRoles = async (): Promise<
     [Array<ServiceTypes.Rol> | null, Status]
 > => {
-    const api_url = getURL()
     try {
-        const res = await axios.get(api_url + '/metadata/roles')
+        const res = await axios.get('/metadata/roles')
         if (res.status === 200) return [res.data, Status.OK]
     } catch (error) {
         if (isAxiosError(error)) {
@@ -269,10 +263,9 @@ export const GetRegistros = async (
     if (offset < 0 || limit < 0) {
         return [null, Status.BAD_REQUEST]
     }
-    const api_url = getURL()
     try {
         const res = await axios.get(
-            api_url + `/registros?limit=${limit}&offset=${offset}`
+            `/registros?limit=${limit}&offset=${offset}`
         )
         if (res.status === 200) return [res.data, Status.OK]
     } catch (error) {
@@ -315,9 +308,8 @@ export const GetRegistros = async (
 export const GetAdmins = async (): Promise<
     [Array<ServiceTypes.AdminGeneric> | null, Status]
 > => {
-    const api_url = getURL()
     try {
-        const res = await axios.get(api_url + '/admin/all')
+        const res = await axios.get('/admin/all')
         if (res.status === 200) return [res.data, Status.OK]
     } catch (error) {
         if (isAxiosError(error)) {
@@ -362,10 +354,9 @@ export const GetCSVRegistro = async (
     from_date: string,
     to_date: string
 ): Promise<[string | null, Status]> => {
-    const api_url = getURL()
     try {
         const res = await axios.get(
-            api_url + `/registros/reporte?from=${from_date}&to=${to_date}`
+            `/registros/reporte?from=${from_date}&to=${to_date}`
         )
         if (res.status === 200) return [res.data, Status.OK]
     } catch (error) {

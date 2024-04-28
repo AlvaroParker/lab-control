@@ -1,10 +1,10 @@
 import * as ServiceTypes from './types'
 import { Status } from './types'
-import axios, { isAxiosError } from 'axios'
+import { isAxiosError } from 'axios'
 import WebSocket from 'isomorphic-ws'
-import { getURL, getWSURL } from '.'
+import { getWSURL } from '.'
 
-axios.defaults.withCredentials = true
+import { axiosInstace as axios } from '.'
 
 /**
  * This function enrolls an admin to the system. The admin data must be provided in the `admin` object.
@@ -33,9 +33,8 @@ axios.defaults.withCredentials = true
 export const EnrollAdmin = async (
     admin: ServiceTypes.AdminRegistro
 ): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/admin/signin`, {
+        const res = await axios.post(`/admin/signin`, {
             nombre: admin.nombre,
             apellido_1: admin.apellido_1,
             apellido_2: admin.apellido_2,
@@ -220,9 +219,8 @@ export const RerollUsuario = async (rutUsuario: string): Promise<WebSocket> => {
  * ```
  */
 export const NewMotivo = async (motivo: string): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/metadata/motivos`, {
+        const res = await axios.post(`/metadata/motivos`, {
             motivo: motivo,
         })
         if (res.status === 200) return Status.OK
@@ -263,9 +261,8 @@ export const NewMotivo = async (motivo: string): Promise<Status> => {
  * ```
  */
 export const NewRol = async (rol: string): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/metadata/roles`, { rol: rol })
+        const res = await axios.post(`/metadata/roles`, { rol: rol })
         if (res.status === 200) return Status.OK
     } catch (error) {
         if (isAxiosError(error)) {
@@ -314,7 +311,6 @@ export const EditUsuario = async (
     edit_usuario: ServiceTypes.Usuario,
     rut_viejo: string
 ): Promise<Status> => {
-    const api_url = getURL()
     const nombre = cleanVal(edit_usuario.nombre)
     const apellido_1 = cleanVal(edit_usuario.apellido_1)
     const apellido_2 = cleanVal(edit_usuario.apellido_2)
@@ -324,7 +320,7 @@ export const EditUsuario = async (
         edit_usuario.rol ? edit_usuario.rol.toLowerCase() : undefined
     )
     try {
-        const res = await axios.put(api_url + `/usuarios/${rut_viejo}`, {
+        const res = await axios.put(`/usuarios/${rut_viejo}`, {
             nombre,
             apellido_1,
             apellido_2,
@@ -379,9 +375,8 @@ export const NewRegistro = async (
     salida: boolean,
     motivo: string
 ): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/registros`, {
+        const res = await axios.post(`/registros`, {
             rut,
             salida,
             motivo,
@@ -428,9 +423,8 @@ export const ChangePassword = async (
     email: string,
     pswd: string
 ): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/admin/change`, {
+        const res = await axios.post(`/admin/change`, {
             email: email,
             pswd: pswd,
         })
