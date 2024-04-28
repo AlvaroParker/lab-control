@@ -1,8 +1,7 @@
-import { getURL } from '.'
+import { isAxiosError } from 'axios'
 import { Status } from './types'
-import axios from 'axios'
-
-axios.defaults.withCredentials = true
+import { axiosInstace as axios } from '.'
+import ChileanRutify from 'chilean-rutify'
 
 /**
  * This function deletes a user from the database given its rut.
@@ -27,13 +26,15 @@ axios.defaults.withCredentials = true
  * ```
  */
 export const DeleteUsuario = async (rut: string): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.delete(api_url + `/usuarios/${rut}`)
+        const rutNormalized = ChileanRutify.normalizeRut(rut)
+        const res = await axios.delete(`/usuarios/${rutNormalized}`)
         if (res.status === 200) return Status.OK
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             switch (error.response?.status) {
+                case 400:
+                    return Status.BAD_REQUEST
                 case 401:
                     return Status.UNAUTHORIZED
                 case 404:
@@ -69,12 +70,11 @@ export const DeleteUsuario = async (rut: string): Promise<Status> => {
  * ```
  */
 export const DeleteMotivo = async (id: number): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.delete(api_url + `/metadata/motivos/${id}`)
+        const res = await axios.delete(`/metadata/motivos/${id}`)
         if (res.status === 200) return Status.OK
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             switch (error.response?.status) {
                 case 400:
                     return Status.BAD_REQUEST
@@ -113,12 +113,11 @@ export const DeleteMotivo = async (id: number): Promise<Status> => {
  * ```
  */
 export const DeleteRol = async (id: number): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.delete(api_url + `/metadata/roles/${id}`)
+        const res = await axios.delete(`/metadata/roles/${id}`)
         if (res.status === 200) return Status.OK
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             switch (error.response?.status) {
                 case 400:
                     return Status.BAD_REQUEST
@@ -162,14 +161,13 @@ export const DeleteRol = async (id: number): Promise<Status> => {
  * ```
  */
 export const DeleteAdmin = async (email: string): Promise<Status> => {
-    const api_url = getURL()
     try {
-        const res = await axios.post(api_url + `/admin/delete`, {
+        const res = await axios.post(`/admin/delete`, {
             email: email,
         })
         if (res.status === 200) return Status.OK
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             switch (error.response?.status) {
                 case 400:
                     return Status.BAD_REQUEST
