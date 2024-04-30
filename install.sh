@@ -44,6 +44,7 @@ if [ "$run" = true ] && [ "$pack" = true ]; then
   exit 1
 fi
 
+rm -r frontend/lab-control/dist
 npm --prefix frontend/lab-control install
 npm --prefix frontend/lab-control run build
 

@@ -1,10 +1,14 @@
 {
     "compilerOptions": {
         "target": "ES2015",
-        "module": "commonjs",
+        "module": "ES2015",
+        "moduleResolution": "Node",
         "declaration": true,
         "outDir": "./dist",
         "strict": true,
         "esModuleInterop": true
-    }
+    },
+    "exclude": [
+        "**/*.test.ts"
+    ]
 }
