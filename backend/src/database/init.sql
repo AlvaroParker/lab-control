@@ -41,13 +41,16 @@ CREATE TABLE IF NOT EXISTS motivos(
   motivo VARCHAR(128) UNIQUE NOT NULL
 );
 
+-- To add an id instead of email as primary key:
+-- ALTER TABLE admins DROP CONSTRAINT admins_pkey;
+--  ALTER TABLE admins ADD COLUMN id SERIAL PRIMARY KEY;
 CREATE TABLE IF NOT EXISTS admins(
+  id SERIAL PRIMARY KEY,
   nombre VARCHAR(64) NOT NULL,
   apellido_1 VARCHAR(64) NOT NULL,
   apellido_2 VARCHAR(64) NOT NULL,
   email VARCHAR(64) NOT NULL,
-  pswd VARCHAR(128) NOT NULL,
-  PRIMARY KEY(email)
+  pswd VARCHAR(128) NOT NULL
 );
 
 INSERT INTO admins (

@@ -19,7 +19,7 @@ pub async fn _create_routes(pool: Arc<Pool>) -> Router<Arc<Pool>> {
         // Return status: [OK 200, UNAUTHORIZED 401, INTERNAL SERVER ERROR 500]
         .route("/change", post(change_password))
         // Return status: [OK 200, UNAUTHORIZED 401, NOT FOUND 404, INTERNAL SERVER ERROR 500]
-        .route("/delete", post(delete_admin))
+        .route("/delete/:id", post(delete_admin))
         .route_layer(middleware::from_fn_with_state(pool, guard_layer))
         // Return status: [OK 200, UNAUTHORIZED 401, INTERNAL SERVER ERROR 500]
         .route("/login", post(login))

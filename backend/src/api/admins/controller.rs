@@ -1,16 +1,19 @@
-use super::models::{AdminReq, Email, LoginAdmin, RequestAdmin, ResponseAdmin};
+use super::models::{AdminReq, LoginAdmin, RequestAdmin, ResponseAdmin};
 use std::{sync::Arc, time::Duration};
 
 use crate::{api::utils::handle_cookie_err, database::entities::admins::Entity as Admin};
 use async_session::{Session, SessionStore};
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::{header::SET_COOKIE, Response, StatusCode},
     response::IntoResponse,
     Json,
 };
 use axum_extra::extract::{cookie::Cookie, CookieJar};
-use sea_orm::{ActiveModelTrait, DbErr, EntityTrait, FromQueryResult, IntoActiveModel};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, FromQueryResult, IntoActiveModel,
+    QueryFilter,
+};
 use sea_orm::{DbBackend, Statement};
 use serde_json::json;
 
@@ -19,7 +22,7 @@ use crate::{
     database::{entities::admins, pool::Pool},
 };
 
-use sea_orm::entity::ActiveValue::Set;
+use sea_orm::entity::ActiveValue::{NotSet, Set};
 
 // Aka signin. The user must provide a valid `RequestAdmin` JSON body
 pub async fn create_user(
@@ -28,6 +31,7 @@ pub async fn create_user(
 ) -> Result<Json<ResponseAdmin>, (StatusCode, String)> {
     // Create a new admin SQL row
     let new_admin = admins::ActiveModel {
+        id: NotSet,
         nombre: Set(admin.nombre),
         apellido_1: Set(admin.apellido_1),
         apellido_2: Set(admin.apellido_2),
@@ -41,6 +45,7 @@ pub async fn create_user(
     .map_err(user_exists)?;
     // From the new created user, create a ResponseAdmin struct
     let mut admin = ResponseAdmin {
+        id: new_admin.id,
         nombre: new_admin.nombre,
         apellido_1: new_admin.apellido_1,
         apellido_2: new_admin.apellido_2,
@@ -60,7 +65,8 @@ pub async fn login(
     Json(request_admin): Json<LoginAdmin>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     // Find the admin in the DB by email
-    let querie = Admin::find_by_id(request_admin.email)
+    let querie = Admin::find()
+        .filter(admins::Column::Email.contains(&request_admin.email))
         .one(pool.get_db())
         .await
         .map_err(internal_error)?;
@@ -75,6 +81,7 @@ pub async fn login(
         // If the password is correct, create a cookie for the admin
         if verified {
             let mut admin = ResponseAdmin {
+                id: saved_admin.id,
                 nombre: saved_admin.nombre,
                 apellido_1: saved_admin.apellido_1,
                 apellido_2: saved_admin.apellido_2,
@@ -129,8 +136,7 @@ pub async fn logout(
 pub async fn get_admins(
     State(pool): State<Arc<Pool>>,
 ) -> Result<Json<Vec<AdminReq>>, (StatusCode, String)> {
-    let query =
-        r#"SELECT admins.nombre, admins.apellido_1, admins.apellido_2, admins.email FROM admins"#;
+    let query = r#"SELECT admins.id, admins.nombre, admins.apellido_1, admins.apellido_2, admins.email FROM admins"#;
     let value = sea_orm::query::JsonValue::find_by_statement(Statement::from_string(
         DbBackend::Postgres,
         query,
@@ -146,9 +152,9 @@ pub async fn get_admins(
 
 pub async fn delete_admin(
     State(pool): State<Arc<Pool>>,
-    Json(email): Json<Email>,
+    Path(id): Path<i32>,
 ) -> Result<(), (StatusCode, String)> {
-    let query = Admin::delete_by_id(email.email)
+    let query = Admin::delete_by_id(id)
         .exec(pool.get_db())
         .await
         .map_err(internal_error)?;
@@ -163,7 +169,8 @@ pub async fn change_password(
     Json(request_admin): Json<LoginAdmin>,
 ) -> Result<(), (StatusCode, String)> {
     // Find the admin in the DB by email
-    let querie = Admin::find_by_id(request_admin.email)
+    let querie = Admin::find()
+        .filter(admins::Column::Email.contains(&request_admin.email))
         .one(pool.get_db())
         .await
         .map_err(internal_error)?;
