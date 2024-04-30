@@ -3,6 +3,7 @@ import { Status } from './types'
 import { isAxiosError } from 'axios'
 import { axiosInstace as axios } from '.'
 
+
 /**
  * Gets the list of users from the server
  * @remarks
