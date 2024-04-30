@@ -25,9 +25,9 @@ export default defineComponent({
             if (this.inputPswd1 === this.inputPswd2 && this.inputPswd1 !== '') this.cambiarPswd();
             else this.missingPswd = true;
         },
-        async eliminarAdmin(email: string) {
-            if (this.user.email !== email) {
-                const status = await DeleteService.DeleteAdmin(email);
+        async eliminarAdmin(id: number) {
+            if (this.user.id !== id) {
+                const status = await DeleteService.DeleteAdmin(id);
                 if (status !== Status.OK) {
                     // TODO: Handle error
                 }
@@ -82,7 +82,7 @@ export default defineComponent({
                     </tr>
                 </thead>
                 <tbody v-for="admin in admins.getAdmins">
-                    <tr id="{{ admin.email }}">
+                    <tr id="{{ admin.id }}">
                         <td>{{ admin.nombre }} {{ admin.apellido_1 }} {{ admin.apellido_2 }}</td>
                         <td>
                             {{ admin.email }}
@@ -128,7 +128,7 @@ export default defineComponent({
                     <div class="modal-footer justify-content-center">
                         <button
                             class="btn btn-danger modal-default-button me-5"
-                            @click="() => eliminarAdmin(selected.email)"
+                            @click="() => eliminarAdmin(selected.id)"
                         >
                             Eliminar
                         </button>

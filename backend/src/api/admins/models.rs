@@ -12,6 +12,7 @@ pub struct RequestAdmin {
 // Struct representing JSON that the server will response
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ResponseAdmin {
+    pub id: i32,
     pub nombre: String,
     pub apellido_1: String,
     pub apellido_2: String,
@@ -28,6 +29,7 @@ pub struct LoginAdmin {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct AdminReq {
+    pub id: i32,
     pub nombre: String,
     pub apellido_1: String,
     pub apellido_2: String,
