@@ -134,12 +134,12 @@ export const DeleteRol = async (id: number): Promise<Status> => {
 }
 
 /**
- * This function deletes an admin from the database given its email.
+ * This function deletes an admin from the database given its id.
  *
  * - If the admin doesn't exists, it will return `Status.NOT_FOUND`
  * - If the admin does exists, it will return `Status.OK`
  *
- * @param email - The email of the admin to delete
+ * @param id - the id of the admin to delete
  * @returns `Status` - Status of the request
  *
  * @example
@@ -147,7 +147,7 @@ export const DeleteRol = async (id: number): Promise<Status> => {
  * ```
  * import { DeleteService, Status } from 'lab-control';
  *
- * const status = await DeleteService.DeleteAdmin("some@email.com");
+ * const status = await DeleteService.DeleteAdmin(2);
  * switch (status) {
  *  case Status.OK:
  *   console.log("Admin deleted successfully");
@@ -160,11 +160,9 @@ export const DeleteRol = async (id: number): Promise<Status> => {
  * }
  * ```
  */
-export const DeleteAdmin = async (email: string): Promise<Status> => {
+export const DeleteAdmin = async (id: number): Promise<Status> => {
     try {
-        const res = await axios.post(`/admin/delete`, {
-            email: email,
-        })
+        const res = await axios.post(`/admin/delete/${id}`)
         if (res.status === 200) return Status.OK
     } catch (error) {
         if (isAxiosError(error)) {

@@ -41,6 +41,7 @@ export interface Registro {
     motivo: string
 }
 export interface Admin {
+    id: number
     nombre: string
     apellido_1: string
     apellido_2: string
@@ -62,6 +63,7 @@ export interface AdminRegistro {
     pswd: string
 }
 export interface AdminGeneric {
+    id: number
     nombre: string
     apellido_1: string
     apellido_2: string
