@@ -146,6 +146,5 @@ describe('DeleteService.DeleteRol()', () => {
 // to do this, we need to change the return tpye of the GetAdmins() function to also return
 // the id of the admin, so we can use it to delete the admin.
 describe('DeleteService.DeleteAdmin()', () => {
-    it('Should delete OK', async () => {
-    })
+    it('Should delete OK', async () => {})
 })

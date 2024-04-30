@@ -1,5 +1,5 @@
 /**
- * Functions: 
+ * Functions:
  * - GetUsuarios
  * - GetUsuarioByRut
  * - VerifyUsuario
@@ -10,15 +10,11 @@
  * - GetCSVRegistro
  */
 
-import MockAdapter from 'axios-mock-adapter'
-import { DeleteService, Status } from '.'
-import { axiosInstace as axios } from '.'
+// import MockAdapter from 'axios-mock-adapter'
+// import { axiosInstace as axios } from '.'
+// const mock = new MockAdapter(axios)
 
-const mock = new MockAdapter(axios)
-
-describe('GetService.GetUsuarios()', () => {
-
-})
+describe('GetService.GetUsuarios()', () => {})
 describe('GetService.GetUsuarioByRut()', () => {})
 describe('GetService.VerifyUsuario()', () => {})
 describe('GetService.GetMotivos()', () => {})
