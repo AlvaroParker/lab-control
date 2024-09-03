@@ -33,7 +33,7 @@ export const useUsuarioStore = defineStore('UsuarioStore', {
                         this.usuarios = new Array<ServiceTypes.Usuario>();
                     }
                 })
-                .catch((_) => {});
+                .catch(() => {});
         },
         clear() {
             this.usuarios = new Array<ServiceTypes.Usuario>();

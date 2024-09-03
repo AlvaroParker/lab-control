@@ -71,7 +71,6 @@ export default defineComponent({
                     this.error_message = 'Error al publicar las ediciones.';
                 }
             } catch (e) {
-                console.log(e);
                 const axios_err = e as AxiosError;
                 if (axios_err.response?.status === 500) {
                     this.error_message = 'Error al publicar las ediciones.';

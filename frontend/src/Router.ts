@@ -34,7 +34,7 @@ export const router = createRouter({
     routes,
 });
 
-router.beforeEach(async (to, _from) => {
+router.beforeEach(async (to) => {
     const is_auth = await AuthService.IsAuthenticated();
     if (
         !is_auth &&

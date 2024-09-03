@@ -12,7 +12,7 @@ export const useRolStore = defineStore('RolStore', {
         getRols: (state): Array<ServiceTypes.Rol> => {
             if (!state.request_made) {
                 state.request_made = true;
-                GetService.GetRoles().then(([rols, _]) => {
+                GetService.GetRoles().then(([rols]) => {
                     if (rols) {
                         state.rols = rols;
                     }
@@ -24,12 +24,12 @@ export const useRolStore = defineStore('RolStore', {
     actions: {
         update() {
             GetService.GetRoles()
-                .then(([rols, _]) => {
+                .then(([rols]) => {
                     if (rols) {
                         this.rols = rols;
                     }
                 })
-                .catch((_) => {});
+                .catch(() => {});
         },
         clear() {
             this.rols = new Array<ServiceTypes.Rol>();

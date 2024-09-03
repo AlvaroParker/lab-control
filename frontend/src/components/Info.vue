@@ -56,8 +56,6 @@ export default defineComponent({
                 let status = JSON.parse(data.data as string);
                 this.total = status.total;
                 this.current = status.current;
-                let stage = `Registrando huella... ${status.current} de ${status.total}`;
-                console.log(stage);
             };
             ws.onclose = (event) => {
                 switch (event.code) {

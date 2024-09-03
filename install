@@ -1,0 +1,53 @@
+#!/bin/bash
+# curl -sL https://raw.githubusercontent.com/AlvaroParker/lab-control/main/install | bash -s -- --server-ip <ip> --socket-ip <ip>
+set -e
+
+# Check if wget and unzip are installed
+if ! command -v wget &>/dev/null || ! command -v unzip &>/dev/null; then
+    echo "Please install wget and unzip"
+    exit 1
+fi
+
+# Initialize variables
+server_ip=""
+socket_ip=""
+
+# Loop through the arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --server-ip)
+            server_ip="$2"
+            shift 2
+            ;;
+        --socket-ip)
+            socket_ip="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Check if both IPs were provided
+if [[ -z "$server_ip" || -z "$socket_ip" ]]; then
+    echo "Usage: $0 --server-ip <ip> --socket-ip <ip>"
+    exit 1
+fi
+
+wget http://github.com/AlvaroParker/lab-control/releases/latest/download/deploy.zip && unzip deploy.zip
+rm deploy.zip
+cd deploy
+./changeip --server $server_ip
+./changeip --socket $socket_ip
+
+# Check if the volume deploy_db-data
+VOLUME_NAME="deploy_db-data"
+# Check if the volume already exists
+if ! docker volume inspect "$VOLUME_NAME" &>/dev/null; then
+    # Create the volume if it doesn't exist
+    docker volume create "$VOLUME_NAME"
+fi
+
+docker compose up -d

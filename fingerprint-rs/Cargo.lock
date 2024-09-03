@@ -423,9 +423,9 @@ checksum = "f92be4933c13fd498862a9e02a3055f8a8d9c039ce33db97306fd5a6caa7f29b"
 
 [[package]]
 name = "libfprint-rs"
-version = "0.1.12"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "645fe492545307c756ac35ef53d790c2356a6a012659b2f710ae781aef558fc1"
+checksum = "de470dc35045cf33b3c8d2fa804a6d106d101ea59caaabbaa61e53171b57c8b7"
 dependencies = [
  "gio",
  "glib",

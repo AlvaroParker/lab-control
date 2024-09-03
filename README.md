@@ -1,3 +1,29 @@
+# Production installation
+
+You can use the installation script available for server deployment (it won't install the fingerprint component)
+
+On your server run the following snippet, adjusting the `server-ip` and `socket-ip` parameters as needed.
+
+```bash
+curl -sL https://raw.githubusercontent.com/AlvaroParker/lab-control/main/install | bash -s -- --server-ip <ip> --socket-ip <ip>
+```
+
+This will install the server and start the docker service. To access the web interface go to the ip you pass as next to `--server-ip`. The inital admin is `first@admin.com` and the password `admin`.
+
+## Alternative
+
+Download the latest `deploy.zip` from the Releases website on Github. You can configure the ip of your server and the socket fingerprint device using the `changeip` script inside the `deploy` zip.
+
+You can configure the database password using the `.env` file inside `deploy/`
+
+To deploy the server just type:
+
+```
+docker compose up
+```
+
+To deploy the fingerprint device, you'll need to connect the fingerprint device to a Linux machine and run `fprs` binaries available in the release page. There are you compiled targets, for `armv7` and `x86_64` architectures.
+
 # Development build
 
 - To run this in development mode, you'll need `docker` engine, `cc` and `openssl` installed.
@@ -37,4 +63,4 @@ In order to build the production backend you'll need `cc`, `openssl` and `openss
 Configure the `.env` variables properly. Then run `./install` and your deployment files will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
 by running `docker compose up`
 
-*Note: to copy a docker volume: `cp -a /var/lib/docker/volumes/source_volume /var/lib/docker/volumes/target_volume` and `docker volume create target_volume`*
+_Note: to copy a docker volume: `cp -a /var/lib/docker/volumes/source_volume /var/lib/docker/volumes/target_volume` and `docker volume create target_volume`_

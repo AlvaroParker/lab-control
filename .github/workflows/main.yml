@@ -1,0 +1,112 @@
+on:
+  push:
+    paths:
+      - "version" # Replace with the actual path to your file
+  workflow_dispatch:
+
+jobs:
+  build_arm:
+    # The host should always be Linux
+    runs-on: ubuntu-22.04
+    name: Build for armv7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: uraimo/run-on-arch-action@v2
+        name: Run commands
+        id: runcmd
+        with:
+          arch: armv7
+          distro: ubuntu22.04
+
+          # Not required, but speeds up builds by storing container images in
+          # a GitHub package registry.
+          githubToken: ${{ github.token }}
+
+          setup: |
+            mkdir -p "${PWD}/artifacts"
+
+          # Mount the artifacts directory as /artifacts in the container
+          dockerRunArgs: |
+            --volume "${PWD}/artifacts:/artifacts"
+
+          # Set an output parameter `uname` for use in subsequent steps
+          install: |
+            apt update
+            apt install pkg-config libfprint-2-2 libfprint-2-dev libglib2.0-dev libclang-dev cargo -y
+
+          run: |
+            cd fingerprint-rs
+            cargo b --release
+            mv target/release/fingerprint-rs fprs-armv7
+
+      - name: Upload Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: fprs-armv7
+          path: fingerprint-rs/fprs-armv7
+
+  build_x86:
+    name: Build for amd64
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          sudo apt update
+          sudo apt install pkg-config libfprint-2-2 libfprint-2-dev libglib2.0-dev libclang-dev -y
+          cd fingerprint-rs
+          cargo build --verbose --release
+          mv target/release/fingerprint-rs fprs-x86
+      - name: Upload Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: fprs-x86
+          path: fingerprint-rs/fprs-x86
+
+  build_server:
+    name: Build server
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          sudo apt update
+          sudo apt install pkg-config libssl-dev yarn nodejs npm -y
+          ./build --pack
+      - name: Upload Zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy.zip
+          path: deploy.zip
+
+  upload:
+    needs: [build_x86, build_arm, build_server]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Binary arm
+        uses: actions/download-artifact@v4
+        with:
+          name: fprs-armv7
+      - name: Download Binary x86
+        uses: actions/download-artifact@v4
+        with:
+          name: fprs-x86
+      - name: Download server pack
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy.zip
+      - name: Set outputs
+        id: vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "lab_control_ver=Lab-control v$(cat version)" >> $GITHUB_OUTPUT
+          echo "version_raw=v$(cat version)" >> $GITHUB_OUTPUT
+      - uses: ncipollo/release-action@v1
+        name: Create a Release
+        with:
+          artifacts: "fprs-x86,fprs-armv7,deploy.zip"
+          name: ${{ steps.vars.outputs.lab_control_ver }}
+          tag: ${{ steps.vars.outputs.version_raw }}
+          bodyFile: "deploy/Release.md"
+          commit: main

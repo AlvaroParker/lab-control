@@ -1,3 +1,4 @@
+/* eslint-disable */
 namespace QRTypes {
     export interface Location {
         topRightCorner: {

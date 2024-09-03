@@ -61,10 +61,10 @@ INSERT INTO admins (
   pswd
 ) VALUES
 (
-  'Alvaro',
-  'Parker',
-  'Del Fierro',
-  'aparkerdf@gmail.com',
+  'Delete',
+  'This',
+  'Admin',
+  'first@admin.com',
   -- Hashed Password for Testing purpposes: 'admin'
   '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS' 
 );

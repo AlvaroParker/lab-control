@@ -30,7 +30,7 @@ export const useAdminStore = defineStore('AdminStore', {
                         this.admins = admins;
                     }
                 })
-                .catch((_) => {});
+                .catch(() => {});
         },
         clear() {
             this.admins = new Array<ServiceTypes.AdminGeneric>();
