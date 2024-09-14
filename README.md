@@ -60,7 +60,7 @@ Once the development containers are deployed, when you make changes in `backend/
 
 In order to build the production backend you'll need `cc`, `openssl` and `openssl-devel` installed in your system.
 
-Configure the `.env` variables properly. Then run `./install` and your deployment files will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
+Configure the `.env` variables properly. Then run `./build` and your deployment files will be under the `deploy/` directory. After this, you can copy this directory and deploy it in any server
 by running `docker compose up`
 
 _Note: to copy a docker volume: `cp -a /var/lib/docker/volumes/source_volume /var/lib/docker/volumes/target_volume` and `docker volume create target_volume`_
