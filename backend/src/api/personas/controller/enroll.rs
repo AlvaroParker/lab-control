@@ -179,7 +179,7 @@ pub(crate) async fn send_and_close(err: (u16, String), mut socket: WebSocket) {
     let (error_code, error_message) = err;
     tracing::info!("{}", error_message);
     if let Err(send_error) = socket.send(close_msg(error_code, error_message)).await {
-        println!("Failed to send close message: {:?}", send_error);
+        tracing::error!("Failed to send close message: {:?}", send_error);
     }
 }
 

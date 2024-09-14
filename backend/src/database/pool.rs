@@ -26,7 +26,7 @@ impl Pool {
         let db = match connect_db(database_uri).await {
             Ok(db) => db,
             Err(e) => {
-                eprintln!("Failed to connect to database: {}", e);
+                tracing::error!("Failed to connect to database: {}", e);
                 exit(1);
             }
         };
