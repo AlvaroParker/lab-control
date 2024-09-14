@@ -111,7 +111,6 @@ fn verify_print(paths: Vec<String>) -> Result<String, io::Error> {
                     "Error while trying to read message from fingerprint socket: {}",
                     e
                 );
-                eprintln!("{}", e);
                 break;
             }
         };
