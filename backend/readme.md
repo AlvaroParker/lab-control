@@ -1,6 +1,6 @@
 # Database ER Diagram
 <p align="center">
-<img src="docs/erd.jpg" alt="ER Diagram" width="550"/>
+<img src="docs/erd.svg" alt="ER Diagram" width="550"/>
 </p>
 
 # API Routes
