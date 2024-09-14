@@ -13,3 +13,13 @@ curl -sL https://raw.githubusercontent.com/AlvaroParker/lab-control/main/install
 ```
 
 You'll need `docker`, `docker-compose`, `wget` and `unzip` installed on your server for the script to work.
+
+## How do I update my `lab-control` server installation?
+
+You can update your installation by following this steps:
+
+1. Locate your `deploy` directory on your server.
+2. `cd` into the directory and run `docker compose stop` .
+3. Run `docker compose rm` to remove the container, but keep the volumes.
+4. `cd ..` out of the directory and run `rm -rf deploy` to remove the old installation.
+5. Finally, run the installation script again.
