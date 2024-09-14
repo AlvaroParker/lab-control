@@ -26,6 +26,8 @@ To deploy the fingerprint device, you'll need to connect the fingerprint device 
 
 # Development build
 
+_Note: To acess the local website you won't be able to use `localhost`, you'll need to access using your local ip_
+
 - To run this in development mode, you'll need `docker` engine, `cc` and `openssl` installed.
 - Configuration of the server ip and fingerprint socket ip can be set on `deploy/.env`
 - Valid `.env` variables:
