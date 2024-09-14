@@ -1,0 +1,21 @@
+name: Fingerprint-rs build
+
+on:
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: |
+        sudo apt install pkg-config libfprint-2-2 libfprint-2-dev libglib2.0-dev libclang-dev
+        cd fingerprint-rs
+        cargo build --verbose
