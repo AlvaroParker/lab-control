@@ -128,7 +128,7 @@ export const Logout = async (): Promise<Status> => {
         localStorage.removeItem('user')
 
         return Status.OK
-    } catch (error) {
+    } catch {
         return Status.UNKNOWN
     }
 }
