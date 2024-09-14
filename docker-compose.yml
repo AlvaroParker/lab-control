@@ -29,7 +29,7 @@ services:
       - "./frontend:/app"
       - ./deploy/.env:/app/.env
     working_dir: /app
-    command: bash -c "npm i -g vite && yarn install && vite"
+    command: bash -c "rm -rf lab-control/dist/ && npm --prefix lab-control run build && npm i -g vite && yarn install && vite"
 
   web:
     container_name: web
