@@ -28,6 +28,7 @@ export default defineComponent({
         async onSearch() {
             // Navigate to search page
             this.$router.push({ name: 'Search', query: { query: this.query } });
+            this.query = '';
         },
     },
     beforeMount() {
