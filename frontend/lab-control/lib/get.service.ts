@@ -3,6 +3,31 @@ import { Status } from './types'
 import { isAxiosError } from 'axios'
 import { axiosInstace as axios } from '.'
 
+export const Search = async (
+    query: string
+): Promise<[Array<ServiceTypes.Usuario> | null, Status]> => {
+    try {
+        const res = await axios.get(`/usuarios/search?query=${query}`)
+        if (res.status === 200) return [res.data, Status.OK]
+    } catch (error) {
+        if (isAxiosError(error)) {
+            switch (error.response?.status) {
+                case 400:
+                    return [null, Status.BAD_REQUEST]
+                case 401:
+                    return [null, Status.UNAUTHORIZED]
+                case 404:
+                    return [null, Status.NOT_FOUND]
+                case 409:
+                    return [null, Status.CONFLICT]
+                case 500:
+                    return [null, Status.INTERNAL_SERVER_ERROR]
+            }
+        }
+    }
+    return [null, Status.UNKNOWN]
+}
+
 /**
  * Gets the list of users from the server
  * @remarks

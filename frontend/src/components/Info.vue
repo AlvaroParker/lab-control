@@ -3,6 +3,7 @@ import { defineComponent } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useRouter } from 'vue-router';
 import { AxiosError } from 'axios';
+import { useMotivoStore } from '../stores/MotivoStore';
 
 import { ServiceTypes, GetService, DeleteService, PostService, Status } from 'lab-control';
 
@@ -16,10 +17,13 @@ export default defineComponent({
             showModal: false, // If we should show modal or not
             showModalEnroll: false,
             error_detected: false,
+            showModalEntrada: false,
+            showModalSalida: false,
             message: '',
             registrando_huella: false,
             current: 0,
             total: 1,
+            motivos: useMotivoStore(),
         };
     },
     setup() {
@@ -45,6 +49,21 @@ export default defineComponent({
         };
     },
     methods: {
+        async marcarEntrada(motivo: string) {
+            if (this.usuario) {
+                PostService.ManuallyVerify(false, motivo, this.usuario.rut);
+                // Navigate to home
+                this.$router.push({ name: 'Registro' });
+            }
+            this.showModalEntrada = false;
+        },
+        async marcarSalida() {
+            if (this.usuario) {
+                PostService.ManuallyVerify(true, 'Salida', this.usuario.rut);
+                this.$router.push({ name: 'Registro' });
+            }
+            this.showModalSalida = false;
+        },
         async handleSubmit() {
             this.showModalEnroll = false;
             this.registrando_huella = true;
@@ -192,6 +211,25 @@ export default defineComponent({
                             Cambiar huella
                         </button>
                     </div>
+
+                    <div class="d-flex justify-content-center mt-5">
+                        <button
+                            class="mx-2 btn btn-primary btn-space me-4"
+                            data-toggle="modal"
+                            @click="showModalEntrada = true"
+                        >
+                            Marcar entrada
+                        </button>
+
+                        <button
+                            class="mx-2 btn btn-primary btn-space me-4"
+                            data-toggle="modal"
+                            @click="showModalSalida = true"
+                        >
+                            Marcar salida
+                        </button>
+                    </div>
+
                     <Teleport to="body">
                         <Transition name="modal">
                             <div v-if="showModalEnroll" class="modal-mask">
@@ -237,6 +275,67 @@ export default defineComponent({
                                         <button
                                             class="btn btn-primary modal-default-button"
                                             @click="showModal = false"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </Teleport>
+
+                    <Teleport to="body">
+                        <Transition name="modal">
+                            <div v-if="showModalSalida" class="modal-mask">
+                                <div class="modal-container border rounded-3">
+                                    <div class="modal-header justify-content-center mb-3">
+                                        Marcar salida?
+                                    </div>
+
+                                    <div class="d-flex justify-content-center">
+                                        <button class="btn btn-success m-2" @click="marcarSalida">
+                                            Marcar salida
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-footer justify-content-center">
+                                        <button
+                                            class="btn btn-primary modal-default-button"
+                                            @click="showModalSalida = false"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </Teleport>
+
+                    <Teleport to="body">
+                        <Transition name="modal">
+                            <div v-if="showModalEntrada" class="modal-mask">
+                                <div class="modal-container border rounded-3">
+                                    <div class="modal-header justify-content-center mb-3">
+                                        Marcar entrada
+                                    </div>
+
+                                    <div
+                                        v-for="motivo in motivos.getMotivos"
+                                        :key="motivo.id"
+                                        class="d-flex justify-content-center"
+                                    >
+                                        <button
+                                            class="btn btn-success m-2"
+                                            @click.prevent="() => marcarEntrada(motivo.motivo)"
+                                        >
+                                            {{ motivo.motivo }}
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-footer justify-content-center">
+                                        <button
+                                            class="btn btn-primary modal-default-button"
+                                            @click="showModalEntrada = false"
                                         >
                                             Cancelar
                                         </button>
