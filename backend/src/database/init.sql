@@ -1,4 +1,5 @@
 \c fingerprints
+CREATE EXTENSION IF NOT EXISTS unaccent;
 CREATE TABLE IF NOT EXISTS personas(
   nombre VARCHAR(64) NOT NULL,
   apellido_1 VARCHAR(64) NOT NULL,
@@ -66,7 +67,7 @@ INSERT INTO admins (
   'Admin',
   'first@admin.com',
   -- Hashed Password for Testing purpposes: 'admin'
-  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS' 
+  '$2b$10$Siy.4RyYygdYblLB1Pg1reQerp3VxQGhi1fp/owXg3qmpRr4/8/DS'
 );
 
 INSERT INTO roles(rol) VALUES ('alumno');

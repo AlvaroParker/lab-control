@@ -5,6 +5,7 @@ mod get_by_rut;
 mod manual_verify;
 mod remove_by_rut;
 mod reroll;
+mod search;
 pub mod utils;
 mod verify;
 
@@ -15,4 +16,5 @@ pub use get_by_rut::get_persona_by_rut;
 pub use manual_verify::manual_verify_persona;
 pub use remove_by_rut::remove_persona_by_rut;
 pub use reroll::reroll_persona;
+pub use search::search_persona;
 pub use verify::verify_persona;

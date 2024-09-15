@@ -13,9 +13,11 @@ import NuevoAdmin from './components/NuevoAdmin.vue';
 import Motivos from './components/Motivos.vue';
 import Admins from './components/Admins.vue';
 import Roles from './components/Roles.vue';
+import Search from './components/Search.vue';
 
 const routes = [
     { path: '/', component: Usuarios, name: 'Home' },
+    { path: '/search', component: Search, name: 'Search' },
     { path: '/login', component: Login, name: 'Login' },
     { path: '/usuarios', component: Info, name: 'Info' },
     { path: '/usuarios/reader', component: QRCode, name: 'QRReader' },

@@ -6,6 +6,7 @@ export default defineComponent({
     data() {
         return {
             user: {} as ServiceTypes.Admin,
+            query: '',
         };
     },
     methods: {
@@ -23,6 +24,10 @@ export default defineComponent({
             this.$router.push('/').then(() => {
                 location.reload();
             });
+        },
+        async onSearch() {
+            // Navigate to search page
+            this.$router.push({ name: 'Search', query: { query: this.query } });
         },
     },
     beforeMount() {
@@ -131,12 +136,16 @@ export default defineComponent({
                 <a class="navbar-brand" href="#">
                     <img src="/public/uai_logo.gif" height="35" alt="" />
                 </a>
-                <form class="d-none d-md-flex input-group w-auto my-auto">
+                <form
+                    class="d-none d-md-flex input-group w-auto my-auto"
+                    @submit.prevent="onSearch"
+                >
                     <input
+                        v-model="query"
                         autocomplete="off"
                         type="search"
                         class="form-control rounded bg-dark text-white"
-                        placeholder="Buscar rut (12.123.343-1)"
+                        placeholder="Buscar alumno"
                         style="min-width: 225px"
                     />
                 </form>
