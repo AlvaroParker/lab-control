@@ -6,6 +6,37 @@ import { getWSURL } from '.'
 
 import { axiosInstace as axios } from '.'
 
+export const ManuallyVerify = async (
+    salida: boolean,
+    motivo: string,
+    rut: string
+): Promise<[ServiceTypes.Usuario | null, Status]> => {
+    try {
+        const res = await axios.post(`/usuarios/verify/manual`, {
+            salida,
+            motivo,
+            rut,
+        })
+        if (res.status === 200) return [res.data, Status.OK]
+    } catch (error) {
+        if (isAxiosError(error)) {
+            switch (error.response?.status) {
+                case 400:
+                    return [null, Status.BAD_REQUEST]
+                case 401:
+                    return [null, Status.UNAUTHORIZED]
+                case 404:
+                    return [null, Status.NOT_FOUND]
+                case 409:
+                    return [null, Status.CONFLICT]
+                case 500:
+                    return [null, Status.INTERNAL_SERVER_ERROR]
+            }
+        }
+    }
+    return [null, Status.UNKNOWN]
+}
+
 /**
  * This function enrolls an admin to the system. The admin data must be provided in the `admin` object.
  *
