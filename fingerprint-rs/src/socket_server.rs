@@ -79,7 +79,7 @@ pub fn server() -> Result<(), Box<dyn Error>> {
         let stream = Rc::new(RefCell::new(websocket));
 
         // stream.borrow_mut().read(&mut buff[..]).unwrap();
-        let msg = stream.borrow_mut().read_message().unwrap();
+        let msg = stream.borrow_mut().read().unwrap();
         if let Message::Text(msg) = msg {
             let body: Body = serde_json::from_str(&msg).unwrap();
             match body.action {
