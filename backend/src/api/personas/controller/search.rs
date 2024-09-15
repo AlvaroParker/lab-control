@@ -29,10 +29,8 @@ pub async fn search_persona(
             r#"
             SELECT *
             FROM personas
-            WHERE unaccent(nombre) ILIKE unaccent($1)
-               OR unaccent(apellido_1) ILIKE unaccent($1)
-               OR unaccent(apellido_2) ILIKE unaccent($1)
-               OR unaccent(rut) ILIKE unaccent($1);
+            WHERE unaccent(nombre || ' ' || apellido_1 || ' ' || apellido_2) ILIKE '%' || unaccent($1) || '%'
+               OR unaccent(rut) ILIKE '%' || unaccent($1) || '%';
             "#,
             [wildcard.into()],
         ))

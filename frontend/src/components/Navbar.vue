@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { AuthService, ServiceTypes } from 'lab-control';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
     data() {
@@ -8,6 +9,16 @@ export default defineComponent({
             user: {} as ServiceTypes.Admin,
             query: '',
         };
+    },
+    watch: {
+        $route: {
+            immediate: true, // to call on first load
+            async handler(newRoute) {
+                if (newRoute.name !== 'Search' && newRoute.name !== 'Info') {
+                    this.query = '';
+                }
+            },
+        },
     },
     methods: {
         getName() {
@@ -28,7 +39,6 @@ export default defineComponent({
         async onSearch() {
             // Navigate to search page
             this.$router.push({ name: 'Search', query: { query: this.query } });
-            this.query = '';
         },
     },
     beforeMount() {
