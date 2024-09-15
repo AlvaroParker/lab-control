@@ -1,45 +1,46 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import ChileanRutify from 'chilean-rutify';
 import { useRoute } from 'vue-router';
 import { GetService, ServiceTypes, Status } from 'lab-control';
-import { ref } from 'vue';
 
 export default defineComponent({
-    data() {
-        return {
-            usuarios: ref(new Array<ServiceTypes.Usuario>()),
-            done: false,
-            formatear_rut: ChileanRutify.formatRut,
-        };
-    },
-    watch: {
-        '$route.query': {
-            immediate: true, // to call on first load
-            async handler() {
-                await this.search();
+    setup() {
+        const usuarios = ref<ServiceTypes.Usuario[]>([]);
+        const done = ref(false);
+        const formatear_rut = ChileanRutify.formatRut;
+
+        const route = useRoute();
+
+        watch(
+            () => route.query,
+            async () => {
+                await search();
             },
-        },
-    },
-    methods: {
-        async search() {
-            const route = useRoute().query.query;
-            const [searchResult, status] = await GetService.Search(route);
-            if (status == Status.OK) {
-                this.usuarios.value = searchResult;
+            { immediate: true }
+        );
+
+        async function search() {
+            const query = route.query.query;
+            const [searchResult, status] = await GetService.Search(query as string);
+            if (status == Status.OK && searchResult != null) {
+                usuarios.value = searchResult;
                 return;
             }
-            this.usuarios.value = new Array<ServiceTypes.Usuario>();
-        },
-    },
-    async beforeMount() {},
-    mounted() {
-        this.usuarios;
+            usuarios.value = [];
+        }
+
+        return {
+            usuarios,
+            done,
+            formatear_rut,
+        };
     },
 });
 </script>
+
 <template>
-    <div class="container" v-if="usuarios.value && usuarios.value.length !== 0">
+    <div class="container" v-if="usuarios && usuarios.length !== 0">
         <div class="card-body text-center" style="margin-top: 50px">
             <h4 class="card-title">Usuarios Lab</h4>
             <p class="card-text">Listado de usuarios autorizados para entrar al lab</p>
@@ -56,8 +57,8 @@ export default defineComponent({
                         <th scope="col">...</th>
                     </tr>
                 </thead>
-                <tbody v-for="usuario in usuarios.value">
-                    <tr id="{{ usuario.rut }}">
+                <tbody v-for="usuario in usuarios" :key="usuario.rut">
+                    <tr :id="usuario.rut">
                         <td>{{ usuario.rut }}</td>
                         <td>{{ formatear_rut(usuario.rut) }}</td>
                         <td>
@@ -81,5 +82,3 @@ export default defineComponent({
         </div>
     </div>
 </template>
-
-<style></style>
